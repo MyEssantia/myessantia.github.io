@@ -465,12 +465,6 @@ const masterAddToCart = async function(productId, shouldOpenCart = true) {
         openCart();
       }
     }, 500);
-  } else {
-    // If button not found, show alert and optionally open cart
-    alert(`${product.title} added to cart!`);
-    if (shouldOpenCart) {
-      openCart();
-    }
   }
 };
 
