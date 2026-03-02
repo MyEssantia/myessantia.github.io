@@ -213,7 +213,7 @@
       border-color: #d4af37;
     }
 
-    /* ===== PRODUCT GRID - MATCHING OTHER PAGES ===== */
+    /* ===== PRODUCT GRID - MATCHING ACCESSORIES PAGE ===== */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -251,19 +251,80 @@
       border: 2px solid #000;
       box-shadow: 0 8px 16px -8px rgba(0,0,0,0.15);
     }
-
-    .product-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s;
+    
+    /* Image hover effect - show second image */
+    .primary-img, .secondary-img { 
+      position: absolute; 
+      inset: 0; 
+      background-size: cover; 
+      background-position: center; 
+      transition: opacity 0.3s ease;
+    }
+    .primary-img { 
+      opacity: 1; 
+      z-index: 2; 
+    }
+    .secondary-img { 
+      opacity: 0; 
+      z-index: 1; 
+    }
+    .image-frame:hover .primary-img { 
+      opacity: 0; 
+    }
+    .image-frame:hover .secondary-img { 
+      opacity: 1; 
+    }
+    @media (hover: none) { 
+      .secondary-img { 
+        opacity: 0; 
+      }
+      .image-frame:hover .primary-img { 
+        opacity: 1; 
+      }
     }
 
-    .product-card:hover .product-image {
-      transform: scale(1.05);
+    /* Sale badge positioned top right on image - matching accessories page */
+    .sale-badge-image {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #d4af37;
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.25rem 0.8rem;
+      border-radius: 60px;
+      border: 2px solid #000;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 30;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      pointer-events: none;
+    }
+    .sale-badge-image::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 30%;
+      height: 200%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,240,1) 40%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,0) 100%);
+      transform: rotate(25deg);
+      animation: shimmerStrongPulse 2.2s infinite ease-in-out;
+      filter: blur(1px);
     }
 
-    /* ===== BADGES ===== */
+    @keyframes shimmerStrongPulse {
+      0% { left: -60%; opacity: 0.2; }
+      10% { left: -60%; opacity: 0.2; transform: rotate(25deg) scale(1); }
+      25% { left: 0%; opacity: 0.6; transform: rotate(25deg) scale(1.15); }
+      35% { left: 50%; opacity: 1; transform: rotate(25deg) scale(1.25); }
+      45% { left: 100%; opacity: 0.8; transform: rotate(25deg) scale(1.15); }
+      55% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+      100% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+    }
+
     .new-badge {
       position: absolute;
       top: 10px;
@@ -281,19 +342,7 @@
       align-items: center;
       gap: 4px;
       text-transform: uppercase;
-    }
-    .sale-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #d4af37;
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.2rem 0.8rem;
-      border-radius: 60px;
-      z-index: 20;
-      border: 2px solid #000;
+      pointer-events: none;
     }
 
     .product-category {
@@ -328,20 +377,21 @@
     }
     .product-price-block {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
       margin: 0.4rem 0 0.1rem;
+      width: 100%;
     }
     .current-price { 
       color: #d4af37; 
       font-weight: 800; 
-      font-size: 1.3rem; 
+      font-size: 1.4rem; 
     }
     .current-price .inr-symbol { 
       font-size: 1rem; 
     }
-    .original-price { 
+    .old-price { 
       color: #999; 
       font-size: 0.9rem; 
       text-decoration: line-through; 
@@ -376,19 +426,22 @@
       width: 100%; 
       margin: 0.5rem 0 0; 
       min-height: 44px;
-      transition: 0.15s; 
+      transition: all 0.15s; 
       text-transform: uppercase;
     }
-    .card-add-btn i { 
-      color: #d4af37; 
+    .card-add-btn i { color: #d4af37; transition: color 0.15s; }
+    .card-add-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; }
+    .card-add-btn:hover i { color: #000; }
+    
+    /* Added state for add-to-cart feedback */
+    .card-add-btn.added {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: white;
+      pointer-events: none;
     }
-    .card-add-btn:hover { 
-      background: #d4af37; 
-      color: #000; 
-      border-color: #d4af37; 
-    }
-    .card-add-btn:hover i { 
-      color: #000; 
+    .card-add-btn.added i {
+      color: white;
     }
 
     /* ===== RESULTS COUNT ===== */
@@ -429,11 +482,11 @@
     /* ===== SCROLL TOP ===== */
     .scroll-top {
       position: fixed; bottom: 20px; right: 20px; 
-      background: #000; color: #d4af37; width: 44px; height: 44px; border-radius: 50%;
+      background: #000; color: #d4af37; width: 52px; height: 52px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; 
-      border: 2px solid #d4af37; box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      border: 2px solid #d4af37; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
       opacity: 0; transform: translateY(15px); transition: 0.2s; z-index: 100;
-      font-size: 1.2rem; cursor: pointer;
+      font-size: 1.4rem; cursor: pointer;
     }
     .scroll-top.visible { opacity: 1; transform: translateY(0); }
     .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
@@ -565,13 +618,23 @@
     }
 
     function formatPrice(price) {
-      return price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') || '0.00';
+      if (!price && price !== 0) return '0.00';
+      return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
 
     function getStockStatus(stock) {
       if (stock > 5) return '<div class="stock-badge in-stock"><i class="fa-regular fa-circle-check"></i> in stock</div>';
       if (stock > 0) return '<div class="stock-badge low-stock"><i class="fa-regular fa-clock"></i> low stock</div>';
       return '<div class="stock-badge out-of-stock"><i class="fa-regular fa-circle-xmark"></i> out of stock</div>';
+    }
+
+    // Check if product is new (within 24h)
+    function isNewProduct(product) {
+      if (!product.createdAt) return false;
+      const now = new Date();
+      const creationDate = product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt);
+      const hoursDiff = (now - creationDate) / (1000 * 60 * 60);
+      return hoursDiff < 24;
     }
 
     // ===== CATEGORY CHIPS SETUP =====
@@ -616,17 +679,20 @@
 
       if (!grid || !window.products) return;
 
-      const now = new Date();
+      // Add fallback oldPrice for testing
+      window.products.forEach(product => {
+        if (!product.oldPrice && product.price) {
+          product.oldPrice = product.price * 1.2; // 20% higher for demo
+        }
+      });
 
-      let filteredProducts = products.filter(product => {
+      let filteredProducts = window.products.filter(product => {
         if (categoryFilter !== 'all') {
           if (categoryFilter === 'accessories' && product.category !== 'accessories') return false;
           if (categoryFilter === 'essentials' && product.category !== 'essentials') return false;
           
           if (categoryFilter === 'newarrival') {
-            const creationDate = product.creationDate ? new Date(product.creationDate) : null;
-            const isNew = creationDate && (now - creationDate) < (7 * 24 * 60 * 60 * 1000);
-            if (!isNew && !product.showOnNew) return false;
+            if (!isNewProduct(product) && !product.showOnNew) return false;
           }
         }
 
@@ -650,8 +716,8 @@
           break;
         case 'newest':
           filteredProducts.sort((a, b) => {
-            const dateA = a.creationDate ? new Date(a.creationDate) : new Date(0);
-            const dateB = b.creationDate ? new Date(b.creationDate) : new Date(0);
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
             return dateB - dateA;
           });
           break;
@@ -675,25 +741,24 @@
         return;
       }
 
-      function isProductNew(creationDate) {
-        if (!creationDate) return false;
-        const productDate = new Date(creationDate);
-        return (now - productDate) < (24 * 60 * 60 * 1000);
-      }
-
       grid.innerHTML = filteredProducts.map(product => {
         const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
         const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
-        const isNew = isProductNew(product.creationDate) || product.showOnNew;
+        const isNew = isNewProduct(product) || product.showOnNew;
         const hasSale = product.oldPrice && product.oldPrice > product.price;
-        const discount = hasSale ? Math.round(((product.oldPrice - product.price)/product.oldPrice)*100) : 0;
         
         return `
           <div class="product-card" data-product-id="${product.id}">
-            ${isNew ? '<span class="new-badge"><i class="fa-regular fa-clock"></i> new</span>' : ''}
-            ${hasSale ? `<span class="sale-badge">-${discount}%</span>` : ''}
             <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
               <div class="image-frame">
+                ${isNew ? `
+                  <span class="new-badge">
+                    <i class="fa-regular fa-star"></i> NEW
+                  </span>
+                ` : ''}
+                ${hasSale ? `
+                  <span class="sale-badge-image">SALE</span>
+                ` : ''}
                 <div class="primary-img" style="background-image: url('${mainImage}');"></div>
                 <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
               </div>
@@ -701,12 +766,12 @@
               <h3 class="product-title">${product.title}</h3>
               <div class="product-rating">${renderRating(product.rating)}</div>
               <div class="product-price-block">
+                ${hasSale ? `<span class="old-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
                 <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
-                ${hasSale ? `<span class="original-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
               </div>
               ${getStockStatus(product.stock)}
             </a>
-            <button class="card-add-btn" onclick="window.addToCart('${product.id}'); event.stopPropagation();">
+            <button class="card-add-btn" onclick="handleProductAdd('${product.id}', this); event.stopPropagation();">
               <i class="fa-solid fa-cart-plus"></i> add
             </button>
           </div>
@@ -714,10 +779,40 @@
       }).join('');
     }
 
+    // Handle add to cart with button feedback
+    window.handleProductAdd = function(productId, btn) {
+      // Show added effect
+      btn.classList.add('added');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+      
+      // Use master function from common.js
+      if (typeof window.masterAddToCart === 'function') {
+        window.masterAddToCart(productId, false);
+        
+        // Open cart modal after a short delay
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      } else {
+        // Fallback
+        if (typeof window.addToCart === 'function') {
+          window.addToCart(productId);
+        }
+      }
+    };
+
     // ===== INITIALIZATION =====
-    document.addEventListener('DOMContentLoaded', () => {
-      loadCommonModals();
-      if (typeof loadComponents === 'function') loadComponents();
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load components
+      if (typeof window.loadComponents === 'function') {
+        await window.loadComponents();
+      }
       
       // Set active nav
       setTimeout(() => {
@@ -754,13 +849,14 @@
       }
     });
 
-    async function loadCommonModals() {
-      try {
-        const res = await fetch('common.html');
-        const data = await res.text();
-        document.getElementById('common-modals').innerHTML = data;
-      } catch (e) { console.warn('modals not loaded'); }
-    }
+    // Watch for products to be loaded
+    const productsObserver = new MutationObserver(() => {
+      if (window.products?.length && !document.getElementById('product-grid').children.length) {
+        renderProducts();
+      }
+    });
+    
+    productsObserver.observe(document.body, { childList: true, subtree: true });
 
     window.addEventListener('scroll', handleScroll);
   </script>
