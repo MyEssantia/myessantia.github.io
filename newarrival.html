@@ -252,49 +252,7 @@
       box-shadow: 0 4px 10px -6px rgba(0,0,0,0.2);
     }
     
-    /* Sale badge on price line */
-    .sale-price-badge {
-      background: #d4af37;
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.2rem 0.6rem;
-      border-radius: 60px;
-      border: 1.5px solid #000;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-left: auto;
-      white-space: nowrap;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    /* Product price block - updated for better alignment */
-    .product-price-block {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin: 0.2rem 0 0.1rem;
-      width: 100%;
-    }
-
-    .primary-img, .secondary-img { 
-      position: absolute; inset:0; background-size: cover; background-position: center; 
-      transition: opacity 0.3s ease;
-    }
-    .primary-img { opacity:1; z-index:2; }
-    .secondary-img { opacity:0; z-index:1; }
-    .image-frame:hover .primary-img { opacity:0; }
-    .image-frame:hover .secondary-img { opacity:1; }
-    @media (hover:none) { .secondary-img { opacity:0; } }
-
-    /* ===== BADGES ===== */
+    /* ===== NEW BADGE (left) and SALE BADGE ON IMAGE (right) ===== */
     .new-badge {
       position: absolute;
       top: 10px;
@@ -312,20 +270,60 @@
       align-items: center;
       gap: 4px;
       text-transform: uppercase;
+      pointer-events: none;
     }
-    .sale-badge {
+
+    /* Sale badge on image (exact style from accessories page) */
+    .sale-badge-image {
       position: absolute;
       top: 10px;
       right: 10px;
       background: #d4af37;
       color: #000;
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 0.2rem 0.8rem;
+      padding: 0.25rem 0.8rem;
       border-radius: 60px;
-      z-index: 20;
       border: 2px solid #000;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 30;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      pointer-events: none;
     }
+    .sale-badge-image::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 30%;
+      height: 200%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,240,1) 40%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,0) 100%);
+      transform: rotate(25deg);
+      animation: shimmerStrongPulse 2.2s infinite ease-in-out;
+      filter: blur(1px);
+    }
+    @keyframes shimmerStrongPulse {
+      0% { left: -60%; opacity: 0.2; }
+      10% { left: -60%; opacity: 0.2; transform: rotate(25deg) scale(1); }
+      25% { left: 0%; opacity: 0.6; transform: rotate(25deg) scale(1.15); }
+      35% { left: 50%; opacity: 1; transform: rotate(25deg) scale(1.25); }
+      45% { left: 100%; opacity: 0.8; transform: rotate(25deg) scale(1.15); }
+      55% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+      100% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+    }
+
+    /* Image hover effect */
+    .primary-img, .secondary-img { 
+      position: absolute; inset:0; background-size: cover; background-position: center; 
+      transition: opacity 0.3s ease;
+    }
+    .primary-img { opacity:1; z-index:2; }
+    .secondary-img { opacity:0; z-index:1; }
+    .image-frame:hover .primary-img { opacity:0; }
+    .image-frame:hover .secondary-img { opacity:1; }
+    @media (hover:none) { .secondary-img { opacity:0; } }
 
     .product-category {
       font-size: 0.65rem;
@@ -358,24 +356,30 @@
       font-weight: 600;
       font-size: 0.7rem;
     }
+
+    /* ===== PRODUCT PRICE BLOCK (exact style from accessories page) ===== */
+    .product-price-block {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0.4rem 0 0.1rem;
+      width: 100%;
+    }
     .current-price { 
       color: #d4af37; 
       font-weight: 800; 
-      font-size: 1.1rem; 
+      font-size: 1.4rem; 
     }
     .current-price .inr-symbol { 
-      font-size: 0.85rem; 
+      font-size: 1rem; 
     }
     .old-price { 
       color: #999; 
-      font-size: 0.8rem; 
+      font-size: 0.9rem; 
       text-decoration: line-through; 
     }
-    .stock-badge { 
-      font-size: 0.65rem; 
-      margin-top: 0.1rem; 
-      font-weight: 600; 
-    }
+
     .card-add-btn {
       display: flex; 
       align-items: center; 
@@ -406,6 +410,17 @@
     }
     .card-add-btn:hover i { 
       color: #000; 
+    }
+
+    /* Added state for add-to-cart feedback */
+    .card-add-btn.added {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: white;
+      pointer-events: none;
+    }
+    .card-add-btn.added i {
+      color: white;
     }
 
     /* ===== EMPTY STATE ===== */
@@ -471,11 +486,6 @@
       }
     }
 
-    /* In stock styles */
-    .in-stock { color: #2e7d32; }
-    .low-stock { color: #ed6c02; }
-    .out-of-stock { color: #d32f2f; }
-    .stock-badge i { margin-right: 3px; }
   </style>
 </head>
 <body>
@@ -546,12 +556,6 @@
     function formatPrice(price) {
       return price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') || '0.00';
     }
-    
-    function getStockStatus(stock) {
-      if (stock > 5) return '<div class="stock-badge in-stock"><i class="fa-regular fa-circle-check"></i> in stock</div>';
-      if (stock > 0) return '<div class="stock-badge low-stock"><i class="fa-regular fa-clock"></i> low stock</div>';
-      return '<div class="stock-badge out-of-stock"><i class="fa-regular fa-circle-xmark"></i> out of stock</div>';
-    }
 
     function handleScroll() {
       const btn = document.getElementById('scrollTop');
@@ -576,7 +580,7 @@
       });
     }
 
-    // ===== MAIN RENDERING FUNCTION =====
+    // ===== MAIN RENDERING FUNCTION - UPDATED TO MATCH ACCESSORIES PAGE STYLE =====
     function renderProducts() {
       const gridContainer = document.getElementById('product-grid-container');
       const sortSelect = document.getElementById('sort-select');
@@ -630,39 +634,37 @@
           const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
           const isBrandNew = product.creationDate ? (new Date() - new Date(product.creationDate)) < 24 * 60 * 60 * 1000 : false;
           
-          // FORCE SALE BADGE FOR ALL PRODUCTS (for demonstration)
-          // Comment this out when you have real sale data
-          const hasSale = true; // Force sale badge for all products
-          const oldPrice = product.price * 1.2; // Calculate 20% higher as old price
-          const discount = 20; // Fixed 20% discount
+          // For demo: simulate sale on all new arrivals using oldPrice logic exactly like accessories page
+          // If real oldPrice exists, use it; otherwise create a 20% higher old price for demonstration
+          const hasSale = product.oldPrice ? product.oldPrice > product.price : true; // force sale for demo
+          const oldPrice = product.oldPrice && product.oldPrice > product.price ? product.oldPrice : product.price * 1.2;
           
-          // ORIGINAL: Use this when you have real sale data
-          // const hasSale = product.oldPrice && product.oldPrice > product.price;
-          // const discount = hasSale ? Math.round(((product.oldPrice - product.price)/product.oldPrice)*100) : 0;
+          // Determine new badge text
+          const newBadgeText = isBrandNew ? 'just landed' : 'new';
           
           gridHtml += `
             <div class="product-card" data-product-id="${product.id}">
-              <span class="new-badge">
-                <i class="fa-regular fa-${isBrandNew ? 'star' : 'clock'}"></i> 
-                ${isBrandNew ? 'just landed' : 'new'}
-              </span>
-              <span class="sale-badge">-${discount}%</span>
               <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
                 <div class="image-frame">
+                  <!-- New badge (left) -->
+                  <span class="new-badge">
+                    <i class="fa-regular fa-${isBrandNew ? 'star' : 'clock'}"></i> ${newBadgeText}
+                  </span>
+                  <!-- Sale badge on image (right) - EXACT same as accessories page -->
+                  ${hasSale ? '<span class="sale-badge-image">SALE</span>' : ''}
+                  
                   <div class="primary-img" style="background-image: url('${mainImage}');"></div>
                   <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
                 </div>
                 <p class="product-category">${product.category || 'new arrival'}</p>
                 <h3 class="product-title">${product.title}</h3>
                 <div class="product-rating">${renderRating(product.rating)}</div>
+                <!-- PRICE BLOCK exactly like accessories page: old price + current price, no extra sale-price-badge -->
                 <div class="product-price-block">
+                  ${hasSale ? `<span class="old-price">₹${formatPrice(oldPrice)}</span>` : ''}
                   <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
-                  <span class="old-price">₹${formatPrice(oldPrice)}</span>
-                  <span class="sale-price-badge">SALE</span>
                 </div>
-                ${getStockStatus(product.stock)}
-              </a>
-              <button class="card-add-btn" onclick="window.addToCart('${product.id}'); event.stopPropagation();">
+              <button class="card-add-btn" onclick="handleNewArrivalAdd('${product.id}', this); event.stopPropagation();">
                 <i class="fa-solid fa-cart-plus"></i> add
               </button>
             </div>
@@ -680,16 +682,54 @@
       }
     }
 
-    // ===== ADD TEST PRODUCTS WITH SALE DATA =====
+    // ===== HANDLE ADD TO CART WITH FEEDBACK (mirroring accessories page) =====
+    window.handleNewArrivalAdd = function(productId, btn) {
+      // Use the master function from common.js if available
+      if (typeof window.masterAddToCart === 'function') {
+        btn.classList.add('added');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        window.masterAddToCart(productId, false);
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      } else {
+        // Fallback
+        btn.classList.add('added');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        if (typeof window.addToCart === 'function') {
+          window.addToCart(productId);
+        }
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      }
+    };
+
+    // ===== ADD TEST SALE DATA TO PRODUCTS (kept from original but ensures oldPrice exists) =====
     function addTestSaleData() {
-      // This adds sale data to products for testing
       if (window.products && window.products.length > 0) {
         window.products.forEach(product => {
+          // Only set oldPrice if not already present to keep data integrity
           if (!product.oldPrice) {
             product.oldPrice = product.price * 1.2; // Add 20% as old price
           }
         });
-        console.log('Added test sale data to products');
         renderProducts();
       }
     }
@@ -697,7 +737,7 @@
     // ===== INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', () => {
       loadCommonModals();
-      if (typeof loadComponents === 'function') loadComponents();
+      if (typeof window.loadComponents === 'function') window.loadComponents();
       
       // Set active nav
       setTimeout(() => {
@@ -708,18 +748,20 @@
       // Wait for products to load from common.js
       const checkProducts = setInterval(() => {
         if (window.products && window.products.length > 0) {
-          // Add test sale data to products
           addTestSaleData();
           renderProducts();
           clearInterval(checkProducts);
         } else {
           const cached = localStorage.getItem('MyEssantia_products');
           if (cached) {
-            window.products = JSON.parse(cached);
-            // Add test sale data to products
-            addTestSaleData();
-            renderProducts();
-            clearInterval(checkProducts);
+            try {
+              window.products = JSON.parse(cached);
+              addTestSaleData();
+              renderProducts();
+              clearInterval(checkProducts);
+            } catch (e) {
+              console.warn('Error parsing cached products');
+            }
           }
         }
       }, 100);
@@ -737,9 +779,11 @@
       if (!window.products?.length) {
         const cached = localStorage.getItem('MyEssantia_products');
         if (cached) { 
-          window.products = JSON.parse(cached); 
-          addTestSaleData();
-          renderProducts();
+          try {
+            window.products = JSON.parse(cached); 
+            addTestSaleData();
+            renderProducts();
+          } catch (e) {}
         }
       }
     });
@@ -763,7 +807,6 @@
       }
     };
 
-    // Close modal when clicking outside
     window.addEventListener('click', function(e) {
       if (e.target.classList.contains('modal')) {
         e.target.classList.remove('show');
@@ -771,7 +814,6 @@
       }
     });
 
-    // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal.show').forEach(modal => {
