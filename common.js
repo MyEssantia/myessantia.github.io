@@ -42,7 +42,7 @@ function saveCartToLocalStorage() {
   }
 }
 
-// Load cart from localStorage immediately when script runs
+// Load cart from localStorage immediately
 loadCartFromLocalStorage();
 
 // ========== FIREBASE AUTH STATE OBSERVER ==========
@@ -70,12 +70,10 @@ auth.onAuthStateChanged(async (user) => {
       renderProfileContent();
     }
     
-    // Update cart count after everything is loaded
     updateCartCount();
   } else {
     currentUser = null;
     localStorage.removeItem('MyEssantia_user');
-    // Don't clear cart when user logs out - keep local cart
     updateProfileIcon();
     if (document.getElementById('profile-content')) {
       renderProfileContent();
@@ -93,35 +91,26 @@ async function loadUserCart(userId) {
       firebaseCart = cartDoc.data().items || [];
     }
     
-    // Merge Firebase cart with local cart if both exist
     if (firebaseCart.length > 0 && cart.length > 0) {
-      // Merge carts (prefer Firebase cart for logged in user)
       cart = mergeCarts(cart, firebaseCart);
     } else if (firebaseCart.length > 0) {
-      // Use Firebase cart if it exists
       cart = firebaseCart;
     }
-    // Otherwise keep local cart
     
-    // Save merged cart to localStorage
     saveCartToLocalStorage();
-    
     updateCartCount();
   } catch (error) {
     console.error('Error loading cart:', error);
-    // Keep using local cart if Firebase fails
     updateCartCount();
   }
 }
 
-// ========== MERGE CARTS FUNCTION ==========
 function mergeCarts(localCart, firebaseCart) {
   const merged = [...firebaseCart];
   
   localCart.forEach(localItem => {
     const existingItem = merged.find(item => item.id === localItem.id);
     if (existingItem) {
-      // Take the higher quantity
       existingItem.quantity = Math.max(existingItem.quantity, localItem.quantity);
     } else {
       merged.push(localItem);
@@ -139,11 +128,9 @@ async function saveCartToFirebase() {
       items: cart,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    // Also save to localStorage as backup
     saveCartToLocalStorage();
   } catch (error) {
     console.error('Error saving cart to Firebase:', error);
-    // Still save to localStorage even if Firebase fails
     saveCartToLocalStorage();
   }
 }
@@ -155,12 +142,9 @@ async function loadProducts() {
       id: doc.id,
       ...doc.data()
     }));
-    
-    // Cache products in localStorage for offline access
     localStorage.setItem('MyEssantia_products', JSON.stringify(products));
   } catch (error) {
     console.error('Error loading products:', error);
-    // Fallback to localStorage if Firebase fails
     const cached = localStorage.getItem('MyEssantia_products');
     products = cached ? JSON.parse(cached) : [];
   }
@@ -171,225 +155,9 @@ function formatPrice(price) {
   return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
 
-function renderRating(rating) {
-  let stars = '';
-  for (let i = 1; i <= 5; i++) {
-    if (rating >= i) stars += '<i class="fa-solid fa-star"></i>';
-    else if (rating > i - 1 && rating < i) stars += '<i class="fa-solid fa-star-half-alt"></i>';
-    else stars += '<i class="fa-regular fa-star"></i>';
-  }
-  return stars + `<span>(${rating.toFixed(1)})</span>`;
-}
-
-function getStockStatus(stock) {
-  if (stock > 10) return '<span class="stock-badge in-stock">In Stock</span>';
-  if (stock > 0) return `<span class="stock-badge low-stock">Only ${stock} left</span>`;
-  return '<span class="stock-badge out-of-stock">Out of Stock</span>';
-}
-
-// ========== FALLBACK COMPONENTS ==========
-function getFallbackHeader() {
-  return `
-    <header style="padding: 1rem; background: #fff; border-bottom: 1px solid #eee;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="logo" style="font-family: 'Playfair Display', serif; font-size: 1.8rem;">
-          My<span style="color: #d4af37;">Essantia</span>
-        </div>
-        <div class="header-icons">
-          <a href="#" id="profile-icon" style="margin: 0 0.5rem;"><i class="fa-regular fa-user"></i></a>
-          <a href="#" id="cart-icon" style="margin: 0 0.5rem; position: relative;">
-            <i class="fa-regular fa-shopping-bag"></i>
-            <span id="cart-count" style="position: absolute; top: -8px; right: -8px; background: #d4af37; color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; display: flex; align-items: center; justify-content: center;">0</span>
-          </a>
-        </div>
-      </div>
-    </header>
-  `;
-}
-
-function getFallbackFooter() {
-  return `
-    <footer style="background: #1a1a1a; color: #fff; padding: 2rem 1rem; margin-top: 3rem;">
-      <div style="text-align: center;">
-        <p>&copy; 2025 MyEssantia. All rights reserved.</p>
-      </div>
-    </footer>
-  `;
-}
-
-// ========== COMPONENT LOADING ==========
-async function loadComponents() {
-  try {
-    const headerResponse = await fetch('header.html');
-    const headerData = await headerResponse.text();
-    document.getElementById('header').innerHTML = headerData;
-
-    const footerResponse = await fetch('footer.html');
-    const footerData = await footerResponse.text();
-    document.getElementById('footer').innerHTML = footerData;
-
-    // Load products after components are loaded
-    await loadProducts();
-
-    setTimeout(() => {
-      if (typeof initializeApp === 'function') {
-        initializeApp();
-      }
-      setupEventListeners();
-      // Update cart count after components are loaded
-      updateCartCount();
-    }, 50);
-  } catch (error) {
-    console.error('Error loading components:', error);
-    document.getElementById('header').innerHTML = getFallbackHeader();
-    document.getElementById('footer').innerHTML = getFallbackFooter();
-    
-    // Fallback to cached products
-    const cached = localStorage.getItem('MyEssantia_products');
-    products = cached ? JSON.parse(cached) : [];
-    
-    setTimeout(() => {
-      if (typeof initializeApp === 'function') {
-        initializeApp();
-      }
-      setupEventListeners();
-      // Update cart count
-      updateCartCount();
-    }, 50);
-  }
-}
-
-// ========== EVENT LISTENERS SETUP ==========
-function setupEventListeners() {
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const navMenu = document.getElementById('nav-menu');
-  
-  if (mobileMenuToggle && navMenu) {
-    mobileMenuToggle.addEventListener('click', function(e) {
-      e.stopPropagation();
-      navMenu.classList.toggle('show');
-    });
-  }
-
-  const cartIcon = document.getElementById('cart-icon');
-  if (cartIcon) {
-    cartIcon.addEventListener('click', function(e) {
-      e.preventDefault();
-      openCart();
-    });
-  }
-
-  const profileIcon = document.getElementById('profile-icon');
-  if (profileIcon) {
-    profileIcon.addEventListener('click', function(e) {
-      e.preventDefault();
-      openProfile();
-    });
-  }
-
-  const closeCart = document.getElementById('close-cart');
-  if (closeCart) {
-    closeCart.addEventListener('click', function() {
-      closeModal('cart-modal');
-    });
-  }
-
-  const closeProfile = document.getElementById('close-profile');
-  if (closeProfile) {
-    closeProfile.addEventListener('click', function() {
-      closeModal('profile-modal');
-    });
-  }
-
-  const checkoutBtn = document.getElementById('checkout-btn');
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', function() {
-      if (!currentUser) {
-        alert('Please login to checkout');
-        closeModal('cart-modal');
-        openProfile();
-        return;
-      }
-      if (cart.length === 0) {
-        alert('Your cart is empty!');
-      } else {
-        // Save cart to localStorage before redirecting
-        saveCartToLocalStorage();
-        
-        // Also save to Firebase if user is logged in
-        if (currentUser) {
-          saveCartToFirebase().then(() => {
-            // Close the cart modal
-            closeModal('cart-modal');
-            // Redirect to checkout page
-            window.location.href = 'checkout.html';
-          }).catch(error => {
-            console.error('Error saving cart before redirect:', error);
-            // Still redirect even if Firebase save fails
-            closeModal('cart-modal');
-            window.location.href = 'checkout.html';
-          });
-        } else {
-          // Redirect even if not logged in (though we checked currentUser above)
-          closeModal('cart-modal');
-          window.location.href = 'checkout.html';
-        }
-      }
-    });
-  }
-
-  window.addEventListener('click', function(e) {
-    const cartModal = document.getElementById('cart-modal');
-    const profileModal = document.getElementById('profile-modal');
-    
-    if (e.target === cartModal) {
-      closeModal('cart-modal');
-    }
-    if (e.target === profileModal) {
-      closeModal('profile-modal');
-    }
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeModal('cart-modal');
-      closeModal('profile-modal');
-    }
-  });
-
-  document.addEventListener('click', function(e) {
-    if (navMenu && navMenu.classList.contains('show')) {
-      if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-        navMenu.classList.remove('show');
-      }
-    }
-  });
-  
-  // Setup cart buttons using event delegation
-  setupCartButtonListener();
-}
-
-// ========== CART BUTTON SETUP (Event Delegation) ==========
-function setupCartButtonListener() {
-  // Listen for clicks on any button with data-add-to-cart attribute
-  document.addEventListener('click', function(e) {
-    const button = e.target.closest('[data-add-to-cart]');
-    if (button) {
-      e.preventDefault();
-      const productId = button.getAttribute('data-add-to-cart');
-      addToCart(productId, button);
-    }
-  });
-}
-
-// ========== MAIN ADD TO CART FUNCTION (SINGLE SOURCE OF TRUTH) ==========
+// ========== ADD TO CART FUNCTION ==========
 window.addToCart = async function(productId, button = null) {
   console.log('Adding to cart:', productId);
-  
-  // If button not provided, try to get it from the event
-  if (!button && event) {
-    button = event.target?.closest('button');
-  }
   
   const product = products.find(p => p.id === productId);
   if (!product) {
@@ -421,10 +189,8 @@ window.addToCart = async function(productId, button = null) {
     });
   }
 
-  // Save to localStorage immediately
   saveCartToLocalStorage();
 
-  // Save to Firebase if user is logged in
   if (currentUser) {
     try {
       await saveCartToFirebase();
@@ -435,37 +201,19 @@ window.addToCart = async function(productId, button = null) {
   
   updateCartCount();
   
-  // Show animation on the button
   if (button) {
     const originalHTML = button.innerHTML;
-    const originalBg = button.style.background;
-    const originalColor = button.style.color;
-    
     button.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
     button.style.background = '#4CAF50';
-    button.style.color = 'white';
     
     setTimeout(() => {
       button.innerHTML = originalHTML;
-      button.style.background = originalBg;
-      button.style.color = originalColor;
-      // Open cart after animation
+      button.style.background = '';
       openCart();
     }, 500);
   } else {
-    // Open cart immediately if button not found
     setTimeout(() => openCart(), 300);
   }
-};
-
-// Legacy support for onclick="addToCart('id')" - still works!
-window.addToCartLegacy = function(productId) {
-  window.addToCart(productId, event?.target?.closest('button'));
-};
-
-// Buy Now function
-window.buyNow = function(productId) {
-  window.addToCart(productId, event?.target?.closest('button'));
 };
 
 // ========== CART FUNCTIONS ==========
@@ -473,29 +221,22 @@ window.updateQuantity = async function(productId, change) {
   const itemIndex = cart.findIndex(item => item.id === productId);
   if (itemIndex === -1) return;
 
-  const product = products.find(p => p.id === productId);
   const item = cart[itemIndex];
   const newQuantity = item.quantity + change;
 
   if (newQuantity <= 0) {
     cart.splice(itemIndex, 1);
-  } else if (product && newQuantity > product.stock) {
-    alert('Sorry, not enough stock available!');
-    return;
   } else {
     item.quantity = newQuantity;
   }
 
-  // Save to localStorage immediately
   saveCartToLocalStorage();
 
-  // Save to Firebase if user is logged in
   if (currentUser) {
     await saveCartToFirebase();
   }
   
   updateCartCount();
-  // Re-render cart items when quantity updates
   if (document.getElementById('cart-modal')?.classList.contains('show')) {
     renderCartItems();
   }
@@ -504,16 +245,13 @@ window.updateQuantity = async function(productId, change) {
 window.removeFromCart = async function(productId) {
   cart = cart.filter(item => item.id !== productId);
   
-  // Save to localStorage immediately
   saveCartToLocalStorage();
 
-  // Save to Firebase if user is logged in
   if (currentUser) {
     await saveCartToFirebase();
   }
   
   updateCartCount();
-  // Re-render cart items when item is removed
   if (document.getElementById('cart-modal')?.classList.contains('show')) {
     renderCartItems();
   }
@@ -524,12 +262,17 @@ function renderCartItems() {
   const cartItemCount = document.getElementById('cart-item-count');
   const cartTotalAmount = document.getElementById('cart-total-amount');
 
-  if (!cartItemsContainer || !cartItemCount || !cartTotalAmount) {
-    console.warn('Cart elements not found');
+  console.log('Rendering cart items:', cart);
+  console.log('Elements found:', {
+    container: !!cartItemsContainer,
+    count: !!cartItemCount,
+    total: !!cartTotalAmount
+  });
+
+  if (!cartItemsContainer) {
+    console.error('Cart items container not found!');
     return;
   }
-
-  console.log('Rendering cart items:', cart); // Debug log
 
   if (!cart || cart.length === 0) {
     cartItemsContainer.innerHTML = `
@@ -539,8 +282,8 @@ function renderCartItems() {
         <p style="font-size: 0.9rem; margin-top: 0.5rem;">Start shopping to add items!</p>
       </div>
     `;
-    cartItemCount.textContent = '0';
-    cartTotalAmount.textContent = '₹0.00';
+    if (cartItemCount) cartItemCount.textContent = '0';
+    if (cartTotalAmount) cartTotalAmount.textContent = '₹0.00';
     return;
   }
 
@@ -577,8 +320,8 @@ function renderCartItems() {
     `;
   }).join('');
 
-  cartItemCount.textContent = totalItems;
-  cartTotalAmount.textContent = `₹${formatPrice(total)}`;
+  if (cartItemCount) cartItemCount.textContent = totalItems;
+  if (cartTotalAmount) cartTotalAmount.textContent = `₹${formatPrice(total)}`;
 }
 
 function updateCartCount() {
@@ -586,6 +329,7 @@ function updateCartCount() {
   if (cartCount) {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartCount.textContent = totalItems;
+    console.log('Cart count updated:', totalItems);
   }
 }
 
@@ -593,23 +337,13 @@ function updateCartCount() {
 function openCart() {
   const cartModal = document.getElementById('cart-modal');
   if (cartModal) {
-    // Make sure cart items are rendered before showing modal
+    console.log('Opening cart modal');
     renderCartItems();
     cartModal.classList.add('show');
     document.body.style.overflow = 'hidden';
   } else {
-    console.warn('Cart modal not found');
-    // Try to load modals if they're not present
-    loadCommonModals().then(() => {
-      setTimeout(() => {
-        const modal = document.getElementById('cart-modal');
-        if (modal) {
-          renderCartItems();
-          modal.classList.add('show');
-          document.body.style.overflow = 'hidden';
-        }
-      }, 100);
-    });
+    console.error('Cart modal element not found in DOM!');
+    alert('Error: Cart modal not found. Please refresh the page.');
   }
 }
 
@@ -619,19 +353,6 @@ function openProfile() {
     renderProfileContent();
     profileModal.classList.add('show');
     document.body.style.overflow = 'hidden';
-  } else {
-    console.warn('Profile modal not found');
-    // Try to load modals if they're not present
-    loadCommonModals().then(() => {
-      setTimeout(() => {
-        const modal = document.getElementById('profile-modal');
-        if (modal) {
-          renderProfileContent();
-          modal.classList.add('show');
-          document.body.style.overflow = 'hidden';
-        }
-      }, 100);
-    });
   }
 }
 
@@ -643,38 +364,8 @@ function closeModal(modalId) {
   }
 }
 
-// Make modal functions globally available
 window.openCart = openCart;
 window.closeModal = closeModal;
-
-// ========== LOAD COMMON MODALS ==========
-async function loadCommonModals() {
-  try {
-    // Check if modals already exist
-    if (document.getElementById('cart-modal')) {
-      return;
-    }
-    
-    const response = await fetch('common.html');
-    const data = await response.text();
-    document.getElementById('common-modals').innerHTML = data;
-    
-    // Re-setup event listeners for modal buttons
-    setTimeout(() => {
-      const closeCart = document.getElementById('close-cart');
-      if (closeCart) {
-        closeCart.addEventListener('click', () => closeModal('cart-modal'));
-      }
-      
-      const closeProfile = document.getElementById('close-profile');
-      if (closeProfile) {
-        closeProfile.addEventListener('click', () => closeModal('profile-modal'));
-      }
-    }, 100);
-  } catch (error) {
-    console.error('Error loading modals:', error);
-  }
-}
 
 // ========== PROFILE FUNCTIONS ==========
 function renderProfileContent() {
@@ -685,43 +376,23 @@ function renderProfileContent() {
     profileContent.innerHTML = `
       <div class="profile-card">
         <div class="profile-avatar">
-          <img src="${currentUser.picture || 'https://via.placeholder.com/150'}"
-               alt="Profile"
-               style="width:100%;height:100%;object-fit:cover;"
-               onerror="this.src='https://via.placeholder.com/150'">
+          <img src="${currentUser.picture || 'https://via.placeholder.com/150'}" alt="Profile">
         </div>
-
         <div class="profile-name">${currentUser.name}</div>
         <div class="profile-email">${currentUser.email}</div>
-
-        <button class="logout-btn" onclick="window.logout()">
-          Logout
-        </button>
+        <button class="logout-btn" onclick="window.logout()">Logout</button>
       </div>
     `;
   } else {
     profileContent.innerHTML = `
       <div class="login-wrapper">
-        <div class="login-icon">
-          <i class="fa-brands fa-google"></i>
-        </div>
-
-        <div class="login-title">
-          Welcome to <span style="color:#d4af37;">MyEssantia</span>
-        </div>
-
-        <div class="login-subtitle">
-          Sign in securely with your Google account
-        </div>
-
+        <div class="login-icon"><i class="fa-brands fa-google"></i></div>
+        <div class="login-title">Welcome to <span style="color:#d4af37;">MyEssantia</span></div>
+        <div class="login-subtitle">Sign in securely with your Google account</div>
         <button class="google-login-btn" onclick="window.loginWithGoogle()">
-          <i class="fa-brands fa-google"></i>
-          Continue with Google
+          <i class="fa-brands fa-google"></i> Continue with Google
         </button>
-
-        <div class="login-terms">
-          By continuing, you agree to our Terms & Privacy Policy
-        </div>
+        <div class="login-terms">By continuing, you agree to our Terms & Privacy Policy</div>
       </div>
     `;
   }
@@ -729,32 +400,12 @@ function renderProfileContent() {
 
 window.loginWithGoogle = async function() {
   const provider = new firebase.auth.GoogleAuthProvider();
-  
   try {
-    const result = await auth.signInWithPopup(provider);
-    
-    const isNewUser = result.additionalUserInfo?.isNewUser;
-    
-    if (isNewUser) {
-      await db.collection('users').doc(result.user.uid).set({
-        name: result.user.displayName,
-        email: result.user.email,
-        photoURL: result.user.photoURL,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    }
-    
+    await auth.signInWithPopup(provider);
     closeModal('profile-modal');
   } catch (error) {
     console.error('Google login error:', error);
-    let errorMessage = 'Google login failed. Please try again.';
-    if (error.code === 'auth/popup-closed-by-user') {
-      errorMessage = 'Login cancelled.';
-    } else if (error.code === 'auth/popup-blocked') {
-      errorMessage = 'Popup was blocked by your browser.';
-    }
-    alert(errorMessage);
+    alert('Login failed. Please try again.');
   }
 };
 
@@ -764,34 +415,54 @@ window.logout = async function() {
     closeModal('profile-modal');
   } catch (error) {
     console.error('Logout error:', error);
-    alert('Failed to logout. Please try again.');
   }
 };
 
 function updateProfileIcon() {
   const profileIcon = document.getElementById('profile-icon');
   if (profileIcon) {
-    if (currentUser) {
-      profileIcon.innerHTML = '<i class="fa-solid fa-circle-user" style="color: #d4af37;"></i>';
-    } else {
-      profileIcon.innerHTML = '<i class="fa-regular fa-user"></i>';
-    }
+    profileIcon.innerHTML = currentUser ? 
+      '<i class="fa-solid fa-circle-user" style="color: #d4af37;"></i>' : 
+      '<i class="fa-regular fa-user"></i>';
+  }
+}
+
+// ========== EVENT LISTENERS ==========
+function setupEventListeners() {
+  const closeCart = document.getElementById('close-cart');
+  if (closeCart) {
+    closeCart.addEventListener('click', () => closeModal('cart-modal'));
+  }
+
+  const closeProfile = document.getElementById('close-profile');
+  if (closeProfile) {
+    closeProfile.addEventListener('click', () => closeModal('profile-modal'));
+  }
+
+  const checkoutBtn = document.getElementById('checkout-btn');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+      if (!currentUser) {
+        alert('Please login to checkout');
+        closeModal('cart-modal');
+        openProfile();
+      } else if (cart.length === 0) {
+        alert('Your cart is empty!');
+      } else {
+        window.location.href = 'checkout.html';
+      }
+    });
   }
 }
 
 // ========== INITIALIZATION ==========
-// Setup cart button listener when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  // Load modals first
-  loadCommonModals().then(() => {
-    setupCartButtonListener();
-    updateCartCount();
-  });
-});
-
-// Also try to load modals on window load
-window.addEventListener('load', function() {
-  if (!document.getElementById('cart-modal')) {
-    loadCommonModals();
-  }
+  console.log('DOM loaded, setting up...');
+  setupEventListeners();
+  updateCartCount();
+  updateProfileIcon();
+  
+  // Check if modals exist
+  console.log('Cart modal exists:', !!document.getElementById('cart-modal'));
+  console.log('Profile modal exists:', !!document.getElementById('profile-modal'));
 });
