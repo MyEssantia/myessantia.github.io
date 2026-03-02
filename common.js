@@ -517,7 +517,10 @@ function renderCartItems() {
   const cartItemCount = document.getElementById('cart-item-count');
   const cartTotalAmount = document.getElementById('cart-total-amount');
 
-  if (!cartItemsContainer || !cartItemCount || !cartTotalAmount) return;
+  if (!cartItemsContainer || !cartItemCount || !cartTotalAmount) {
+    console.warn('Cart elements not found');
+    return;
+  }
 
   if (cart.length === 0) {
     cartItemsContainer.innerHTML = `
@@ -545,7 +548,6 @@ function renderCartItems() {
         <div class="cart-item-image" style="background-image: url('${item.primaryImg || 'https://via.placeholder.com/90'}');"></div>
         <div class="cart-item-details">
           <h4 class="cart-item-title">${item.title}</h4>
-          <p class="cart-item-category">${item.category || 'Accessory'}</p>
           <div class="cart-item-price">₹${formatPrice(item.price)}</div>
           <div class="cart-item-actions">
             <div class="quantity-controls">
