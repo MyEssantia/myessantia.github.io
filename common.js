@@ -1,4 +1,3 @@
-
 // ========== FIREBASE CONFIGURATION ==========
 const firebaseConfig = {
   apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
@@ -238,8 +237,6 @@ async function loadComponents() {
         initializeApp();
       }
       setupEventListeners();
-      // Force override any duplicate addToCart functions after components are loaded
-      forceOverrideCartFunctions();
       // Update cart count after components are loaded
       updateCartCount();
     }, 50);
@@ -256,8 +253,6 @@ async function loadComponents() {
         initializeApp();
       }
       setupEventListeners();
-      // Force override any duplicate addToCart functions
-      forceOverrideCartFunctions();
       // Update cart count
       updateCartCount();
     }, 50);
@@ -369,39 +364,32 @@ function setupEventListeners() {
       }
     }
   });
+  
+  // Setup cart buttons using event delegation
+  setupCartButtonListener();
 }
 
-// ========== MODAL FUNCTIONS ==========
-function openCart() {
-  const cartModal = document.getElementById('cart-modal');
-  if (cartModal) {
-    renderCartItems();
-    cartModal.classList.add('show');
-    document.body.style.overflow = 'hidden';
+// ========== CART BUTTON SETUP (Event Delegation) ==========
+function setupCartButtonListener() {
+  // Listen for clicks on any button with data-add-to-cart attribute
+  document.addEventListener('click', function(e) {
+    const button = e.target.closest('[data-add-to-cart]');
+    if (button) {
+      e.preventDefault();
+      const productId = button.getAttribute('data-add-to-cart');
+      addToCart(productId, button);
+    }
+  });
+}
+
+// ========== MAIN ADD TO CART FUNCTION (SINGLE SOURCE OF TRUTH) ==========
+window.addToCart = async function(productId, button = null) {
+  console.log('Adding to cart:', productId);
+  
+  // If button not provided, try to get it from the event
+  if (!button && event) {
+    button = event.target?.closest('button');
   }
-}
-
-function openProfile() {
-  const profileModal = document.getElementById('profile-modal');
-  if (profileModal) {
-    renderProfileContent();
-    profileModal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-}
-
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-  }
-}
-
-// ========== MASTER CART FUNCTION (FORCED OVERRIDE) ==========
-// This is the single source of truth for addToCart
-const masterAddToCart = async function(productId, shouldOpenCart = true) {
-  console.log('Master addToCart called for product:', productId);
   
   const product = products.find(p => p.id === productId);
   if (!product) {
@@ -438,70 +426,46 @@ const masterAddToCart = async function(productId, shouldOpenCart = true) {
 
   // Save to Firebase if user is logged in
   if (currentUser) {
-    await saveCartToFirebase();
+    try {
+      await saveCartToFirebase();
+    } catch (error) {
+      console.error('Error saving to Firebase:', error);
+    }
   }
   
   updateCartCount();
   
   // Show animation on the button
-  const btn = event?.target?.closest('button');
-  if (btn) {
-    const originalText = btn.innerHTML;
-    const originalBg = btn.style.background;
-    const originalColor = btn.style.color;
+  if (button) {
+    const originalHTML = button.innerHTML;
+    const originalBg = button.style.background;
+    const originalColor = button.style.color;
     
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
-    btn.style.background = '#4CAF50';
-    btn.style.color = 'white';
+    button.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
+    button.style.background = '#4CAF50';
+    button.style.color = 'white';
     
     setTimeout(() => {
-      btn.innerHTML = originalText;
-      btn.style.background = originalBg;
-      btn.style.color = originalColor;
-      
-      // Open cart after animation if requested
-      if (shouldOpenCart) {
-        openCart();
-      }
+      button.innerHTML = originalHTML;
+      button.style.background = originalBg;
+      button.style.color = originalColor;
+      openCart();
     }, 500);
+  } else {
+    // Open cart immediately if button not found
+    setTimeout(() => openCart(), 300);
   }
 };
 
-// ========== FORCED OVERRIDE FUNCTION ==========
-function forceOverrideCartFunctions() {
-  console.log('Forcing override of cart functions...');
-  
-  // Override window.addToCart with master function
-  window.addToCart = function(productId) {
-    return masterAddToCart(productId, true);
-  };
-  
-  // Override any potential duplicate functions
-  window.addToCartMaster = masterAddToCart;
-  window.addToCartLegacy = function(productId) {
-    return masterAddToCart(productId, false);
-  };
-  
-  // Override buyNow to use master function
-  window.buyNow = function(productId) {
-    masterAddToCart(productId, true);
-  };
-  
-  // Freeze the functions to prevent further overrides
-  Object.defineProperty(window, 'addToCart', {
-    value: window.addToCart,
-    writable: false,
-    configurable: false
-  });
-  
-  Object.defineProperty(window, 'buyNow', {
-    value: window.buyNow,
-    writable: false,
-    configurable: false
-  });
-  
-  console.log('Cart functions forcefully overridden and locked');
-}
+// Legacy support for onclick="addToCart('id')" - still works!
+window.addToCartLegacy = function(productId) {
+  window.addToCart(productId, event?.target?.closest('button'));
+};
+
+// Buy Now function
+window.buyNow = function(productId) {
+  window.addToCart(productId, event?.target?.closest('button'));
+};
 
 // ========== CART FUNCTIONS ==========
 window.updateQuantity = async function(productId, change) {
@@ -612,6 +576,37 @@ function updateCartCount() {
   }
 }
 
+// ========== MODAL FUNCTIONS ==========
+function openCart() {
+  const cartModal = document.getElementById('cart-modal');
+  if (cartModal) {
+    renderCartItems();
+    cartModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function openProfile() {
+  const profileModal = document.getElementById('profile-modal');
+  if (profileModal) {
+    renderProfileContent();
+    profileModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// Make modal functions globally available
+window.openCart = openCart;
+window.closeModal = closeModal;
+
 // ========== PROFILE FUNCTIONS ==========
 function renderProfileContent() {
   const profileContent = document.getElementById('profile-content');
@@ -715,21 +710,9 @@ function updateProfileIcon() {
   }
 }
 
-// Make all cart functions globally available
-window.openCart = openCart;
-window.closeModal = closeModal;
-
-// Initial override when script loads
-forceOverrideCartFunctions();
-
-// Override again after DOM is fully loaded
+// ========== INITIALIZATION ==========
+// Setup cart button listener when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  forceOverrideCartFunctions();
-  // Update cart count when DOM is loaded
+  setupCartButtonListener();
   updateCartCount();
 });
-
-// Override again after a short delay to catch any late script execution
-setTimeout(forceOverrideCartFunctions, 100);
-setTimeout(forceOverrideCartFunctions, 500);
-setTimeout(forceOverrideCartFunctions, 1000);
