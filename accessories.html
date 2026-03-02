@@ -18,7 +18,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Common CSS -->
+  <!-- Common CSS (loaded dynamically via JS but we also link for reliability) -->
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="header.css">
   <link rel="stylesheet" href="footer.css">
@@ -166,23 +166,6 @@
       color: #fff;
     }
 
-    /* ===== RESULTS COUNT ===== */
-    .results-wrapper {
-      display: flex;
-      justify-content: flex-end;
-      margin: 0.5rem 0 1rem;
-    }
-    .results-count {
-      color: #666;
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: #f5f5f5;
-      padding: 0.2rem 1rem;
-      border-radius: 60px;
-      border: 1px solid #000;
-      display: inline-block;
-    }
-
     /* ===== PRODUCT GRID ===== */
     .product-grid {
       display: grid;
@@ -264,7 +247,7 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      background: #ff6b6b;
+      background: #cc0000;
       color: white;
       font-size: 0.65rem;
       font-weight: 800;
@@ -404,7 +387,7 @@
       background: #2e7d32;
       border-color: #2e7d32;
       color: white;
-      pointer-events: none; /* prevent double click while adding */
+      pointer-events: none;
     }
     .card-add-btn.added i {
       color: white;
@@ -464,9 +447,6 @@
       .sort-select select {
         flex: 1;
       }
-      .results-wrapper {
-        justify-content: center;
-      }
     }
 
     @media (max-width: 480px) {
@@ -478,8 +458,12 @@
 </head>
 <body>
 
+  <!-- Header will be loaded dynamically -->
   <div id="header"></div>
-  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+  
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
 
   <main>
     <!-- PAGE HEADER WITH SORT INTEGRATED -->
@@ -519,24 +503,32 @@
     </div>
   </main>
 
+  <!-- Footer will be loaded dynamically -->
   <div id="footer"></div>
+  
+  <!-- Common modals container -->
   <div id="common-modals"></div>
 
+  <!-- Load common.js first (contains Firebase, cart logic, component loading) -->
   <script src="common.js"></script>
+  
   <script>
-    // ===== ADD TEST DATA FUNCTION (to enrich demo) =====
+    // ===== LOCAL FUNCTIONS THAT DEPEND ON common.js =====
+    
+    // Add test data to enrich demo products
     function addTestData() {
       if (window.products && window.products.length > 0) {
         window.products.forEach(product => {
           if (!product.oldPrice) {
             product.oldPrice = product.price * 1.2;
           }
-          // Ensure category is accessories for filter
+          // Ensure category is set for filtering
           if (!product.category) product.category = 'accessories';
         });
       }
     }
 
+    // Check if product is new (within 24h)
     function isNewProduct(product) {
       if (!product.createdAt) return false;
       const now = new Date();
@@ -545,17 +537,18 @@
       return hoursDiff < 24;
     }
 
-    // ===== RENDER =====
+    // Render products in grid
     function renderProducts() {
       const gridContainer = document.getElementById('product-grid-container');
       const sortSelect = document.getElementById('sort-select');
       
       if (!gridContainer) return;
 
-      // Ensure window.products exists and has test data
+      // Ensure products exist
       if (!window.products) window.products = [];
       addTestData();
 
+      // Filter accessories products
       const accessoriesProducts = (window.products || []).filter(p => 
         p.category === 'accessories' || p.showOnAccessories === true
       );
@@ -645,37 +638,44 @@
       }
     }
 
-    // ===== HANDLE ADD (using the master function from common.js) =====
+    // Handle add to cart with button feedback and cart opening
     window.handleAccessoryAdd = function(productId, btn) {
-      // Use the globally defined masterAddToCart if available (from common.js)
+      // Use the master function from common.js
       if (typeof window.masterAddToCart === 'function') {
-        // Pass the button to show effect, and ensure cart opens afterwards
-        // We need to slightly adapt because masterAddToCart expects 'event' to access button.
-        // We'll create a synthetic event-like object.
-        const fakeEvent = { target: btn };
-        window.masterAddToCart.call({}, productId, true, fakeEvent);
-      } else {
-        // Fallback if master function not yet loaded
-        console.warn('masterAddToCart not ready, using local fallback');
+        // Show added effect
         btn.classList.add('added');
         btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
         
-        // Still try to add to cart via common.js addToCart
-        if (typeof window.addToCart === 'function') {
-          window.addToCart(productId);
-        } else {
-          // Minimal local storage update
-          let cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
-          if (!cart.includes(productId)) cart.push(productId);
-          localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
-        }
+        // Call master function (it will add to cart, sync, etc.)
+        // We pass false to avoid double-opening cart, then open manually
+        window.masterAddToCart(productId, false);
         
         // Open cart modal after a short delay
         setTimeout(() => {
           if (typeof window.openCart === 'function') {
             window.openCart();
           }
-          // Reset button after opening cart (optional, but cart modal is open)
+          // Reset button after cart opens (optional, but keeps UI consistent)
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      } else {
+        // Fallback if master function not ready
+        console.warn('masterAddToCart not available yet');
+        btn.classList.add('added');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        // Try to use standard addToCart
+        if (typeof window.addToCart === 'function') {
+          window.addToCart(productId);
+        }
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
           setTimeout(() => {
             btn.classList.remove('added');
             btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
@@ -684,51 +684,40 @@
       }
     };
 
-    // Override masterAddToCart to ensure cart opens and button shows added
-    // This runs after common.js is loaded
-    function enhanceMasterFunction() {
-      if (window.masterAddToCart && !window.masterAddToCart.__enhanced) {
-        const original = window.masterAddToCart;
-        window.masterAddToCart = async function(productId, shouldOpenCart = true, customEvent = null) {
-          // Call original but capture button if provided via customEvent
-          let btn = customEvent?.target?.closest?.('button');
+    // ===== INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load components (header, footer, modals) using common.js function
+      if (typeof window.loadComponents === 'function') {
+        await window.loadComponents();
+      } else {
+        // Fallback manual loading
+        try {
+          // Load header
+          const headerRes = await fetch('header.html');
+          const headerData = await headerRes.text();
+          document.getElementById('header').innerHTML = headerData;
           
-          // Show added effect immediately
-          if (btn) {
-            btn.classList.add('added');
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
-          }
+          // Load footer
+          const footerRes = await fetch('footer.html');
+          const footerData = await footerRes.text();
+          document.getElementById('footer').innerHTML = footerData;
           
-          // Execute original logic (adds to cart, updates storage)
-          await original.call(this, productId, false); // pass false to avoid double open
-          
-          // Update cart count (already inside original)
-          
-          // Open cart modal after a tiny delay to see the added state
-          setTimeout(() => {
-            if (shouldOpenCart && typeof window.openCart === 'function') {
-              window.openCart();
-            }
-            // Reset button after cart opens (optional, but cart is now open)
-            if (btn) {
-              setTimeout(() => {
-                btn.classList.remove('added');
-                btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
-              }, 500);
-            }
-          }, 200);
-        };
-        window.masterAddToCart.__enhanced = true;
-        console.log('masterAddToCart enhanced to open cart');
+          // Load common modals
+          const modalsRes = await fetch('common.html');
+          const modalsData = await modalsRes.text();
+          document.getElementById('common-modals').innerHTML = modalsData;
+        } catch (e) {
+          console.warn('Error loading components manually:', e);
+        }
       }
-    }
 
-    // ===== INIT =====
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load common modals if function exists
-      if (typeof loadCommonModals === 'function') loadCommonModals();
-      
-      // Wait for products to load from common.js
+      // Set active nav link after components are loaded
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.nav-link[href="accessories.html"]').forEach(l => l.classList.add('active'));
+      }, 300);
+
+      // Wait for products to be available
       const checkProducts = setInterval(() => {
         if (window.products && window.products.length > 0) {
           renderProducts();
@@ -736,54 +725,23 @@
         } else {
           const cached = localStorage.getItem('MyEssantia_products');
           if (cached) {
-            window.products = JSON.parse(cached);
-            renderProducts();
-            clearInterval(checkProducts);
+            try {
+              window.products = JSON.parse(cached);
+              renderProducts();
+              clearInterval(checkProducts);
+            } catch (e) {
+              console.warn('Error parsing cached products');
+            }
           }
         }
       }, 100);
-
-      // Enhance master function after it becomes available
-      const checkMaster = setInterval(() => {
-        if (window.masterAddToCart) {
-          enhanceMasterFunction();
-          clearInterval(checkMaster);
-        }
-      }, 100);
-
-      // Set active nav
-      setTimeout(() => {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll('.nav-link[href="accessories.html"]').forEach(l => l.classList.add('active'));
-      }, 200);
     });
 
-    window.addEventListener('load', () => {
-      if (!window.products?.length) {
-        const cached = localStorage.getItem('MyEssantia_products');
-        if (cached) { 
-          window.products = JSON.parse(cached); 
-          renderProducts();
-        }
-      }
-      // Enhance again in case master loaded after load
-      if (window.masterAddToCart) enhanceMasterFunction();
-    });
-
-    // Scroll top button
+    // Scroll top button visibility
     window.addEventListener('scroll', () => {
       const btn = document.getElementById('scrollTop');
       if (btn) btn.classList.toggle('visible', window.scrollY > 200);
     });
-
-    // Fallback loadCommonModals if not defined in common.js
-    async function loadCommonModals() {
-      try {
-        const res = await fetch('common.html');
-        const data = await res.text();
-        document.getElementById('common-modals').innerHTML = data;
-      } catch (e) { console.warn('modals not loaded'); }
-    }
   </script>
 </body>
 </html>
