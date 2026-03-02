@@ -183,7 +183,7 @@
       display: inline-block;
     }
 
-    /* ===== PRODUCT GRID - OPTIMIZED FOR DESKTOP ===== */
+    /* ===== PRODUCT GRID - 2 COLUMNS ON MOBILE ===== */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -220,10 +220,10 @@
     
     @media (max-width: 500px) {
       .product-grid {
-       grid-template-columns: repeat(2, 1fr);
-    gap: 1.2rem;
-  }
-}
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
 
     .product-card {
       background: transparent;
@@ -252,30 +252,30 @@
       box-shadow: 0 4px 10px -6px rgba(0,0,0,0.2);
     }
     
-   /* Add this to your existing CSS */
-.sale-price-badge {
-  background: #d4af37;
-  color: #000;
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 0.2rem 0.6rem;
-  border-radius: 60px;
-  border: 1.5px solid #000;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-left: auto;
-  white-space: nowrap;
-}
+    /* Sale badge on price line */
+    .sale-price-badge {
+      background: #d4af37;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 60px;
+      border: 1.5px solid #000;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: auto;
+      white-space: nowrap;
+    }
 
-/* Update the product-price-block to better align items */
-.product-price-block {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin: 0.2rem 0 0.1rem;
-  width: 100%;
-}
+    /* Product price block - updated for better alignment */
+    .product-price-block {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 0.2rem 0 0.1rem;
+      width: 100%;
+    }
 
     .primary-img, .secondary-img { 
       position: absolute; inset:0; background-size: cover; background-position: center; 
@@ -463,6 +463,12 @@
         padding: 0 20px;
       }
     }
+
+    /* In stock styles */
+    .in-stock { color: #2e7d32; }
+    .low-stock { color: #ed6c02; }
+    .out-of-stock { color: #d32f2f; }
+    .stock-badge i { margin-right: 3px; }
   </style>
 </head>
 <body>
@@ -503,7 +509,7 @@
       </div>
     </section>
 
-    <!-- PRODUCT GRID - OPTIMIZED FOR DESKTOP -->
+    <!-- PRODUCT GRID -->
     <div class="container">
       <div id="product-grid-container" class="product-grid">
         <!-- products injected via JS -->
@@ -517,7 +523,6 @@
   <!-- Common Modals -->
   <div id="common-modals"></div>
 
-  <script src="common.js"></script>
   <script src="common.js"></script>
   <script>
     // ===== UTILITY FUNCTIONS =====
@@ -546,7 +551,7 @@
       if (btn) btn.classList.toggle('visible', window.scrollY > 200);
     }
 
-    // ===== CORRECTED ADD TO CART FUNCTION =====
+    // ===== ADD TO CART FUNCTION =====
     window.addToCart = async function(productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
@@ -594,10 +599,10 @@
           btn.innerHTML = originalText;
           btn.style.background = '';
           btn.style.color = '';
-          openCart(); // Open cart after animation
+          openCart();
         }, 500);
       } else {
-        openCart(); // Open cart immediately if button not found
+        openCart();
       }
     };
 
@@ -632,7 +637,6 @@
     function renderProducts() {
       const gridContainer = document.getElementById('product-grid-container');
       const sortSelect = document.getElementById('sort-select');
-      const resultsCount = document.getElementById('results-count');
       
       if (!gridContainer) return;
 
@@ -647,7 +651,6 @@
             <p>Check back soon for fresh products!</p>
           </div>
         `;
-        if (resultsCount) resultsCount.innerHTML = 'Showing 0 products';
         return;
       }
 
@@ -675,53 +678,49 @@
         return sorted;
       }
 
-function renderAllProducts() {
-  const sortedProducts = getSortedProducts();
-  
-  // Update results count
-  if (resultsCount) {
-    resultsCount.innerHTML = `Showing ${sortedProducts.length} new arrival${sortedProducts.length !== 1 ? 's' : ''}`;
-  }
-  
-  let gridHtml = '';
-  sortedProducts.forEach(product => {
-    const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
-    const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
-    const isBrandNew = product.creationDate ? (new Date() - new Date(product.creationDate)) < 24 * 60 * 60 * 1000 : false;
-    const hasSale = product.oldPrice && product.oldPrice > product.price;
-    const discount = hasSale ? Math.round(((product.oldPrice - product.price)/product.oldPrice)*100) : 0;
-    
-    gridHtml += `
-      <div class="product-card" data-product-id="${product.id}">
-        <span class="new-badge">
-          <i class="fa-regular fa-${isBrandNew ? 'star' : 'clock'}"></i> 
-          ${isBrandNew ? 'just landed' : 'new'}
-        </span>
-        ${hasSale ? `<span class="sale-badge">-${discount}%</span>` : ''}
-        <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
-          <div class="image-frame">
-            <div class="primary-img" style="background-image: url('${mainImage}');"></div>
-            <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
-          </div>
-          <p class="product-category">${product.category || 'new arrival'}</p>
-          <h3 class="product-title">${product.title}</h3>
-          <div class="product-rating">${renderRating(product.rating)}</div>
-          <div class="product-price-block">
-            <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
-            ${hasSale ? `<span class="old-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
-            ${hasSale ? `<span class="sale-price-badge">SALE</span>` : ''}
-          </div>
-          ${getStockStatus(product.stock)}
-        </a>
-        <button class="card-add-btn" onclick="window.addToCart('${product.id}'); event.stopPropagation();">
-          <i class="fa-solid fa-cart-plus"></i> add
-        </button>
-      </div>
-    `;
-  });
-  
-  gridContainer.innerHTML = gridHtml;
-}
+      function renderAllProducts() {
+        const sortedProducts = getSortedProducts();
+        
+        let gridHtml = '';
+        sortedProducts.forEach(product => {
+          const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
+          const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
+          const isBrandNew = product.creationDate ? (new Date() - new Date(product.creationDate)) < 24 * 60 * 60 * 1000 : false;
+          const hasSale = product.oldPrice && product.oldPrice > product.price;
+          const discount = hasSale ? Math.round(((product.oldPrice - product.price)/product.oldPrice)*100) : 0;
+          
+          gridHtml += `
+            <div class="product-card" data-product-id="${product.id}">
+              <span class="new-badge">
+                <i class="fa-regular fa-${isBrandNew ? 'star' : 'clock'}"></i> 
+                ${isBrandNew ? 'just landed' : 'new'}
+              </span>
+              ${hasSale ? `<span class="sale-badge">-${discount}%</span>` : ''}
+              <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
+                <div class="image-frame">
+                  <div class="primary-img" style="background-image: url('${mainImage}');"></div>
+                  <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
+                </div>
+                <p class="product-category">${product.category || 'new arrival'}</p>
+                <h3 class="product-title">${product.title}</h3>
+                <div class="product-rating">${renderRating(product.rating)}</div>
+                <div class="product-price-block">
+                  <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
+                  ${hasSale ? `<span class="old-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
+                  ${hasSale ? `<span class="sale-price-badge">SALE</span>` : ''}
+                </div>
+                ${getStockStatus(product.stock)}
+              </a>
+              <button class="card-add-btn" onclick="window.addToCart('${product.id}'); event.stopPropagation();">
+                <i class="fa-solid fa-cart-plus"></i> add
+              </button>
+            </div>
+          `;
+        });
+        
+        gridContainer.innerHTML = gridHtml;
+      }
+
       renderAllProducts();
       
       if (sortSelect) {
