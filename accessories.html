@@ -3,765 +3,519 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>ESSENCE · secure checkout</title>
-  
+  <title>MyEssantia · premium accessories</title>
+
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
+
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
-  
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  
-  <!-- Common CSS (placeholder) -->
+
+  <!-- Common CSS -->
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="header.css">
   <link rel="stylesheet" href="footer.css">
-  
+
   <style>
     /* ===== GLOBAL & RESETS ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body { 
       font-family: 'Inter', 'Montserrat', sans-serif; 
-      background: #faf9f7; 
+      background: #ffffff; 
       color: #1e1e1e; 
       overflow-x: hidden;
-      line-height: 1.4;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      line-height: 1.5;
     }
-    .container { 
-      width: 100%; 
-      max-width: 1200px; 
-      margin: 0 auto; 
-      padding: 0 16px; 
-    }
-    @media (min-width: 640px) { 
-      .container { padding: 0 24px; } 
-    }
+    .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 30px; }
+    @media (min-width: 1600px) { .container { max-width: 1600px; padding: 0 40px; } }
+    @media (min-width: 640px) { .container { padding: 0 32px; } }
 
-    /* ===== CHECKOUT HEADER ===== */
-    .checkout-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 1.5rem 0 1.2rem;
-      flex-wrap: wrap;
-      gap: 0.8rem;
+    /* ===== ACTIVE NAV ===== */
+    .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
+    .nav-link.active::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
+      background: #d4af37; animation: slideIn 0.3s ease;
     }
-    .checkout-header h1 {
-      font-size: clamp(1.6rem, 4vw, 2rem);
-      font-weight: 800;
-      color: #000;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-      font-family: 'Montserrat', sans-serif;
-    }
-    .checkout-header h1 span {
-      color: #d4af37;
-      font-weight: 900;
-    }
-    .secure-badge {
-      background: #000;
-      padding: 0.5rem 1.2rem;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-      color: #fff;
-      border: 2px solid #d4af37;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .secure-badge i {
-      color: #d4af37;
-      margin-right: 0.3rem;
-    }
+    @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
 
-    /* ===== EMPTY CART ===== */
-    .empty-cart-checkout {
-      text-align: center;
-      padding: 3rem 1.5rem;
-      background: #ffffff;
-      border-radius: 32px;
-      border: 2px solid #000;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-      margin: 1.5rem 0;
-    }
-    .empty-cart-checkout i {
-      font-size: 3.5rem;
-      color: #d4af37;
-      margin-bottom: 1rem;
-    }
-    .empty-cart-checkout h3 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-    }
-    .empty-cart-checkout p {
-      color: #666;
-      margin-bottom: 1.5rem;
-      font-size: 0.95rem;
-    }
-    .empty-cart-checkout .btn {
-      display: inline-block;
-      padding: 0.9rem 2.2rem;
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 60px;
-      font-weight: 600;
-      transition: all 0.2s;
-      border: 2px solid #000;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.9rem;
-    }
-    .empty-cart-checkout .btn:hover {
-      background: #d4af37;
-      color: #000;
-      border-color: #d4af37;
-    }
-
-    /* ===== MAIN CHECKOUT GRID ===== */
-    .checkout-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.9fr;
-      gap: 1.5rem;
-      align-items: stretch;
-      margin-bottom: 2.5rem;
-    }
-
-    /* ===== LEFT COLUMN ===== */
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-
-    /* ===== SECTION CARDS ===== */
-    .section-card {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 1.2rem 1.5rem;
-      border: 2px solid #000;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-      transition: all 0.2s;
-    }
-    .section-card:hover {
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
-      transform: translateY(-1px);
-    }
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      font-family: 'Montserrat', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-    }
-    .section-title .step-number {
-      background: #000;
-      color: #d4af37;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1rem;
-      border: 2px solid #d4af37;
-    }
-
-    /* ===== FORM STYLES (mandatory fields with asterisk) ===== */
-    .form-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .form-group {
-      flex: 1 1 calc(50% - 0.5rem);
-      min-width: 130px;
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: #fcfaf7;
+      padding: 1.5rem 0 1rem;
       position: relative;
-    }
-    .form-group.full-width {
-      flex: 1 1 100%;
-    }
-    label {
-      display: block;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #000;
-      margin-bottom: 0.2rem;
-      font-weight: 600;
-    }
-    .required-asterisk {
-      color: #c00;
-      font-size: 0.9rem;
-      margin-left: 0.2rem;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border: 2px solid #000;
-      border-radius: 50px;
-      background: #ffffff;
-      font-size: 0.85rem;
-      transition: 0.15s;
-      outline: none;
-      font-family: 'Inter', sans-serif;
-      font-weight: 400;
-    }
-    input:focus, select:focus {
-      border-color: #d4af37;
-      box-shadow: 0 0 0 3px rgba(212,175,55,0.15);
-    }
-    input.error, select.error {
-      border-color: #c00;
-      background-color: #fff2f2;
-    }
-
-    /* ===== CHECKBOX ROW ===== */
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 0.5rem;
-    }
-    .checkbox-row input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #d4af37;
-    }
-    .checkbox-row label {
-      display: inline;
-      text-transform: none;
-      font-size: 0.8rem;
-      color: #1e1e1e;
-      font-weight: 400;
-    }
-
-    /* ===== SHIPPING METHOD CARDS ===== */
-    .radio-card {
-      border: 2px solid #000;
-      border-radius: 50px;
-      padding: 0.7rem 1.2rem;
-      margin-bottom: 0.6rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      transition: 0.15s;
-      cursor: pointer;
-      background: #ffffff;
-    }
-    .radio-card.selected {
-      border-color: #d4af37;
-      background: #fcf9f4;
-      box-shadow: 0 0 0 2px #d4af37;
-    }
-    .radio-card input[type="radio"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #d4af37;
-      flex-shrink: 0;
-    }
-    .radio-content {
-      flex: 1;
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      align-items: center;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-      font-weight: 500;
-    }
-    .radio-price {
-      font-weight: 700;
-      color: #000;
-      white-space: nowrap;
-    }
-    .free-badge {
-      background: #2e7d32;
-      color: white;
-      font-size: 0.6rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 40px;
-      margin-left: 0.5rem;
-      font-weight: 700;
-      border: 1px solid #000;
-    }
-
-    /* ===== RIGHT PANEL ===== */
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      height: fit-content;
-      position: sticky;
-      top: 20px;
-    }
-    .order-summary {
-      background: #ffffff;
-      border-radius: 32px;
-      padding: 1.5rem;
-      border: 2px solid #000;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-      width: 100%;
-    }
-    .summary-title {
-      font-size: 1.3rem;
-      font-weight: 800;
+      overflow: hidden;
       border-bottom: 3px solid #000;
-      padding-bottom: 0.8rem;
-      margin-bottom: 1.2rem;
+    }
+    .page-header-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1601924994987-69e26d50dc26?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover; background-position: 60% 30%; opacity: 0.1;
+    }
+    .page-header .container { position: relative; z-index: 2; }
+
+    /* ===== HEADER CONTENT WITH SORT ===== */
+    .header-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .title-section {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .breadcrumbs a {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumbs a:hover {
+      color: #d4af37;
+    }
+    .breadcrumbs i {
+      color: #d4af37;
+      font-size: 0.7rem;
+    }
+    .breadcrumbs span {
+      color: #000;
+    }
+
+    .page-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
       font-family: 'Montserrat', sans-serif;
       text-transform: uppercase;
-      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: #000;
+      margin-bottom: 0.25rem;
     }
-    .summary-title span {
+    .page-title span {
       color: #d4af37;
       font-weight: 900;
+      background: linear-gradient(145deg, #d4af37, #b07e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
-    /* ===== CART ITEMS ===== */
-    .cart-items-container {
-      max-height: 320px;
-      overflow-y: auto;
-      padding-right: 4px;
-      margin-bottom: 0.8rem;
-      scrollbar-width: thin;
-    }
-    .cart-items-container::-webkit-scrollbar {
-      width: 4px;
-    }
-    .cart-items-container::-webkit-scrollbar-thumb {
-      background: #d4af37;
-      border-radius: 4px;
-    }
-    .cart-item {
-      display: flex;
-      gap: 0.8rem;
-      margin-bottom: 1rem;
-      align-items: center;
-      padding: 0.6rem;
-      border: 2px solid #eee;
-      border-radius: 16px;
-      transition: all 0.2s;
-      background: #fff;
-    }
-    .cart-item:hover {
-      border-color: #d4af37;
-      background: #fcf9f4;
-    }
-    .item-image {
-      width: 65px;
-      height: 65px;
-      background: #ece5dc;
-      border-radius: 16px;
-      background-size: cover;
-      background-position: center;
-      flex-shrink: 0;
-      border: 2px solid #000;
-    }
-    .item-details {
-      flex: 1;
-      min-width: 0;
-    }
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.2rem;
-    }
-    .item-details h4 {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #000;
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 130px;
-    }
-    .item-price {
-      font-weight: 800;
-      color: #d4af37;
-      font-size: 0.9rem;
-      white-space: nowrap;
-    }
-    .item-meta {
-      font-size: 0.6rem;
-      color: #666;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-    .qty-control {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .qty-btn {
-      background: #f5f2ee;
-      border: 2px solid #000;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-weight: 700;
+    .page-desc {
+      color: #2a2a2a;
       font-size: 1rem;
-      transition: 0.15s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #000;
-    }
-    .qty-btn:hover:not(:disabled) {
-      background: #d4af37;
-      color: #000;
-    }
-    .qty-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-    .qty-btn.remove-btn {
-      background: #fee;
-      color: #c00;
-      margin-left: 0.2rem;
-    }
-    .qty-btn.remove-btn:hover {
-      background: #c00;
-      color: white;
-    }
-    .qty-value {
-      font-weight: 700;
-      font-size: 0.9rem;
-      min-width: 24px;
-      text-align: center;
+      max-width: 600px;
+      font-weight: 400;
+      line-height: 1.5;
     }
 
-    /* ===== SHIMMER EFFECT FOR RAZORPAY REFUND ===== */
-    .razorpay-tag {
-      display: inline-flex;
+    /* ===== SORT SECTION - INSIDE HEADER ===== */
+    .sort-header-section {
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
-      background: #000;
-      color: white;
-      padding: 0.2rem 0.8rem;
-      border-radius: 40px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      border: 1px solid #d4af37;
+      justify-content: flex-end;
     }
-    .shimmer-badge {
-      background: linear-gradient(90deg, #000 0%, #d4af37 50%, #000 100%);
-      background-size: 200% auto;
-      animation: shimmer 2.5s infinite linear;
-      color: #fff;
-      border: none;
-      padding: 0.3rem 0.9rem;
-      border-radius: 40px;
-      font-weight: 700;
-      margin-top: 0.5rem;
-    }
-    @keyframes shimmer {
-      0% { background-position: 0% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    /* ===== RETURN POLICY SECTION ===== */
-    .return-section {
-      margin-top: 1rem;
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 1.2rem;
-      border: 2px solid #000;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-    }
-    .return-header {
+    
+    .sort-select {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid #d4af37;
-    }
-    .return-header i {
-      color: #d4af37;
-      font-size: 1.2rem;
-    }
-    .return-header h3 {
-      font-size: 1rem;
-      font-weight: 800;
-      font-family: 'Montserrat', sans-serif;
-      text-transform: uppercase;
-    }
-    .badge-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .badge {
       background: #000;
-      color: white;
-      padding: 0.3rem 0.8rem;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      border: 1px solid #d4af37;
-    }
-    .badge i {
-      color: #d4af37;
-      margin-right: 0.3rem;
-    }
-    .policy-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
-      margin: 1rem 0;
-    }
-    .policy-card {
-      background: #f8f5f1;
-      padding: 0.8rem;
-      border-radius: 16px;
-      border: 2px solid #000;
-    }
-    .policy-card-title {
-      font-weight: 800;
-      font-size: 0.8rem;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      color: #000;
-    }
-    .policy-list {
-      list-style: none;
-    }
-    .policy-list li {
-      font-size: 0.7rem;
-      color: #444;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .policy-list li i {
-      color: #d4af37;
-      font-size: 0.6rem;
-    }
-
-    /* ===== PROMO SECTION ===== */
-    .promo-inside {
-      background: #f8f5f1;
-      border-radius: 20px;
-      padding: 1rem 1.2rem;
-      margin: 1rem 0;
-      border: 2px solid #000;
-    }
-    .promo-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    .promo-header p {
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-    }
-    .promo-status {
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #2e7d32;
-      display: none;
-    }
-    .promo-status.error {
-      color: #c00;
-    }
-    .promo-flex {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .promo-flex input {
-      flex: 1;
-      min-width: 140px;
-      background: white;
-      border: 2px solid #000;
-      padding: 0.7rem 1rem;
-      border-radius: 50px;
-      font-size: 0.8rem;
-    }
-    .promo-btn {
-      background: #000;
-      border: 2px solid #000;
-      color: white;
-      padding: 0.7rem 1.2rem;
-      border-radius: 50px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      font-family: 'Inter', sans-serif;
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.8rem;
-    }
-    .promo-btn:hover {
-      background: #d4af37;
-      color: #000;
-      border-color: #d4af37;
-    }
-
-    /* ===== PRICE BREAKDOWN ===== */
-    .price-line {
-      display: flex;
-      justify-content: space-between;
-      margin: 0.5rem 0;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    .total-line {
-      font-weight: 800;
-      font-size: 1.5rem;
-      border-top: 3px solid #000;
-      padding-top: 0.8rem;
-      margin: 0.8rem 0 1rem;
-      font-family: 'Montserrat', sans-serif;
-      color: #000;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    /* ===== PLACE ORDER BUTTON (with pulse/shimmer) ===== */
-    .place-order-btn {
-      background: #d4af37;
-      border: 2px solid #000;
-      width: 100%;
-      padding: 1.2rem;
+      padding: 0.5rem 1.5rem;
       border-radius: 60px;
-      font-weight: 700;
-      font-size: 1rem;
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
+      border: 2px solid #d4af37;
       cursor: pointer;
       transition: 0.2s;
-      margin-bottom: 1rem;
-      font-family: 'Montserrat', sans-serif;
+    }
+    .sort-select:hover {
+      background: #1a1a1a;
+    }
+    .sort-select i {
+      color: #d4af37;
+      font-size: 0.9rem;
+    }
+    .sort-select select {
+      background: transparent;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .sort-select select option {
+      background: #000;
+      color: #fff;
+    }
+
+    /* ===== RESULTS COUNT ===== */
+    .results-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin: 0.5rem 0 1rem;
+    }
+    .results-count {
+      color: #666;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #f5f5f5;
+      padding: 0.2rem 1rem;
+      border-radius: 60px;
+      border: 1px solid #000;
+      display: inline-block;
+    }
+
+    /* ===== PRODUCT GRID ===== */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+      margin: 1rem 0 4rem;
+    }
+    @media (min-width: 600px) { .product-grid { gap: 1.8rem; } }
+    @media (min-width: 800px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1100px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 2rem; } }
+    @media (min-width: 1400px) { .product-grid { grid-template-columns: repeat(5, 1fr); gap: 2rem; } }
+
+    .product-card {
+      background: transparent;
+      padding: 0;
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      text-decoration: none;
+      color: inherit;
+      border: none;
+      cursor: pointer;
+      position: relative;
+    }
+    .product-card:hover { transform: translateY(-4px); }
+
+    .image-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 0.8rem;
+      background: #f8f6f2;
+      border: 2px solid #000;
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.15);
+    }
+    
+    /* Sale badge with shimmer */
+    .sale-price-badge {
+      background: #d4af37;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 60px;
+      border: 1.5px solid #000;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+      margin-left: auto;
+      white-space: nowrap;
       position: relative;
       overflow: hidden;
     }
-    .place-order-btn::after {
+    .sale-price-badge::after {
       content: '';
       position: absolute;
       top: -50%;
       left: -60%;
-      width: 200%;
+      width: 30%;
       height: 200%;
-      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,240,1) 40%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,0) 100%);
       transform: rotate(25deg);
-      animation: btnShine 3s infinite;
+      animation: shimmerStrongPulse 2.2s infinite ease-in-out;
+      filter: blur(1px);
     }
-    @keyframes btnShine {
-      0% { left: -60%; }
-      20% { left: 100%; }
-      100% { left: 100%; }
+    @keyframes shimmerStrongPulse {
+      0% { left: -60%; opacity: 0.2; }
+      10% { left: -60%; opacity: 0.2; transform: rotate(25deg) scale(1); }
+      25% { left: 0%; opacity: 0.6; transform: rotate(25deg) scale(1.15); }
+      35% { left: 50%; opacity: 1; transform: rotate(25deg) scale(1.25); }
+      45% { left: 100%; opacity: 0.8; transform: rotate(25deg) scale(1.15); }
+      55% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+      100% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
     }
-    .place-order-btn:hover:not(:disabled) {
+
+    .high-demand-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #ff6b6b;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.8rem;
+      border-radius: 60px;
+      z-index: 20;
+      letter-spacing: 0.3px;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-transform: uppercase;
+      animation: pulse 2s infinite;
+    }
+    .high-demand-badge i { color: white; font-size: 0.7rem; }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .primary-img, .secondary-img { 
+      position: absolute; inset:0; background-size: cover; background-position: center; 
+      transition: opacity 0.3s ease;
+    }
+    .primary-img { opacity:1; z-index:2; }
+    .secondary-img { opacity:0; z-index:1; }
+    .image-frame:hover .primary-img { opacity:0; }
+    .image-frame:hover .secondary-img { opacity:1; }
+    @media (hover:none) { .secondary-img { opacity:0; } }
+
+    .new-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
       background: #000;
       color: #d4af37;
-      border-color: #d4af37;
-      transform: translateY(-2px);
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-    }
-    .place-order-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* ===== PAYMENT ICONS ===== */
-    .payment-icons-sm {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.2rem 0.8rem;
+      border-radius: 60px;
+      z-index: 20;
+      letter-spacing: 0.3px;
+      border: 2px solid #d4af37;
       display: flex;
-      justify-content: center;
-      gap: 0.8rem;
+      align-items: center;
+      gap: 4px;
+      text-transform: uppercase;
+    }
+
+    .product-category {
+      font-size: 0.7rem;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .product-title { 
+      font-weight: 800;
+      font-size: 1rem;
+      margin: 0.2rem 0;
       color: #000;
-      font-size: 1.4rem;
+      line-height: 1.3;
+      text-transform: uppercase;
+      word-break: break-word;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .product-rating { 
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0.2rem 0;
+      font-size: 0.8rem;
+    }
+    .product-rating i { color: #d4af37; }
+    .product-rating span {
+      margin-left: 4px;
+      color: #666;
+      font-weight: 600;
+    }
+    .product-price-block {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
+      margin: 0.4rem 0 0.1rem;
+      width: 100%;
     }
-    .payment-icons-sm i:hover {
+    .current-price { 
+      color: #d4af37; 
+      font-weight: 800; 
+      font-size: 1.3rem; 
+    }
+    .current-price .inr-symbol { 
+      font-size: 1rem; 
+    }
+    .old-price { 
+      color: #999; 
+      font-size: 0.9rem; 
+      text-decoration: line-through; 
+    }
+    .stock-badge { 
+      font-size: 0.7rem; 
+      margin-top: 0.2rem; 
+      font-weight: 600; 
+    }
+    .in-stock { color: #2e7d32; }
+    .low-stock { color: #f57c00; }
+    .out-of-stock { color: #c62828; }
+    
+    .card-add-btn {
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 6px;
+      background: #000; 
+      border: 2px solid #000; 
+      border-radius: 60px;
+      padding: 0.7rem 0.3rem; 
+      font-size: 0.85rem; 
+      font-weight: 600; 
+      color: #fff;
+      cursor: pointer; 
+      width: 100%; 
+      margin: 0.5rem 0 0; 
+      min-height: 44px;
+      transition: all 0.15s; 
+      text-transform: uppercase;
+    }
+    .card-add-btn i { color: #d4af37; transition: color 0.15s; }
+    .card-add-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; }
+    .card-add-btn:hover i { color: #000; }
+    
+    /* Added state for add-to-cart feedback */
+    .card-add-btn.added {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: white;
+      pointer-events: none; /* prevent double click while adding */
+    }
+    .card-add-btn.added i {
+      color: white;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fcfaf7;
+      border-radius: 40px;
+      border: 2px solid #000;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
+    }
+    .empty-state i {
+      font-size: 4rem;
       color: #d4af37;
+      margin-bottom: 1rem;
+    }
+    .empty-state h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .empty-state p {
+      color: #666;
+      font-size: 1.1rem;
     }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 992px) {
-      .checkout-grid {
-        grid-template-columns: 1fr;
-        gap: 1.2rem;
-      }
-      .right-column {
-        position: static;
-      }
-      .policy-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .form-group {
-        flex: 1 1 100%;
-      }
-      .radio-content {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    /* ===== SCROLL TOP BUTTON ===== */
+    /* ===== SCROLL TOP ===== */
     .scroll-top {
       position: fixed; bottom: 20px; right: 20px; 
-      background: #000; color: #d4af37; width: 44px; height: 44px; border-radius: 50%;
+      background: #000; color: #d4af37; width: 52px; height: 52px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center; 
       border: 2px solid #d4af37; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
       opacity: 0; transform: translateY(15px); transition: 0.2s; z-index: 100;
-      font-size: 1.2rem; cursor: pointer;
+      font-size: 1.4rem; cursor: pointer;
     }
     .scroll-top.visible { opacity: 1; transform: translateY(0); }
     .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .sort-header-section {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .sort-select {
+        width: 100%;
+        justify-content: center;
+      }
+      .sort-select select {
+        flex: 1;
+      }
+      .results-wrapper {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-title {
+        font-size: 2.2rem;
+      }
+    }
   </style>
 </head>
 <body>
+
   <div id="header"></div>
   <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
 
   <main>
-    <div class="container">
-      <div class="checkout-header">
-        <h1>checkout <span>· essence</span></h1>
-        <div class="secure-badge"><i class="fa-solid fa-lock"></i> 100% secure</div>
+    <!-- PAGE HEADER WITH SORT INTEGRATED -->
+    <section class="page-header">
+      <div class="page-header-bg"></div>
+      <div class="container">
+        <div class="header-content">
+          <div class="title-section">
+            <div class="breadcrumbs">
+              <a href="index.html">home</a>
+              <i class="fa-solid fa-chevron-right"></i>
+              <span>accessories</span>
+            </div>
+            <h1 class="page-title">all <span>accessories</span></h1>
+            <p class="page-desc">Minimal, premium & daily essentials — curated for the modern lifestyle.</p>
+          </div>
+          <div class="sort-header-section">
+            <div class="sort-select">
+              <i class="fa-solid fa-arrow-down-wide-short"></i>
+              <select id="sort-select" aria-label="Sort products">
+                <option value="popular">sort: popular</option>
+                <option value="price-low">price: low to high</option>
+                <option value="price-high">price: high to low</option>
+                <option value="rating">top rated</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="checkout-content"></div>
+    </section>
+
+    <!-- PRODUCT GRID -->
+    <div class="container">
+      <div id="product-grid-container" class="product-grid">
+        <!-- products injected via JS -->
+      </div>
     </div>
   </main>
 
@@ -769,308 +523,267 @@
   <div id="common-modals"></div>
 
   <script src="common.js"></script>
-
   <script>
-    // ========== GLOBAL ==========
-    let subtotalSpan, shippingSpan, discountSpan, totalSpan;
-    let standardRadio, expressRadio, freeBadge, standardPriceSpan, radioStandard, radioExpress;
-    let cartItems = [];
-    let currentUser = JSON.parse(localStorage.getItem('MyEssantia_user') || 'null');
+    // ===== ADD TEST DATA FUNCTION (to enrich demo) =====
+    function addTestData() {
+      if (window.products && window.products.length > 0) {
+        window.products.forEach(product => {
+          if (!product.oldPrice) {
+            product.oldPrice = product.price * 1.2;
+          }
+          // Ensure category is accessories for filter
+          if (!product.category) product.category = 'accessories';
+        });
+      }
+    }
 
-    const VALID_PROMOS = { 'WELCOME10': 10, 'SAVE20': 20, 'ESSENCE5': 5 };
+    function isNewProduct(product) {
+      if (!product.createdAt) return false;
+      const now = new Date();
+      const creationDate = product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt);
+      const hoursDiff = (now - creationDate) / (1000 * 60 * 60);
+      return hoursDiff < 24;
+    }
 
-    function handleScroll() {
+    // ===== RENDER =====
+    function renderProducts() {
+      const gridContainer = document.getElementById('product-grid-container');
+      const sortSelect = document.getElementById('sort-select');
+      
+      if (!gridContainer) return;
+
+      // Ensure window.products exists and has test data
+      if (!window.products) window.products = [];
+      addTestData();
+
+      const accessoriesProducts = (window.products || []).filter(p => 
+        p.category === 'accessories' || p.showOnAccessories === true
+      );
+
+      if (accessoriesProducts.length === 0) {
+        gridContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>no accessories found</h3>
+            <p>Check back later for new arrivals!</p>
+          </div>
+        `;
+        return;
+      }
+
+      function getSortedProducts() {
+        let sorted = [...accessoriesProducts];
+        switch (sortSelect.value) {
+          case 'price-low':
+            sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+            break;
+          case 'price-high':
+            sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+            break;
+          case 'rating':
+            sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            break;
+          default: break;
+        }
+        return sorted;
+      }
+
+      function renderAllProducts() {
+        const sortedProducts = getSortedProducts();
+        
+        let gridHtml = '';
+        sortedProducts.forEach(product => {
+          const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
+          const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
+          
+          const hasSale = product.oldPrice && product.oldPrice > product.price;
+          const isHighDemand = product.highDemand === true;
+          const isNew = isNewProduct(product);
+          
+          gridHtml += `
+            <div class="product-card" data-product-id="${product.id}">
+              ${isHighDemand ? `
+                <span class="high-demand-badge">
+                  <i class="fa-solid fa-fire"></i> HIGH DEMAND
+                </span>
+              ` : ''}
+              ${isNew ? `
+                <span class="new-badge">
+                  <i class="fa-regular fa-star"></i> NEW
+                </span>
+              ` : ''}
+              <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
+                <div class="image-frame">
+                  <div class="primary-img" style="background-image: url('${mainImage}');"></div>
+                  <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
+                </div>
+                <p class="product-category">${product.category || 'accessory'}</p>
+                <h3 class="product-title">${product.title}</h3>
+                <div class="product-rating">${window.renderRating ? window.renderRating(product.rating) : '<span>★ 0.0</span>'}</div>
+                <div class="product-price-block">
+                  <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
+                  ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.oldPrice) : product.oldPrice}</span>` : ''}
+                  ${hasSale ? `<span class="sale-price-badge">SALE</span>` : ''}
+                </div>
+                ${window.getStockStatus ? window.getStockStatus(product.stock) : ''}
+              </a>
+              <button class="card-add-btn" onclick="handleAccessoryAdd('${product.id}', this); event.stopPropagation();">
+                <i class="fa-solid fa-cart-plus"></i> add
+              </button>
+            </div>
+          `;
+        });
+        
+        gridContainer.innerHTML = gridHtml;
+      }
+
+      renderAllProducts();
+      
+      if (sortSelect) {
+        sortSelect.removeEventListener('change', renderAllProducts);
+        sortSelect.addEventListener('change', renderAllProducts);
+      }
+    }
+
+    // ===== HANDLE ADD (using the master function from common.js) =====
+    window.handleAccessoryAdd = function(productId, btn) {
+      // Use the globally defined masterAddToCart if available (from common.js)
+      if (typeof window.masterAddToCart === 'function') {
+        // Pass the button to show effect, and ensure cart opens afterwards
+        // We need to slightly adapt because masterAddToCart expects 'event' to access button.
+        // We'll create a synthetic event-like object.
+        const fakeEvent = { target: btn };
+        window.masterAddToCart.call({}, productId, true, fakeEvent);
+      } else {
+        // Fallback if master function not yet loaded
+        console.warn('masterAddToCart not ready, using local fallback');
+        btn.classList.add('added');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        // Still try to add to cart via common.js addToCart
+        if (typeof window.addToCart === 'function') {
+          window.addToCart(productId);
+        } else {
+          // Minimal local storage update
+          let cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
+          if (!cart.includes(productId)) cart.push(productId);
+          localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
+        }
+        
+        // Open cart modal after a short delay
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+          // Reset button after opening cart (optional, but cart modal is open)
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      }
+    };
+
+    // Override masterAddToCart to ensure cart opens and button shows added
+    // This runs after common.js is loaded
+    function enhanceMasterFunction() {
+      if (window.masterAddToCart && !window.masterAddToCart.__enhanced) {
+        const original = window.masterAddToCart;
+        window.masterAddToCart = async function(productId, shouldOpenCart = true, customEvent = null) {
+          // Call original but capture button if provided via customEvent
+          let btn = customEvent?.target?.closest?.('button');
+          
+          // Show added effect immediately
+          if (btn) {
+            btn.classList.add('added');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+          }
+          
+          // Execute original logic (adds to cart, updates storage)
+          await original.call(this, productId, false); // pass false to avoid double open
+          
+          // Update cart count (already inside original)
+          
+          // Open cart modal after a tiny delay to see the added state
+          setTimeout(() => {
+            if (shouldOpenCart && typeof window.openCart === 'function') {
+              window.openCart();
+            }
+            // Reset button after cart opens (optional, but cart is now open)
+            if (btn) {
+              setTimeout(() => {
+                btn.classList.remove('added');
+                btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+              }, 500);
+            }
+          }, 200);
+        };
+        window.masterAddToCart.__enhanced = true;
+        console.log('masterAddToCart enhanced to open cart');
+      }
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load common modals if function exists
+      if (typeof loadCommonModals === 'function') loadCommonModals();
+      
+      // Wait for products to load from common.js
+      const checkProducts = setInterval(() => {
+        if (window.products && window.products.length > 0) {
+          renderProducts();
+          clearInterval(checkProducts);
+        } else {
+          const cached = localStorage.getItem('MyEssantia_products');
+          if (cached) {
+            window.products = JSON.parse(cached);
+            renderProducts();
+            clearInterval(checkProducts);
+          }
+        }
+      }, 100);
+
+      // Enhance master function after it becomes available
+      const checkMaster = setInterval(() => {
+        if (window.masterAddToCart) {
+          enhanceMasterFunction();
+          clearInterval(checkMaster);
+        }
+      }, 100);
+
+      // Set active nav
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.nav-link[href="accessories.html"]').forEach(l => l.classList.add('active'));
+      }, 200);
+    });
+
+    window.addEventListener('load', () => {
+      if (!window.products?.length) {
+        const cached = localStorage.getItem('MyEssantia_products');
+        if (cached) { 
+          window.products = JSON.parse(cached); 
+          renderProducts();
+        }
+      }
+      // Enhance again in case master loaded after load
+      if (window.masterAddToCart) enhanceMasterFunction();
+    });
+
+    // Scroll top button
+    window.addEventListener('scroll', () => {
       const btn = document.getElementById('scrollTop');
       if (btn) btn.classList.toggle('visible', window.scrollY > 200);
-    }
-    window.addEventListener('scroll', handleScroll);
-
-    // ========== RENDER CHECKOUT ==========
-    function loadCartItems() {
-      cartItems = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
-      const checkoutContent = document.getElementById('checkout-content');
-      if (cartItems.length === 0) {
-        checkoutContent.innerHTML = `
-          <div class="empty-cart-checkout">
-            <i class="fa-regular fa-cart-shopping"></i>
-            <h3>Your cart is empty</h3>
-            <p>Looks like you haven't added any items yet.</p>
-            <a href="collection.html" class="btn">Continue Shopping</a>
-          </div>
-        `;
-        return;
-      }
-      checkoutContent.innerHTML = renderCheckoutGrid();
-      setTimeout(() => {
-        initializeCheckout();
-        attachValidationListeners();  // mark fields as mandatory
-      }, 50);
-    }
-
-    function renderCheckoutGrid() {
-      const cartItemsHtml = cartItems.map(item => {
-        const itemTotal = item.price * item.quantity;
-        const imageUrl = item.primaryImg || item.image || 'https://via.placeholder.com/60';
-        return `
-          <div class="cart-item" id="product-${item.id}" data-product-id="${item.id}">
-            <div class="item-image" style="background-image: url('${imageUrl}');"></div>
-            <div class="item-details">
-              <div class="item-header">
-                <h4 title="${item.title}">${item.title}</h4>
-                <span class="item-price" id="price-${item.id}">₹${formatPrice(itemTotal)}</span>
-              </div>
-              <div class="item-meta">${item.category || 'Accessory'}</div>
-              <div class="qty-control">
-                <button class="qty-btn" onclick="window.updateItemQuantity('${item.id}', -1)" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
-                <span class="qty-value" id="qty-${item.id}">${item.quantity}</span>
-                <button class="qty-btn" onclick="window.updateItemQuantity('${item.id}', 1)">+</button>
-                <button class="qty-btn remove-btn" onclick="window.removeItem('${item.id}')" title="Remove item"><i class="fa-solid fa-trash-can"></i></button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      return `
-        <div class="checkout-grid">
-          <div class="left-column">
-            <!-- CONTACT - mandatory -->
-            <div class="section-card">
-              <div class="section-title"><span class="step-number">1</span> Contact</div>
-              <div class="form-group full-width">
-                <label>Email <span class="required-asterisk">*</span></label>
-                <input type="email" id="contact-email" placeholder="your@email.com" value="${currentUser?.email || ''}" class="mandatory">
-              </div>
-              <div class="checkbox-row">
-                <input type="checkbox" id="offers" checked>
-                <label for="offers">keep me updated on new arrivals & offers</label>
-              </div>
-            </div>
-
-            <!-- SHIPPING ADDRESS - all mandatory -->
-            <div class="section-card">
-              <div class="section-title"><span class="step-number">2</span> Shipping address <span class="required-asterisk">*</span></div>
-              <div class="form-row">
-                <div class="form-group"><label>First name <span class="required-asterisk">*</span></label><input id="first-name" placeholder="First name" class="mandatory"></div>
-                <div class="form-group"><label>Last name <span class="required-asterisk">*</span></label><input id="last-name" placeholder="Last name" class="mandatory"></div>
-              </div>
-              <div class="form-group full-width"><label>Address <span class="required-asterisk">*</span></label><input id="address" placeholder="Street, building" class="mandatory"></div>
-              <div class="form-row">
-                <div class="form-group"><label>City <span class="required-asterisk">*</span></label><input id="city" placeholder="City" class="mandatory"></div>
-                <div class="form-group"><label>PIN code <span class="required-asterisk">*</span></label><input id="pin" placeholder="PIN" type="number" class="mandatory"></div>
-              </div>
-              <div class="form-row">
-                <div class="form-group"><label>State <span class="required-asterisk">*</span></label>
-                  <select id="state" class="mandatory">
-                    <option value="">Select state</option>
-                    <option>Kerala</option><option>Tamil Nadu</option><option>Karnataka</option><option>Maharashtra</option><option>Delhi</option>
-                  </select>
-                </div>
-                <div class="form-group"><label>Phone <span class="required-asterisk">*</span></label><input id="phone" placeholder="+91 98765 43210" type="tel" class="mandatory"></div>
-              </div>
-            </div>
-
-            <!-- SHIPPING METHOD -->
-            <div class="section-card">
-              <div class="section-title"><span class="step-number">3</span> Shipping method</div>
-              <label class="radio-card selected" id="radio-standard">
-                <input type="radio" name="shipping" value="standard" id="ship-standard" checked>
-                <div class="radio-content">
-                  <span>Standard shipping (3–5 days) <span class="free-badge" id="freeBadge" style="display: none;">FREE</span></span>
-                  <span class="radio-price" id="standard-price">₹40</span>
-                </div>
-              </label>
-              <label class="radio-card" id="radio-express">
-                <input type="radio" name="shipping" value="express">
-                <div class="radio-content">
-                  <span>Express shipping (1–2 days)</span>
-                  <span class="radio-price">₹149</span>
-                </div>
-              </label>
-              <p style="font-size:0.7rem; margin-top:0.5rem;"><i class="fa-solid fa-circle-info" style="color:#d4af37;"></i> Free standard shipping on orders above ₹499</p>
-            </div>
-
-            <!-- RETURN & REFUND with SHIMMER -->
-            <div class="return-section">
-              <div class="return-header">
-                <i class="fa-solid fa-rotate-left"></i>
-                <h3>Return & Refund Policy</h3>
-              </div>
-              <div class="badge-container">
-                <span class="badge"><i class="fa-regular fa-clock"></i> 7 Days Return</span>
-                <span class="badge"><i class="fa-solid fa-video"></i> Unboxing Video Mandatory</span>
-                <span class="badge"><i class="fa-solid fa-box-open"></i> Damaged Only</span>
-              </div>
-              <div class="policy-grid">
-                <div class="policy-card"><div class="policy-card-title">✓ Eligible</div><ul class="policy-list"><li><i class="fa-solid fa-check"></i> Damaged during shipping</li><li><i class="fa-solid fa-check"></i> Claim within 7 days</li><li><i class="fa-solid fa-check"></i> With unboxing video proof</li></ul></div>
-                <div class="policy-card"><div class="policy-card-title">✗ Not Eligible</div><ul class="policy-list"><li><i class="fa-solid fa-xmark"></i> Change of mind</li><li><i class="fa-solid fa-xmark"></i> Minor box damage</li><li><i class="fa-solid fa-xmark"></i> No video proof</li></ul></div>
-              </div>
-              <div class="policy-card" style="margin-bottom:0.8rem;"><div class="policy-card-title">🎥 Unboxing Video Must Show:</div><ul class="policy-list"><li><i class="fa-solid fa-circle"></i> Sealed package before opening</li><li><i class="fa-solid fa-circle"></i> Complete unboxing process</li><li><i class="fa-solid fa-circle"></i> Clear visibility of damage</li></ul></div>
-              <div class="refund-note" style="background:#fcf9f4; padding:0.8rem; border-radius:16px; border:2px dashed #d4af37; margin-top:0.8rem;">
-                <p><i class="fa-solid fa-indian-rupee-sign"></i> Refund Process</p>
-                <div class="small">• Approved refunds: 3-5 business days</div>
-                <div class="small">• Credited to original payment method</div>
-                <div class="small">• Shipping charges non-refundable</div>
-                <div style="margin-top: 0.5rem;">
-                  <span class="razorpay-tag shimmer-badge"><i class="fa-solid fa-bolt"></i> Razorpay 100% refund guarantee ✦</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- RIGHT COLUMN -->
-          <div class="right-column">
-            <div class="order-summary">
-              <div class="summary-title">your <span>cart</span></div>
-              <div class="cart-items-container">${cartItemsHtml}</div>
-              <div class="promo-inside">
-                <div class="promo-header"><p>Apply promo code</p><span class="promo-status" id="promo-status"></span></div>
-                <div class="promo-flex"><input type="text" placeholder="Enter code" id="promo-code"><button class="promo-btn" onclick="applyPromo()">Apply</button></div>
-              </div>
-              <div style="margin:0.3rem 0 0.8rem; border-top:2px dashed #000;"></div>
-              <div class="price-line"><span>Subtotal</span> <span id="subtotal-value">₹0</span></div>
-              <div class="price-line"><span>Shipping</span> <span id="shipping-value">₹0</span></div>
-              <div class="price-line" style="color:#2e7d32;" id="discount-line"><span>Discount</span> <span id="discount-value">-₹0</span></div>
-              <div class="total-line"><span>Total</span> <span id="total-value">₹0</span></div>
-              <button class="place-order-btn" onclick="placeOrder()" id="place-order-btn"><i class="fa-solid fa-lock"></i> place order</button>
-              <div class="payment-icons-sm"><i class="fa-brands fa-cc-visa"></i><i class="fa-brands fa-cc-mastercard"></i><i class="fa-brands fa-cc-amex"></i><i class="fa-brands fa-cc-paypal"></i><i class="fa-brands fa-cc-rupay"></i></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // ========== VALIDATION: mark mandatory fields & highlight if empty ==========
-    function attachValidationListeners() {
-      document.querySelectorAll('.mandatory').forEach(field => {
-        field.addEventListener('blur', function() { validateField(this); });
-      });
-    }
-
-    function validateField(field) {
-      if (!field.value.trim()) {
-        field.classList.add('error');
-        return false;
-      } else {
-        field.classList.remove('error');
-        return true;
-      }
-    }
-
-    function validateAllMandatory() {
-      let allValid = true;
-      document.querySelectorAll('.mandatory').forEach(field => {
-        if (!validateField(field)) allValid = false;
-      });
-      return allValid;
-    }
-
-    // ========== QUANTITY & REMOVE ==========
-    window.updateItemQuantity = function(productId, change) {
-      const itemIndex = cartItems.findIndex(item => item.id === productId);
-      if (itemIndex === -1) return;
-      const item = cartItems[itemIndex];
-      const newQuantity = item.quantity + change;
-      if (newQuantity < 1) return;
-      item.quantity = newQuantity;
-      localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
-      const qtySpan = document.getElementById(`qty-${productId}`);
-      if (qtySpan) qtySpan.innerText = newQuantity;
-      const priceSpan = document.getElementById(`price-${productId}`);
-      if (priceSpan) priceSpan.innerText = '₹' + formatPrice(item.price * newQuantity);
-      const minusBtn = document.querySelector(`#product-${productId} .qty-btn:first-child`);
-      if (minusBtn) minusBtn.disabled = newQuantity <= 1;
-      updateAll();
-    };
-
-    window.removeItem = function(productId) {
-      cartItems = cartItems.filter(item => item.id !== productId);
-      localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
-      if (cartItems.length === 0) { window.location.reload(); return; }
-      document.getElementById('checkout-content').innerHTML = renderCheckoutGrid();
-      setTimeout(() => { initializeCheckout(); attachValidationListeners(); updateAll(); }, 50);
-    };
-
-    function initializeCheckout() {
-      subtotalSpan = document.getElementById('subtotal-value');
-      shippingSpan = document.getElementById('shipping-value');
-      discountSpan = document.getElementById('discount-value');
-      totalSpan = document.getElementById('total-value');
-      standardRadio = document.getElementById('ship-standard');
-      expressRadio = document.querySelector('input[name="shipping"][value="express"]');
-      freeBadge = document.getElementById('freeBadge');
-      standardPriceSpan = document.getElementById('standard-price');
-      radioStandard = document.getElementById('radio-standard');
-      radioExpress = document.getElementById('radio-express');
-      document.querySelectorAll('input[name="shipping"]').forEach(radio => radio.addEventListener('change', updateAll));
-      updateAll();
-    }
-
-    function formatPrice(price) { return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'); }
-    function calculateSubtotal() { return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0); }
-
-    function updateAll() {
-      const subtotal = calculateSubtotal();
-      let shippingCost = 40, shippingText = '₹40';
-      const isExpress = expressRadio ? expressRadio.checked : false;
-      if (subtotal > 499 && standardRadio && standardRadio.checked) { shippingCost = 0; shippingText = 'FREE'; }
-      else if (isExpress) { shippingCost = 149; shippingText = '₹149'; }
-      if (standardPriceSpan) standardPriceSpan.innerText = (subtotal > 499 && standardRadio?.checked) ? 'FREE' : '₹40';
-      if (freeBadge) freeBadge.style.display = (subtotal > 499 && standardRadio?.checked) ? 'inline-block' : 'none';
-      if (shippingSpan) shippingSpan.innerText = shippingText;
-
-      const discountText = discountSpan?.innerText || '-₹0';
-      const discount = parseFloat(discountText.replace('-₹', '').replace(/,/g, '')) || 0;
-      const total = subtotal - discount + shippingCost;
-      if (subtotalSpan) subtotalSpan.innerText = '₹' + formatPrice(subtotal);
-      if (totalSpan) totalSpan.innerText = '₹' + formatPrice(total);
-
-      document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
-      if (standardRadio?.checked && radioStandard) radioStandard.classList.add('selected');
-      else if (expressRadio?.checked && radioExpress) radioExpress.classList.add('selected');
-    }
-
-    window.applyPromo = function() {
-      const input = document.getElementById('promo-code');
-      const status = document.getElementById('promo-status');
-      if (!input?.value) {
-        status.style.display = 'inline'; status.className = 'promo-status error'; status.innerText = 'Enter a code';
-        return;
-      }
-      const code = input.value.trim().toUpperCase();
-      if (VALID_PROMOS[code]) {
-        const discountAmount = (calculateSubtotal() * VALID_PROMOS[code]) / 100;
-        if (discountSpan) discountSpan.innerText = '-₹' + formatPrice(discountAmount);
-        status.style.display = 'inline'; status.className = 'promo-status'; status.innerText = `✓ ${VALID_PROMOS[code]}% off applied!`;
-        updateAll();
-      } else {
-        status.style.display = 'inline'; status.className = 'promo-status error'; status.innerText = 'Invalid promo code';
-        if (discountSpan) discountSpan.innerText = '-₹0';
-        updateAll();
-      }
-    };
-
-    window.placeOrder = function() {
-      if (!validateAllMandatory()) {
-        alert('Please fill in all mandatory fields (*)');
-        return;
-      }
-      if (!currentUser) { alert('Please login first'); return; }
-      if (cartItems.length === 0) { alert('Cart empty'); return; }
-
-      // create order ...
-      alert(`Order placed (demo). Thank you!`);
-    };
-
-    // prefill
-    function prefillUserData() {
-      const emailInput = document.getElementById('contact-email');
-      if (emailInput && currentUser?.email) emailInput.value = currentUser.email;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadCartItems();
     });
+
+    // Fallback loadCommonModals if not defined in common.js
+    async function loadCommonModals() {
+      try {
+        const res = await fetch('common.html');
+        const data = await res.text();
+        document.getElementById('common-modals').innerHTML = data;
+      } catch (e) { console.warn('modals not loaded'); }
+    }
   </script>
 </body>
 </html>
