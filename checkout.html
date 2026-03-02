@@ -818,6 +818,75 @@
         initializeCheckout();
       }, 50);
     }
+    
+    // ===== FIX: Make sure functions are globally available =====
+// Force attach functions to window immediately
+window.updateItemQuantity = function(productId, change) {
+  console.log('updateItemQuantity called', productId, change);
+  const itemIndex = cartItems.findIndex(item => item.id === productId);
+  if (itemIndex === -1) return;
+
+  const item = cartItems[itemIndex];
+  const newQuantity = item.quantity + change;
+
+  if (newQuantity < 1) return;
+  
+  item.quantity = newQuantity;
+  
+  // Update global cart
+  if (typeof cart !== 'undefined') {
+    const globalItemIndex = cart.findIndex(item => item.id === productId);
+    if (globalItemIndex !== -1) cart[globalItemIndex].quantity = newQuantity;
+  }
+  
+  // Update display
+  const qtySpan = document.getElementById(`qty-${productId}`);
+  if (qtySpan) qtySpan.innerText = newQuantity;
+  
+  const priceSpan = document.getElementById(`price-${productId}`);
+  if (priceSpan) priceSpan.innerText = '₹' + formatPrice(item.price * newQuantity);
+  
+  // Enable/disable minus button
+  const minusBtn = document.querySelector(`#product-${productId} .qty-btn:first-child`);
+  if (minusBtn) minusBtn.disabled = newQuantity <= 1;
+  
+  // Save
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
+  if (typeof updateCartCount === 'function') updateCartCount();
+  updateAll();
+};
+
+window.removeItem = function(productId) {
+  console.log('removeItem called', productId);
+  cartItems = cartItems.filter(item => item.id !== productId);
+  
+  // Update global cart
+  if (typeof cart !== 'undefined') {
+    const globalItemIndex = cart.findIndex(item => item.id === productId);
+    if (globalItemIndex !== -1) cart.splice(globalItemIndex, 1);
+  }
+  
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
+  if (typeof updateCartCount === 'function') updateCartCount();
+  
+  if (cartItems.length === 0) {
+    window.location.reload();
+    return;
+  }
+  
+  // Re-render
+  document.getElementById('checkout-content').innerHTML = renderCheckoutGrid();
+  setTimeout(() => {
+    initializeCheckout();
+    updateAll();
+  }, 50);
+};
+
+// Double-check they're attached
+console.log('Functions attached:', {
+  updateItemQuantity: typeof window.updateItemQuantity,
+  removeItem: typeof window.removeItem
+});
 
     function renderCheckoutGrid() {
       // Generate cart items HTML with working quantity controls
@@ -1358,6 +1427,18 @@
       loadCommonModals();
       if (typeof loadComponents === 'function') loadComponents();
     });
+    
+    // Debug - check if functions are attached after everything loads
+setTimeout(() => {
+  console.log('Final check - window.updateItemQuantity:', typeof window.updateItemQuantity);
+  console.log('Final check - window.removeItem:', typeof window.removeItem);
+  
+  // Test if buttons exist and have correct onclick handlers
+  document.querySelectorAll('.qty-btn').forEach(btn => {
+    console.log('Button onclick:', btn.getAttribute('onclick'));
+  });
+}, 1000);
+
   </script>
 </body>
 </html>
