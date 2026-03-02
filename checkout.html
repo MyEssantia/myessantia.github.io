@@ -1019,94 +1019,74 @@
       `;
     }
 
-    // ===== QUANTITY CONTROL FUNCTIONS =====
-    window.updateItemQuantity = function(productId, change) {
-      const itemIndex = cartItems.findIndex(item => item.id === productId);
-      if (itemIndex === -1) return;
+window.updateItemQuantity = function(productId, change) {
+  const itemIndex = cartItems.findIndex(item => item.id === productId);
+  if (itemIndex === -1) return;
 
-      const item = cartItems[itemIndex];
-      const newQuantity = item.quantity + change;
+  const item = cartItems[itemIndex];
+  const newQuantity = item.quantity + change;
 
-      if (newQuantity < 1) return;
-      
-      // Update quantity
-      item.quantity = newQuantity;
-      
-      // Update display
-      const qtySpan = document.getElementById(`qty-${productId}`);
-      if (qtySpan) qtySpan.innerText = newQuantity;
-      
-      // Update price
-      const priceSpan = document.getElementById(`price-${productId}`);
-      if (priceSpan) {
-        priceSpan.innerText = '₹' + formatPrice(item.price * newQuantity);
-      }
-      
-      // Enable/disable minus button
-      const minusBtn = document.querySelector(`#product-${productId} .qty-btn:first-child`);
-      if (minusBtn) {
-        minusBtn.disabled = newQuantity <= 1;
-      }
-      
-      // Save to localStorage
-      localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
-      
-      // Update cart count
+  if (newQuantity < 1) return;
+  
+  // Update quantity
+  item.quantity = newQuantity;
+  
+  // Update display
+  const qtySpan = document.getElementById(`qty-${productId}`);
+  if (qtySpan) qtySpan.innerText = newQuantity;
+  
+  // Update price
+  const priceSpan = document.getElementById(`price-${productId}`);
+  if (priceSpan) {
+    priceSpan.innerText = '₹' + formatPrice(item.price * newQuantity);
+  }
+  
+  // Enable/disable minus button
+  const minusBtn = document.querySelector(`#product-${productId} .qty-btn:first-child`);
+  if (minusBtn) {
+    minusBtn.disabled = newQuantity <= 1;
+  }
+  
+  // Save to localStorage
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
+  
+  // Update cart count
+  if (typeof updateCartCount === 'function') {
+    updateCartCount();
+  }
+  
+  // Update totals
+  updateAll();
+};
+
+window.removeItem = function(productId) {
+  // Remove item from cart
+  cartItems = cartItems.filter(item => item.id !== productId);
+  
+  // Save to localStorage
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
+  
+  // If cart is empty, reload page to show empty state
+  if (cartItems.length === 0) {
+    window.location.reload();
+    return;
+  }
+  
+  // Instead of manually re-rendering, reload the entire checkout content
+  // This ensures all event handlers are properly attached
+  const checkoutContent = document.getElementById('checkout-content');
+  checkoutContent.innerHTML = renderCheckoutGrid();
+  
+  // Re-initialize checkout to attach event listeners
+  setTimeout(() => {
+    initializeCheckout();
+    
+    // Also update cart count in header
+    if (typeof updateCartCount === 'function') {
       updateCartCount();
-      
-      // Update totals
-      updateAll();
-    };
-
-    window.removeItem = function(productId) {
-      // Remove item from cart
-      cartItems = cartItems.filter(item => item.id !== productId);
-      
-      // Save to localStorage
-      localStorage.setItem('MyEssantia_cart', JSON.stringify(cartItems));
-      
-      // If cart is empty, reload page to show empty state
-      if (cartItems.length === 0) {
-        window.location.reload();
-        return;
-      }
-      
-      // Re-render cart items
-      const container = document.getElementById('cart-items-container');
-      if (container) {
-        const newHtml = cartItems.map((item) => {
-          const itemTotal = item.price * item.quantity;
-          const imageUrl = item.primaryImg || item.image || 'https://via.placeholder.com/60';
-          
-          return `
-            <div class="cart-item" id="product-${item.id}" data-product-id="${item.id}">
-              <div class="item-image" style="background-image: url('${imageUrl}');"></div>
-              <div class="item-details">
-                <div class="item-header">
-                  <h4 title="${item.title}">${item.title}</h4>
-                  <span class="item-price" id="price-${item.id}">₹${formatPrice(itemTotal)}</span>
-                </div>
-                <div class="item-meta">${item.category || 'Accessory'}</div>
-                <div class="qty-control">
-                  <button class="qty-btn" onclick="updateItemQuantity(${item.id}, -1)" ${item.quantity <= 1 ? 'disabled' : ''}>−</button>
-                  <span class="qty-value" id="qty-${item.id}">${item.quantity}</span>
-                  <button class="qty-btn" onclick="updateItemQuantity(${item.id}, 1)">+</button>
-                  <button class="qty-btn remove-btn" onclick="removeItem(${item.id})">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-        
-        container.innerHTML = newHtml;
-      }
-      
-      // Update cart count and totals
-      updateCartCount();
-      updateAll();
-    };
+    }
+  }, 50);
+};
 
     function initializeCheckout() {
       subtotalSpan = document.getElementById('subtotal-value');
