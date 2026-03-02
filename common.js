@@ -633,6 +633,69 @@ function updateCartCount() {
   }
 }
 
+// Diagnostic function to check what's happening with the cart
+window.debugCart = function() {
+  console.log('=== CART DIAGNOSTIC ===');
+  console.log('Cart data:', cart);
+  console.log('Cart modal exists:', !!document.getElementById('cart-modal'));
+  console.log('Cart modal class:', document.getElementById('cart-modal')?.className);
+  console.log('Cart items container:', !!document.getElementById('cart-items'));
+  console.log('Cart items HTML:', document.getElementById('cart-items')?.innerHTML);
+  
+  // Force show cart with debug styles
+  const modal = document.getElementById('cart-modal');
+  if (modal) {
+    modal.style.cssText = `
+      display: flex !important;
+      background: rgba(255, 0, 0, 0.3) !important;
+      z-index: 99999 !important;
+    `;
+    modal.classList.add('show');
+    
+    const content = modal.querySelector('.modal-content');
+    if (content) {
+      content.style.cssText = `
+        background: yellow !important;
+        border: 5px solid red !important;
+        transform: scale(1) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+      `;
+    }
+    
+    const cartItems = document.getElementById('cart-items');
+    if (cartItems) {
+      cartItems.style.cssText = `
+        border: 5px solid green !important;
+        background: lightblue !important;
+        min-height: 300px !important;
+      `;
+    }
+  }
+  
+  // Check if any parent is hiding the modal
+  let parent = modal?.parentElement;
+  while (parent) {
+    const style = window.getComputedStyle(parent);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+      console.log('⚠️ Hidden parent:', parent, style);
+    }
+    parent = parent.parentElement;
+  }
+};
+
+// Make it available globally
+window.debugCart = debugCart;
+
+// Auto-run debug after 2 seconds when cart is opened
+document.addEventListener('click', function(e) {
+  if (e.target.closest('#cart-icon')) {
+    setTimeout(debugCart, 500);
+  }
+});
+
+console.log('🔧 Debug tools loaded - type debugCart() in console to diagnose');
+
 // ========== MODAL FUNCTIONS ==========
 function openCart() {
   console.log('🛒 Opening cart modal');
