@@ -336,7 +336,7 @@
 @media (max-width: 768px) {
   .main-header .container {
     flex-wrap: wrap;
-    position: relative; /* For proper positioning */
+    position: relative;
   }
 
   .logo {
@@ -359,34 +359,121 @@
     order: 3;
   }
 
-  /* Reset desktop navigation positioning for mobile */
+  /* Improved Mobile Menu Styling */
   .nav-menu {
-    position: static;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     transform: none;
     display: none;
     width: 100%;
+    height: 100vh;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem 0 0.5rem;
-    border-top: 2px solid #000;
-    margin-top: 0.5rem;
+    gap: 1rem;
+    padding: 5rem 2rem 2rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border-top: none;
+    margin-top: 0;
     order: 4;
-    left: auto;
-    transform: none;
+    z-index: 1000;
+    overflow-y: auto;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .nav-menu.show {
     display: flex;
   }
 
+  /* Close button for mobile menu */
+  .nav-menu.show::before {
+    content: '✕';
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    color: #000;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f5f5f5;
+    border: 2px solid #000;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    transition: all 0.2s ease;
+  }
+
+  .nav-menu.show::before:hover {
+    background: #d4af37;
+    color: #fff;
+    transform: rotate(90deg);
+  }
+
   .nav-link {
     width: 100%;
     text-align: center;
-    padding: 0.75rem;
-    background: #f8f5f1;
+    padding: 1.2rem;
+    background: #fff;
     border: 2px solid #000;
     border-radius: 60px;
     white-space: normal;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+    transition: all 0.3s ease;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    background: #d4af37;
+    color: #000;
+    border-color: #d4af37;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 rgba(212, 175, 55, 0.3);
+  }
+
+  /* Add a subtle pattern or decoration to mobile menu */
+  .nav-menu.show::after {
+    content: '';
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+
+  /* Style for the menu items container */
+  .nav-menu {
+    justify-content: center;
+  }
+
+  .nav-menu li {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
   }
 
   .search-icon,
@@ -412,13 +499,22 @@
   .mobile-menu-toggle {
     width: 32px;
     height: 32px;
+    z-index: 1001;
+    position: relative;
   }
 
   .mobile-menu-toggle i {
     font-size: 1.2rem;
   }
+
+  /* When menu is open, highlight the toggle button */
+  .mobile-menu-toggle.active {
+    background: #d4af37;
+    color: #000;
+  }
 }
 
+/* Additional improvements for smaller screens */
 @media (max-width: 480px) {
   .top-bar-links {
     gap: 0.8rem;
@@ -453,5 +549,50 @@
 
   .mobile-menu-toggle i {
     font-size: 1.1rem;
+  }
+
+  /* Adjust mobile menu for very small screens */
+  .nav-menu {
+    padding: 4rem 1rem 2rem;
+  }
+
+  .nav-menu.show::before {
+    top: 0.8rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.6rem;
+  }
+
+  .nav-link {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .nav-menu li {
+    max-width: 260px;
+  }
+}
+
+/* Optional: Add animation for menu items */
+@media (max-width: 768px) {
+  .nav-menu.show li {
+    animation: slideInItem 0.3s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .nav-menu.show li:nth-child(1) { animation-delay: 0.1s; }
+  .nav-menu.show li:nth-child(2) { animation-delay: 0.15s; }
+  .nav-menu.show li:nth-child(3) { animation-delay: 0.2s; }
+  .nav-menu.show li:nth-child(4) { animation-delay: 0.25s; }
+  .nav-menu.show li:nth-child(5) { animation-delay: 0.3s; }
+  .nav-menu.show li:nth-child(6) { animation-delay: 0.35s; }
+
+  @keyframes slideInItem {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
