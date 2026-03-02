@@ -620,45 +620,45 @@ function renderProfileContent() {
 
   if (currentUser) {
     profileContent.innerHTML = `
-      <div class="profile-info">
+      <div class="profile-card">
         <div class="profile-avatar">
-          <img src="${currentUser.picture || 'https://via.placeholder.com/80'}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" alt="Profile" onerror="this.src='https://via.placeholder.com/80'">
+          <img src="${currentUser.picture || 'https://via.placeholder.com/150'}"
+               alt="Profile"
+               style="width:100%;height:100%;object-fit:cover;"
+               onerror="this.src='https://via.placeholder.com/150'">
         </div>
-        <div class="profile-details">
-          <p>
-            <i class="fa-regular fa-user"></i>
-            <span class="label">Name:</span>
-            <span class="value">${currentUser.name}</span>
-          </p>
-          <p>
-            <i class="fa-regular fa-envelope"></i>
-            <span class="label">Email:</span>
-            <span class="value">${currentUser.email}</span>
-          </p>
-        </div>
-        <button class="btn logout-btn" onclick="window.logout()">
-          <i class="fa-solid fa-sign-out-alt"></i>
+
+        <div class="profile-name">${currentUser.name}</div>
+        <div class="profile-email">${currentUser.email}</div>
+
+        <button class="logout-btn" onclick="window.logout()">
           Logout
         </button>
       </div>
     `;
   } else {
     profileContent.innerHTML = `
-      <div class="login-form">
-        <div class="login-header">
-          <i class="fa-brands fa-google" style="font-size: 3rem; color: #d4af37;"></i>
-          <h4>Welcome to MyEssantia</h4>
-          <p>Sign in with Google to continue</p>
-        </div>
-        
-        <button class="btn google-login-btn" onclick="window.loginWithGoogle()">
+      <div class="login-wrapper">
+        <div class="login-icon">
           <i class="fa-brands fa-google"></i>
-          Sign in with Google
+        </div>
+
+        <div class="login-title">
+          Welcome to <span style="color:#d4af37;">MyEssantia</span>
+        </div>
+
+        <div class="login-subtitle">
+          Sign in securely with your Google account
+        </div>
+
+        <button class="google-login-btn" onclick="window.loginWithGoogle()">
+          <i class="fa-brands fa-google"></i>
+          Continue with Google
         </button>
-        
-        <p style="margin-top: 1.5rem; font-size: 0.85rem; color: #999;">
-          By signing in, you agree to our Terms of Service and Privacy Policy.
-        </p>
+
+        <div class="login-terms">
+          By continuing, you agree to our Terms & Privacy Policy
+        </div>
       </div>
     `;
   }
