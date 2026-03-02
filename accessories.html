@@ -4,25 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>MyEssantia · premium accessories</title>
-  
+
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
+
   <!-- Premium Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
-  
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  
+
   <!-- Common CSS -->
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="header.css">
   <link rel="stylesheet" href="footer.css">
-  
+
   <style>
     /* ===== GLOBAL & RESETS ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -222,93 +222,49 @@
       box-shadow: 0 8px 16px -8px rgba(0,0,0,0.15);
     }
     
-/* Sale badge on price line with stronger pulse on shimmer */
-.sale-price-badge {
-  background: #d4af37;
-  color: #000;
-  font-size: 0.65rem;
-  font-weight: 800;
-  padding: 0.2rem 0.6rem;
-  border-radius: 60px;
-  border: 1.5px solid #000;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-left: auto;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease;
-}
+    /* Sale badge with shimmer */
+    .sale-price-badge {
+      background: #d4af37;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 60px;
+      border: 1.5px solid #000;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: auto;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+    .sale-price-badge::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 30%;
+      height: 200%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,240,1) 40%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,0) 100%);
+      transform: rotate(25deg);
+      animation: shimmerStrongPulse 2.2s infinite ease-in-out;
+      filter: blur(1px);
+    }
+    @keyframes shimmerStrongPulse {
+      0% { left: -60%; opacity: 0.2; }
+      10% { left: -60%; opacity: 0.2; transform: rotate(25deg) scale(1); }
+      25% { left: 0%; opacity: 0.6; transform: rotate(25deg) scale(1.15); }
+      35% { left: 50%; opacity: 1; transform: rotate(25deg) scale(1.25); }
+      45% { left: 100%; opacity: 0.8; transform: rotate(25deg) scale(1.15); }
+      55% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+      100% { left: 100%; opacity: 0; transform: rotate(25deg) scale(1); }
+    }
 
-/* Shimmer effect with stronger pulse */
-.sale-price-badge::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -60%;
-  width: 30%;
-  height: 200%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 240, 1) 40%,
-    rgba(255, 255, 255, 0.9) 60%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: rotate(25deg);
-  animation: shimmerStrongPulse 2.2s infinite ease-in-out;
-  filter: blur(1px);
-}
-
-@keyframes shimmerStrongPulse {
-  0% {
-    left: -60%;
-    opacity: 0.2;
-  }
-  10% {
-    left: -60%;
-    opacity: 0.2;
-    transform: rotate(25deg) scale(1);
-  }
-  25% {
-    left: 0%;
-    opacity: 0.6;
-    transform: rotate(25deg) scale(1.15);
-  }
-  35% {
-    left: 50%;
-    opacity: 1;
-    transform: rotate(25deg) scale(1.25);
-  }
-  45% {
-    left: 100%;
-    opacity: 0.8;
-    transform: rotate(25deg) scale(1.15);
-  }
-  55% {
-    left: 100%;
-    opacity: 0;
-    transform: rotate(25deg) scale(1);
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-    transform: rotate(25deg) scale(1);
-  }
-}
-
-/* Optional: Add a subtle glow during the pulse */
-.sale-price-badge.shimmer-active {
-  filter: brightness(1.2);
-  transition: filter 0.1s ease;
-}
-
-    /* High Demand Badge */
     .high-demand-badge {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: #cc0000;
+      background: #ff6b6b;
       color: white;
       font-size: 0.65rem;
       font-weight: 800;
@@ -323,26 +279,7 @@
       text-transform: uppercase;
       animation: pulse 2s infinite;
     }
-    
-    .high-demand-badge i {
-      color: white;
-      font-size: 0.7rem;
-    }
-    
-    /* Sale badge on price line */
-    .sale-price-badge {
-      background: #d4af37;
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.2rem 0.6rem;
-      border-radius: 60px;
-      border: 1.5px solid #000;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-left: auto;
-      white-space: nowrap;
-    }
+    .high-demand-badge i { color: white; font-size: 0.7rem; }
     
     @keyframes pulse {
       0% { transform: scale(1); }
@@ -360,7 +297,6 @@
     .image-frame:hover .secondary-img { opacity:1; }
     @media (hover:none) { .secondary-img { opacity:0; } }
 
-    /* ===== BADGES ===== */
     .new-badge {
       position: absolute;
       top: 10px;
@@ -436,15 +372,10 @@
       margin-top: 0.2rem; 
       font-weight: 600; 
     }
-    .in-stock { 
-      color: #2e7d32; 
-    }
-    .low-stock { 
-      color: #f57c00; 
-    }
-    .out-of-stock { 
-      color: #c62828; 
-    }
+    .in-stock { color: #2e7d32; }
+    .low-stock { color: #f57c00; }
+    .out-of-stock { color: #c62828; }
+    
     .card-add-btn {
       display: flex; 
       align-items: center; 
@@ -461,19 +392,22 @@
       width: 100%; 
       margin: 0.5rem 0 0; 
       min-height: 44px;
-      transition: 0.15s; 
+      transition: all 0.15s; 
       text-transform: uppercase;
     }
-    .card-add-btn i { 
-      color: #d4af37; 
+    .card-add-btn i { color: #d4af37; transition: color 0.15s; }
+    .card-add-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; }
+    .card-add-btn:hover i { color: #000; }
+    
+    /* Added state for add-to-cart feedback */
+    .card-add-btn.added {
+      background: #2e7d32;
+      border-color: #2e7d32;
+      color: white;
+      pointer-events: none; /* prevent double click while adding */
     }
-    .card-add-btn:hover { 
-      background: #d4af37; 
-      color: #000; 
-      border-color: #d4af37; 
-    }
-    .card-add-btn:hover i { 
-      color: #000; 
+    .card-add-btn.added i {
+      color: white;
     }
 
     /* ===== EMPTY STATE ===== */
@@ -514,7 +448,6 @@
     .scroll-top.visible { opacity: 1; transform: translateY(0); }
     .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       .header-content {
         flex-direction: column;
@@ -541,12 +474,6 @@
         font-size: 2.2rem;
       }
     }
-
-    /* In stock styles */
-    .in-stock { color: #2e7d32; }
-    .low-stock { color: #ed6c02; }
-    .out-of-stock { color: #d32f2f; }
-    .stock-badge i { margin-right: 3px; }
   </style>
 </head>
 <body>
@@ -560,7 +487,6 @@
       <div class="page-header-bg"></div>
       <div class="container">
         <div class="header-content">
-          <!-- Title Section -->
           <div class="title-section">
             <div class="breadcrumbs">
               <a href="index.html">home</a>
@@ -570,8 +496,6 @@
             <h1 class="page-title">all <span>accessories</span></h1>
             <p class="page-desc">Minimal, premium & daily essentials — curated for the modern lifestyle.</p>
           </div>
-          
-          <!-- Sort Section - Right Side -->
           <div class="sort-header-section">
             <div class="sort-select">
               <i class="fa-solid fa-arrow-down-wide-short"></i>
@@ -600,46 +524,19 @@
 
   <script src="common.js"></script>
   <script>
-    // ===== UTILITY FUNCTIONS =====
-    function renderRating(rating) {
-      if (!rating || rating === 0) return '<span>★ 0.0</span>';
-      const full = Math.floor(rating);
-      let stars = '';
-      for (let i = 0; i < 5; i++) {
-        stars += i < full ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
-      }
-      return stars + `<span> ${rating.toFixed(1)}</span>`;
-    }
-    
-    function formatPrice(price) {
-      return price?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') || '0.00';
-    }
-    
-    function getStockStatus(stock) {
-      if (stock > 5) return '<div class="stock-badge in-stock"><i class="fa-regular fa-circle-check"></i> in stock</div>';
-      if (stock > 0) return '<div class="stock-badge low-stock"><i class="fa-regular fa-clock"></i> low stock</div>';
-      return '<div class="stock-badge out-of-stock"><i class="fa-regular fa-circle-xmark"></i> out of stock</div>';
-    }
-
-    function handleScroll() {
-      const btn = document.getElementById('scrollTop');
-      if (btn) btn.classList.toggle('visible', window.scrollY > 200);
-    }
-
-    // ===== ADD TEST DATA FUNCTION =====
+    // ===== ADD TEST DATA FUNCTION (to enrich demo) =====
     function addTestData() {
       if (window.products && window.products.length > 0) {
         window.products.forEach(product => {
-          // Add test oldPrice for SALE badge (remove when you have real data)
           if (!product.oldPrice) {
-            product.oldPrice = product.price * 1.2; // Add 20% as old price
+            product.oldPrice = product.price * 1.2;
           }
+          // Ensure category is accessories for filter
+          if (!product.category) product.category = 'accessories';
         });
-        console.log('Added test data to products');
       }
     }
 
-    // ===== CHECK IF PRODUCT IS NEW (within 24 hours) =====
     function isNewProduct(product) {
       if (!product.createdAt) return false;
       const now = new Date();
@@ -648,17 +545,17 @@
       return hoursDiff < 24;
     }
 
-    // ===== MAIN RENDERING FUNCTION =====
+    // ===== RENDER =====
     function renderProducts() {
       const gridContainer = document.getElementById('product-grid-container');
       const sortSelect = document.getElementById('sort-select');
       
       if (!gridContainer) return;
 
-      // Add test data to all products
+      // Ensure window.products exists and has test data
+      if (!window.products) window.products = [];
       addTestData();
 
-      // Filter accessories products
       const accessoriesProducts = (window.products || []).filter(p => 
         p.category === 'accessories' || p.showOnAccessories === true
       );
@@ -686,9 +583,7 @@
           case 'rating':
             sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
             break;
-          default:
-            // Keep original order (popular)
-            break;
+          default: break;
         }
         return sorted;
       }
@@ -701,14 +596,8 @@
           const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
           const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
           
-          // Check for sale
           const hasSale = product.oldPrice && product.oldPrice > product.price;
-          const discount = hasSale ? Math.round(((product.oldPrice - product.price)/product.oldPrice)*100) : 0;
-          
-          // Check if high demand
           const isHighDemand = product.highDemand === true;
-          
-          // Check if new
           const isNew = isNewProduct(product);
           
           gridHtml += `
@@ -730,15 +619,15 @@
                 </div>
                 <p class="product-category">${product.category || 'accessory'}</p>
                 <h3 class="product-title">${product.title}</h3>
-                <div class="product-rating">${renderRating(product.rating)}</div>
+                <div class="product-rating">${window.renderRating ? window.renderRating(product.rating) : '<span>★ 0.0</span>'}</div>
                 <div class="product-price-block">
-                  <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
-                  ${hasSale ? `<span class="old-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
+                  <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
+                  ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.oldPrice) : product.oldPrice}</span>` : ''}
                   ${hasSale ? `<span class="sale-price-badge">SALE</span>` : ''}
                 </div>
-                ${getStockStatus(product.stock)}
+                ${window.getStockStatus ? window.getStockStatus(product.stock) : ''}
               </a>
-              <button class="card-add-btn" onclick="window.addToCart('${product.id}'); event.stopPropagation();">
+              <button class="card-add-btn" onclick="handleAccessoryAdd('${product.id}', this); event.stopPropagation();">
                 <i class="fa-solid fa-cart-plus"></i> add
               </button>
             </div>
@@ -756,17 +645,89 @@
       }
     }
 
-    // ===== INITIALIZATION =====
-    document.addEventListener('DOMContentLoaded', () => {
-      loadCommonModals();
-      if (typeof loadComponents === 'function') loadComponents();
-      
-      // Set active nav
-      setTimeout(() => {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll('.nav-link[href="accessories.html"]').forEach(l => l.classList.add('active'));
-      }, 200);
+    // ===== HANDLE ADD (using the master function from common.js) =====
+    window.handleAccessoryAdd = function(productId, btn) {
+      // Use the globally defined masterAddToCart if available (from common.js)
+      if (typeof window.masterAddToCart === 'function') {
+        // Pass the button to show effect, and ensure cart opens afterwards
+        // We need to slightly adapt because masterAddToCart expects 'event' to access button.
+        // We'll create a synthetic event-like object.
+        const fakeEvent = { target: btn };
+        window.masterAddToCart.call({}, productId, true, fakeEvent);
+      } else {
+        // Fallback if master function not yet loaded
+        console.warn('masterAddToCart not ready, using local fallback');
+        btn.classList.add('added');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        // Still try to add to cart via common.js addToCart
+        if (typeof window.addToCart === 'function') {
+          window.addToCart(productId);
+        } else {
+          // Minimal local storage update
+          let cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
+          if (!cart.includes(productId)) cart.push(productId);
+          localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
+        }
+        
+        // Open cart modal after a short delay
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+          // Reset button after opening cart (optional, but cart modal is open)
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 500);
+        }, 200);
+      }
+    };
 
+    // Override masterAddToCart to ensure cart opens and button shows added
+    // This runs after common.js is loaded
+    function enhanceMasterFunction() {
+      if (window.masterAddToCart && !window.masterAddToCart.__enhanced) {
+        const original = window.masterAddToCart;
+        window.masterAddToCart = async function(productId, shouldOpenCart = true, customEvent = null) {
+          // Call original but capture button if provided via customEvent
+          let btn = customEvent?.target?.closest?.('button');
+          
+          // Show added effect immediately
+          if (btn) {
+            btn.classList.add('added');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+          }
+          
+          // Execute original logic (adds to cart, updates storage)
+          await original.call(this, productId, false); // pass false to avoid double open
+          
+          // Update cart count (already inside original)
+          
+          // Open cart modal after a tiny delay to see the added state
+          setTimeout(() => {
+            if (shouldOpenCart && typeof window.openCart === 'function') {
+              window.openCart();
+            }
+            // Reset button after cart opens (optional, but cart is now open)
+            if (btn) {
+              setTimeout(() => {
+                btn.classList.remove('added');
+                btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+              }, 500);
+            }
+          }, 200);
+        };
+        window.masterAddToCart.__enhanced = true;
+        console.log('masterAddToCart enhanced to open cart');
+      }
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load common modals if function exists
+      if (typeof loadCommonModals === 'function') loadCommonModals();
+      
       // Wait for products to load from common.js
       const checkProducts = setInterval(() => {
         if (window.products && window.products.length > 0) {
@@ -782,12 +743,19 @@
         }
       }, 100);
 
-      // Refresh new/high demand status every minute
-      setInterval(() => {
-        if (window.products?.length) {
-          renderProducts();
+      // Enhance master function after it becomes available
+      const checkMaster = setInterval(() => {
+        if (window.masterAddToCart) {
+          enhanceMasterFunction();
+          clearInterval(checkMaster);
         }
-      }, 60000);
+      }, 100);
+
+      // Set active nav
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.nav-link[href="accessories.html"]').forEach(l => l.classList.add('active'));
+      }, 200);
     });
 
     window.addEventListener('load', () => {
@@ -798,8 +766,17 @@
           renderProducts();
         }
       }
+      // Enhance again in case master loaded after load
+      if (window.masterAddToCart) enhanceMasterFunction();
     });
 
+    // Scroll top button
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('scrollTop');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 200);
+    });
+
+    // Fallback loadCommonModals if not defined in common.js
     async function loadCommonModals() {
       try {
         const res = await fetch('common.html');
@@ -807,8 +784,6 @@
         document.getElementById('common-modals').innerHTML = data;
       } catch (e) { console.warn('modals not loaded'); }
     }
-
-    window.addEventListener('scroll', handleScroll);
   </script>
 </body>
 </html>
