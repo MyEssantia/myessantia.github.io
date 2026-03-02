@@ -248,7 +248,6 @@
       font-size: 0.7rem;
     }
 
-    /* Sale badge on price line with shimmer effect only */
 .sale-price-badge {
   background: #d4af37;
   color: #000;
@@ -265,7 +264,6 @@
   overflow: hidden;
 }
 
-/* Shimmer effect overlay */
 .sale-price-badge::after {
   content: '';
   position: absolute;
@@ -276,45 +274,39 @@
   background: linear-gradient(
     to right,
     rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.8) 50%,
     rgba(255, 255, 255, 0) 100%
   );
   transform: rotate(25deg);
-  animation: shimmer 2.5s infinite;
+  animation: shimmerPulse 2.5s infinite;
 }
 
-@keyframes shimmer {
+@keyframes shimmerPulse {
   0% {
     left: -60%;
-    opacity: 0;
+    opacity: 0.3;
   }
   10% {
-    opacity: 0;
+    left: -60%;
+    opacity: 0.3;
+    transform: rotate(25deg) scale(1);
   }
-  20% {
+  30% {
     left: 100%;
     opacity: 1;
+    transform: rotate(25deg) scale(1.1);
+  }
+  50% {
+    left: 100%;
+    opacity: 0;
+    transform: rotate(25deg) scale(1);
   }
   100% {
     left: 100%;
     opacity: 0;
   }
 }
-    
-    /* Sale badge on price line */
-    .sale-price-badge {
-      background: #d4af37;
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 0.2rem 0.6rem;
-      border-radius: 60px;
-      border: 1.5px solid #000;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-left: auto;
-      white-space: nowrap;
-    }
+
     
     @keyframes pulse {
       0% { transform: scale(1); }
