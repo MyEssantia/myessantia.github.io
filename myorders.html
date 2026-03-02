@@ -764,7 +764,7 @@
     <div class="container" style="text-align: center; margin: 2rem auto 3rem;">
       <p class="info-note">
         <i class="fa-regular fa-circle-question"></i> 
-        need help? <a href="#" style="color: #000; font-weight: 600; text-decoration: none; border-bottom: 2px solid #d4af37;" onclick="showSupportModal()">contact support</a>
+        need help? <a href="#" style="color: #000; font-weight: 600; text-decoration: none; border-bottom: 2px solid #d4af37;" id="support-link">contact support</a>
       </p>
     </div>
   </main>
@@ -1121,19 +1121,32 @@
       }, 100);
     }
 
-    // ===== SUPPORT FUNCTIONS =====
+    // ===== SIMPLE SUPPORT FUNCTION - NO MODAL =====
     window.showSupportModal = function(e) {
       if (e) e.preventDefault();
-      // Use the existing modal from common.js or create a simple alert
-      alert('Please contact support at support@myessantia.com or call +1 (555) 123-4567');
+      alert('📧 Email: support@myessantia.com\n📞 Phone: +1 (555) 123-4567\n\nOur support team is available 24/7.');
     };
 
     // ===== INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', async () => {
-      await loadCommonModals();
+      // First, clear any existing cart modals that might be hanging around
+      const existingCartModal = document.getElementById('cart-modal');
+      if (existingCartModal) {
+        existingCartModal.remove();
+      }
+      
+      const existingProfileModal = document.getElementById('profile-modal');
+      if (existingProfileModal) {
+        existingProfileModal.remove();
+      }
+
+      // Load components
       if (typeof window.loadComponents === 'function') {
         await window.loadComponents();
       }
+      
+      // Load common modals only once
+      await loadCommonModals();
       
       // Set active nav
       setTimeout(() => {
@@ -1146,29 +1159,50 @@
 
       // Initialize order tracking
       initializeOrderTracking();
+
+      // Add support link listener
+      const supportLink = document.getElementById('support-link');
+      if (supportLink) {
+        supportLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          showSupportModal(e);
+        });
+      }
     });
 
     async function loadCommonModals() {
       try {
-        // Check if modals already exist
-        if (!document.getElementById('cart-modal')) {
+        // Check if modals container exists and is empty
+        const container = document.getElementById('common-modals');
+        if (container && container.children.length === 0) {
           const res = await fetch('common.html');
           const data = await res.text();
-          document.getElementById('common-modals').innerHTML = data;
+          container.innerHTML = data;
+          console.log('Modals loaded successfully');
         }
       } catch (e) { 
-        console.warn('modals not loaded'); 
+        console.warn('Modals not loaded', e); 
       }
     }
 
     window.addEventListener('scroll', handleScroll);
 
-    // ===== MODAL CLOSE FUNCTIONS =====
-    window.closeModal = function(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
+    // Override the openCart function to prevent duplicates
+    const originalOpenCart = window.openCart;
+    window.openCart = function() {
+      // Close any other open modals first
+      const profileModal = document.getElementById('profile-modal');
+      if (profileModal && profileModal.classList.contains('show')) {
+        profileModal.classList.remove('show');
+      }
+      
+      // Remove any stray cart modals
+      const strayCarts = document.querySelectorAll('.cart-modal:not(#cart-modal)');
+      strayCarts.forEach(cart => cart.remove());
+      
+      // Call original function
+      if (originalOpenCart) {
+        originalOpenCart();
       }
     };
 
@@ -1189,17 +1223,19 @@
       }
     });
 
-    // Clean up any duplicate event listeners on load
+    // Clean up any duplicate elements on load
     window.addEventListener('load', function() {
-      const cartModal = document.getElementById('cart-modal');
-      if (cartModal) {
-        const closeButtons = cartModal.querySelectorAll('[onclick*="closeModal"]');
-        if (closeButtons.length > 1) {
-          for (let i = 1; i < closeButtons.length; i++) {
-            closeButtons[i].remove();
-          }
+      // Remove any duplicate cart modals
+      const allModals = document.querySelectorAll('[id*="cart-modal"]');
+      if (allModals.length > 1) {
+        for (let i = 1; i < allModals.length; i++) {
+          allModals[i].remove();
         }
       }
+      
+      // Remove any stray left-aligned carts
+      const strayCarts = document.querySelectorAll('.cart-sidebar, [class*="cart-left"], [class*="cart-drawer"]');
+      strayCarts.forEach(cart => cart.remove());
     });
   </script>
 </body>
