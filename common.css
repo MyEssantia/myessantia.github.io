@@ -1,19 +1,31 @@
-/* ---------- HEADER STYLES - MyEssantia Brand ---------- */
-/* TOP BAR */
+/* ---------- 1. THEME VARIABLES ---------- */
+:root {
+  --my-gold: #d4af37;
+  --my-dark: #161616;
+  --my-black: #0c0c0c;
+  --my-white: #ffffff;
+  --my-gray: #f0f0f0;
+  --my-text-muted: #999;
+  --font-main: 'Montserrat', sans-serif;
+  --font-accent: 'Playfair Display', serif;
+  --shadow-sm: 0 4px 24px rgba(0,0,0,0.02);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --transition: all 0.3s ease;
+}
+
+/* ---------- 2. TOP BAR ---------- */
 .top-bar {
-  background: #0c0c0c;
-  color: #f0f0f0;
+  background: var(--my-black);
+  color: var(--my-gray);
   padding: 0.6rem 0;
   font-size: 0.7rem;
   border-bottom: 1px solid #2a2a2a;
-  width: 100%;
 }
 
 .top-bar .container {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.4rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
@@ -21,170 +33,119 @@
 
 .top-bar-links {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.2rem 1rem;
+  gap: 1.2rem;
 }
 
 .top-bar-links a {
   text-decoration: none;
   color: #ddd;
-  font-size: 0.7rem;
   font-weight: 300;
-  transition: color 0.2s;
-  padding: 0.2rem 0;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  transition: var(--transition);
 }
 
 .top-bar-links a:hover {
-  color: #d4af37;
+  color: var(--my-gold);
 }
 
 .trust-badge {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
 
-.trust-badge i { 
-  color: #d4af37; 
-}
+.trust-badge i { color: var(--my-gold); }
 
-/* MAIN HEADER */
+/* ---------- 3. MAIN HEADER ---------- */
 .main-header {
-  background: #ffffff;
+  background: var(--my-white);
   padding: 0.8rem 0;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
-  z-index: 50;
-  border-bottom: 1px solid #f0f0f0;
-  width: 100%;
+  z-index: 100;
+  border-bottom: 1px solid var(--my-gray);
 }
 
 .main-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  flex-wrap: wrap;
 }
 
-/* MyEssantia Logo */
+/* Logo */
 .logo {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-main);
   font-weight: 700;
   font-size: 2rem;
-  letter-spacing: 1px;
-  color: #161616;
+  color: var(--my-dark);
   text-decoration: none;
-  line-height: 1.2;
   background: linear-gradient(135deg, #161616 0%, #2a2a2a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-  flex-shrink: 0;
 }
 
 .logo span {
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
+  font-family: var(--font-accent);
   font-size: 2.4rem;
-  color: #d4af37;
-  -webkit-text-fill-color: #d4af37;
-  background: none;
-  text-shadow: 2px 2px 4px rgba(212, 175, 55, 0.3);
-  display: inline-block;
-  margin-left: 2px;
+  color: var(--my-gold);
+  -webkit-text-fill-color: var(--my-gold);
   font-style: italic;
+  display: inline-block;
   transform: rotate(-2deg);
 }
 
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #1e1e1e;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.2s;
-}
-
-.mobile-menu-toggle:hover {
-  color: #d4af37;
-}
-
-/* Navigation Menu */
+/* Desktop Navigation */
 .nav-menu {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  flex: 1;
-  justify-content: center;
-}
-
-.nav-item {
+  gap: 1.5rem;
   list-style: none;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #1e1e1e;
-  font-family: 'Montserrat', sans-serif;
+  color: var(--my-dark);
+  font-family: var(--font-main);
   font-weight: 500;
   font-size: 0.9rem;
-  border-bottom: 1px solid transparent;
-  transition: all 0.2s;
+  transition: var(--transition);
   padding: 0.3rem 0;
-  display: inline-block;
-  letter-spacing: 0.5px;
+  border-bottom: 2px solid transparent;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  color: #d4af37;
-  border-bottom-color: #d4af37;
+.nav-link:hover {
+  color: var(--my-gold);
+  border-bottom-color: var(--my-gold);
 }
 
-/* Header Icons */
+/* Icons */
 .header-icons {
   display: flex;
   gap: 1.2rem;
   align-items: center;
-  flex-shrink: 0;
 }
 
 .header-icons a {
-  color: #202020;
+  color: var(--my-dark);
   font-size: 1.3rem;
-  transition: color 0.2s;
   position: relative;
-  padding: 0.2rem;
-  text-decoration: none;
+  transition: var(--transition);
 }
 
-.header-icons a:hover {
-  color: #d4af37;
-}
+.header-icons a:hover { color: var(--my-gold); }
 
 .cart-count {
   position: absolute;
   top: -8px;
   right: -10px;
-  background: #d4af37;
-  color: #0c0c0c;
-  font-size: 0.6rem;
+  background: var(--my-gold);
+  color: var(--my-black);
+  font-size: 0.65rem;
   font-weight: 700;
   width: 18px;
   height: 18px;
@@ -192,69 +153,52 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-family: 'Montserrat', sans-serif;
 }
 
-/* ==================== MODAL STYLES ==================== */
-/* Modal Base */
+/* ---------- 4. MODALS ---------- */
 .modal {
-  display: none;
+  display: none; 
   position: fixed;
-  z-index: 1000;
+  z-index: 2000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
-  overflow-y: auto;
-}
-
-.modal.show {
-  display: block;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
 }
 
 .modal-content {
-  background-color: #fff;
-  margin: 2rem auto;
+  background: var(--my-white);
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  max-width: 450px;
   padding: 2rem;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 30px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  max-height: 80vh;
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  animation: slideDown 0.3s ease;
-  position: relative;
+  animation: slideLeft 0.4s ease;
 }
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--my-gray);
+  padding-bottom: 1rem;
 }
 
 .modal-header h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-accent);
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  letter-spacing: -0.02em;
-  margin: 0;
 }
 
 .close-modal {
@@ -262,758 +206,39 @@
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  color: #999;
-  transition: color 0.2s;
-  line-height: 1;
-  padding: 0 0.5rem;
-  font-weight: 300;
+  color: var(--my-text-muted);
 }
 
-.close-modal:hover {
-  color: #1a1a1a;
-}
-
-.modal-footer {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 1.5rem;
-}
-
-/* ==================== CART MODAL ==================== */
-.cart-modal-content {
-  max-width: 500px;
-}
-
-.cart-items {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem 0;
-  max-height: 400px;
-  min-height: 200px;
-}
-
-.cart-item {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f5f5f5;
-  position: relative;
-}
-
-.cart-item-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
-  background-size: cover;
-  background-position: center;
-  background-color: #f4f2ef;
-  flex-shrink: 0;
-}
-
-.cart-item-details {
-  flex: 1;
-}
-
-.cart-item-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
-  color: #1e1e1e;
-}
-
-.cart-item-category {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 400;
-  color: #a2a2a2;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.5px;
-}
-
-.cart-item-price {
-  color: #d4af37;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.cart-item-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 0.5rem;
-}
-
-.quantity-btn {
-  background: #f5f5f5;
-  border: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-  color: #333;
-  font-weight: 600;
-}
-
-.quantity-btn:hover {
-  background: #e5e5e5;
-  color: #d4af37;
-}
-
-.item-quantity {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  min-width: 30px;
-  text-align: center;
-  color: #1a1a1a;
-}
-
-.remove-item {
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  font-size: 0.8rem;
-  text-decoration: underline;
-  margin-left: auto;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-}
-
-.remove-item:hover {
-  color: #ff4444;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-  font-family: 'Montserrat', sans-serif;
-}
-
-#cart-total-amount {
-  color: #d4af37;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.checkout-btn {
-  width: 100%;
-  background: #d4af37;
-  border: 1px solid #d4af37;
-  color: #0c0c0c;
-  font-weight: 700;
-  padding: 1rem;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.checkout-btn:hover {
-  background: #c4a030;
-  border-color: #c4a030;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-}
-
-.empty-cart-message {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: #999;
-}
-
-.empty-cart-message i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: #ddd;
-}
-
-.empty-cart-message p {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-  margin: 0;
-}
-
-/* ==================== PROFILE MODAL ==================== */
-.profile-modal-content {
-  max-width: 400px;
-}
-
-.profile-content {
-  padding: 1.5rem 0;
-  overflow-y: auto;
-  max-height: 60vh;
-}
-
-/* Logged In State */
-.profile-info {
-  text-align: center;
-  padding: 1rem 0;
-}
-
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  background: #f5f5f5;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 2.5rem;
-  color: #d4af37;
-  border: 2px solid #d4af37;
-}
-
-.profile-details {
-  text-align: left;
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 20px;
-  margin-bottom: 1.5rem;
-}
-
-.profile-details p {
-  margin-bottom: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: #333;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
-}
-
-.profile-details p:last-child {
-  margin-bottom: 0;
-}
-
-.profile-details i {
-  width: 20px;
-  color: #d4af37;
-}
-
-.profile-details .label {
-  font-weight: 400;
-  color: #666;
-  min-width: 70px;
-}
-
-.profile-details .value {
-  font-weight: 600;
-  color: #1a1a1a;
-  font-family: 'Playfair Display', serif;
-}
-
-.logout-btn {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #d4af37;
-  color: #1a1a1a;
-  padding: 1rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-  transition: all 0.3s;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: #d4af37;
-  color: #fff;
-}
-
-.logout-btn i {
-  font-size: 1rem;
-}
-
-/* Logged Out State (Login Form) */
-.login-form {
-  padding: 0.5rem 0;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.login-header i {
-  font-size: 3rem;
-  color: #d4af37;
-  margin-bottom: 1rem;
-}
-
-.login-header h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 0.5rem;
-}
-
-.login-header p {
-  color: #666;
-  font-size: 0.9rem;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-  margin: 0;
-}
-
-.form-group {
-  margin-bottom: 1.2rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-weight: 600;
-  font-size: 0.9rem;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.95rem;
-  transition: all 0.3s;
-  box-sizing: border-box;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #d4af37;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-}
-
-.form-group input::placeholder {
-  color: #aaa;
-  font-size: 0.9rem;
-  font-weight: 300;
-}
-
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 1rem 0 1.5rem;
-  font-size: 0.9rem;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #666;
-}
-
-.remember-me input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color: #d4af37;
-}
-
-.forgot-password {
-  color: #d4af37;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
-.login-btn {
-  width: 100%;
-  background: #d4af37;
-  border: 1px solid #d4af37;
-  color: #0c0c0c;
-  padding: 1rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-  transition: all 0.3s;
-  margin-bottom: 1.5rem;
-  font-family: 'Montserrat', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.login-btn:hover {
-  background: #c4a030;
-  border-color: #c4a030;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-}
-
-.login-divider {
-  position: relative;
-  text-align: center;
-  margin: 1.5rem 0;
-}
-
-.login-divider::before,
-.login-divider::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: 45%;
-  height: 1px;
-  background: #eee;
-}
-
-.login-divider::before {
-  left: 0;
-}
-
-.login-divider::after {
-  right: 0;
-}
-
-.login-divider span {
-  background: #fff;
-  padding: 0 1rem;
-  color: #999;
-  font-size: 0.9rem;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-}
-
-.social-login {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.social-btn {
-  flex: 1;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-  color: #333;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
-}
-
-.social-btn:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-  transform: translateY(-2px);
-}
-
-.social-btn.google {
-  color: #DB4437;
-}
-
-.social-btn.facebook {
-  color: #4267B2;
-}
-
-.signup-prompt {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #666;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.signup-prompt a {
-  color: #d4af37;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.signup-prompt a:hover {
-  text-decoration: underline;
-}
-
-.error-message {
-  background: #fee;
-  color: #c00;
-  padding: 0.8rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  display: none;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  border-left: 3px solid #c00;
-}
-
-.error-message.show {
-  display: block;
-}
-
-/* ==================== RESPONSIVE STYLES ==================== */
-/* Tablet Styles (640px and up) */
-@media (min-width: 640px) {
-  .top-bar .container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  
-  .main-header .container {
-    flex-wrap: nowrap;
-  }
-  
+/* ---------- 5. RESPONSIVE DESIGN ---------- */
+@media (max-width: 992px) {
   .nav-menu {
-    display: flex !important;
-    position: static;
-    width: auto;
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
+    position: fixed;
+    top: 80px; /* Below Header */
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 80px);
+    background: var(--my-white);
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2rem;
+    transition: 0.4s ease;
+    z-index: 99;
   }
-  
-  .mobile-menu-toggle {
-    display: none;
-  }
-  
-  .modal-content {
-    margin: 5rem auto;
-  }
-  
-  .logo {
-    font-size: 2.2rem;
-  }
-  
-  .logo span {
-    font-size: 2.6rem;
-  }
-}
 
-/* Desktop Styles (1024px and up) */
-@media (min-width: 1024px) {
-  .logo {
-    font-size: 2.4rem;
-  }
-  
-  .logo span {
-    font-size: 2.8rem;
-  }
-  
-  .nav-link {
-    font-size: 1rem;
-  }
-}
+  .nav-menu.show { left: 0; }
 
-/* Mobile Styles (639px and below) */
-@media (max-width: 639px) {
-  .main-header .container {
-    flex-wrap: wrap;
-    position: relative;
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    order: 1;
-  }
-  
-  .logo span {
-    font-size: 2.2rem;
-  }
-  
-  .header-icons {
-    order: 2;
-    gap: 0.8rem;
-  }
-  
-  .header-icons a {
-    font-size: 1.1rem;
-  }
-  
   .mobile-menu-toggle {
     display: block;
-    order: 3;
-    font-size: 1.3rem;
-  }
-  
-  .nav-menu {
-    display: none;
-    width: 100%;
-    order: 4;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem 0 0.5rem;
-    background: #ffffff;
-    border-top: 1px solid #f0f0f0;
-    margin-top: 0.5rem;
-  }
-  
-  .nav-menu.show {
-    display: flex;
-  }
-  
-  .nav-item {
-    width: 100%;
-  }
-  
-  .nav-link {
-    display: block;
-    text-align: center;
-    padding: 0.75rem 0.25rem;
-    background: #f8f8f8;
-    border: 1px solid #eaeaea;
-    border-radius: 40px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-    width: 100%;
-  }
-  
-  .nav-link:active {
-    background: #d4af37;
-    border-color: #d4af37;
-    color: white;
-    transform: scale(0.97);
-  }
-  
-  .modal-content {
-    margin: 1rem auto;
-    padding: 1.5rem;
-    width: 95%;
-    max-height: 90vh;
-  }
-  
-  .cart-modal-content,
-  .profile-modal-content {
-    max-width: 95%;
-  }
-  
-  .cart-items {
-    max-height: 300px;
-  }
-  
-  .cart-item {
-    flex-wrap: wrap;
-  }
-  
-  .cart-item-image {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .cart-item-title {
-    font-size: 0.9rem;
-  }
-  
-  .cart-item-price {
-    font-size: 1rem;
-  }
-  
-  .social-login {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .modal-header h3 {
-    font-size: 1.2rem;
-  }
-}
-
-/* Small Mobile Optimization (480px and below) */
-@media (max-width: 480px) {
-  .top-bar-links {
-    gap: 0.8rem;
-  }
-  
-  .top-bar-links a {
-    font-size: 0.65rem;
-  }
-  
-  .trust-badge span {
-    font-size: 0.65rem;
-  }
-  
-  .logo {
+    background: none;
+    border: none;
     font-size: 1.5rem;
+    cursor: pointer;
   }
-  
-  .logo span {
-    font-size: 1.9rem;
-  }
-  
-  .header-icons {
-    gap: 0.6rem;
-  }
-  
-  .header-icons a {
-    font-size: 1rem;
-  }
-  
-  .cart-count {
-    width: 16px;
-    height: 16px;
-    font-size: 0.55rem;
-    top: -6px;
-    right: -8px;
-  }
-  
-  .modal-content {
-    padding: 1rem;
-  }
-  
-  .profile-details {
-    padding: 1rem;
-  }
-  
-  .profile-details p {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-  }
-  
-  .profile-details .label {
-    min-width: auto;
-  }
-  
-  .remember-forgot {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.5rem; }
+  .logo span { font-size: 1.8rem; }
+  .top-bar-links { display: none; } /* Hide links to save space */
+  .top-bar .container { justify-content: center; }
 }
