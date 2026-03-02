@@ -542,19 +542,21 @@ function renderCartItems() {
 
     return `
       <div class="cart-item">
-        <div class="cart-item-image" style="background-image: url('${item.primaryImg || 'https://via.placeholder.com/60'}');"></div>
+        <div class="cart-item-image" style="background-image: url('${item.primaryImg || 'https://via.placeholder.com/90'}');"></div>
         <div class="cart-item-details">
-          <h4>${item.title}</h4>
-          <p>${item.category}</p>
+          <h4 class="cart-item-title">${item.title}</h4>
+          <p class="cart-item-category">${item.category || 'Accessory'}</p>
           <div class="cart-item-price">₹${formatPrice(item.price)}</div>
-          <div class="cart-quantity-controls">
-            <button class="quantity-btn" onclick="window.updateQuantity('${item.id}', -1)">
-              <i class="fa-solid fa-minus"></i>
-            </button>
-            <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
-            <button class="quantity-btn" onclick="window.updateQuantity('${item.id}', 1)">
-              <i class="fa-solid fa-plus"></i>
-            </button>
+          <div class="cart-item-actions">
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="window.updateQuantity('${item.id}', -1)">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <span class="quantity-value">${item.quantity}</span>
+              <button class="quantity-btn" onclick="window.updateQuantity('${item.id}', 1)">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
             <button class="remove-btn" onclick="window.removeFromCart('${item.id}')">
               <i class="fa-regular fa-trash-can"></i>
             </button>
