@@ -44,7 +44,8 @@
   display: inline-block;
 }
 
-.cart-icon-wrapper {
+/* Using cart-icon-inner to match your HTML */
+.cart-icon-inner {  /* Changed from cart-icon-wrapper to match your HTML */
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -53,13 +54,13 @@
   height: auto;
 }
 
-.cart-icon-wrapper i {
+.cart-icon-inner i {
   font-size: 1.4rem;
   color: #000;
   transition: color 0.2s ease;
 }
 
-.cart-icon-wrapper:hover i {
+.cart-icon-inner:hover i {
   color: #d4af37;
 }
 
@@ -67,8 +68,8 @@
 
 .cart-count {
   position: absolute;
-  top: -8px;
-  right: -12px;
+  top: -10px;  /* Adjusted for better positioning */
+  right: -12px;  /* Adjusted for better positioning */
 
   background: #d4af37;
   color: #000;
