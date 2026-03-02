@@ -396,20 +396,6 @@
       font-size: 0.9rem; 
       text-decoration: line-through; 
     }
-    .stock-badge { 
-      font-size: 0.7rem; 
-      margin-top: 0.2rem; 
-      font-weight: 600; 
-    }
-    .in-stock { 
-      color: #2e7d32; 
-    }
-    .low-stock { 
-      color: #f57c00; 
-    }
-    .out-of-stock { 
-      color: #c62828; 
-    }
     .card-add-btn {
       display: flex; 
       align-items: center; 
@@ -622,12 +608,6 @@
       return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
 
-    function getStockStatus(stock) {
-      if (stock > 5) return '<div class="stock-badge in-stock"><i class="fa-regular fa-circle-check"></i> in stock</div>';
-      if (stock > 0) return '<div class="stock-badge low-stock"><i class="fa-regular fa-clock"></i> low stock</div>';
-      return '<div class="stock-badge out-of-stock"><i class="fa-regular fa-circle-xmark"></i> out of stock</div>';
-    }
-
     // Check if product is new (within 24h)
     function isNewProduct(product) {
       if (!product.createdAt) return false;
@@ -726,10 +706,6 @@
           break;
       }
 
-      if (resultsCount) {
-        resultsCount.innerHTML = `Showing ${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''}`;
-      }
-
       if (filteredProducts.length === 0) {
         grid.innerHTML = `
           <div class="empty-state">
@@ -769,8 +745,6 @@
                 ${hasSale ? `<span class="old-price">₹${formatPrice(product.oldPrice)}</span>` : ''}
                 <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
               </div>
-              ${getStockStatus(product.stock)}
-            </a>
             <button class="card-add-btn" onclick="handleProductAdd('${product.id}', this); event.stopPropagation();">
               <i class="fa-solid fa-cart-plus"></i> add
             </button>
