@@ -205,6 +205,37 @@
       box-shadow: 0 8px 16px -8px rgba(0,0,0,0.15);
     }
     
+    /* Image hover effect - show second image */
+    .primary-img, .secondary-img { 
+      position: absolute; 
+      inset: 0; 
+      background-size: cover; 
+      background-position: center; 
+      transition: opacity 0.3s ease;
+    }
+    .primary-img { 
+      opacity: 1; 
+      z-index: 2; 
+    }
+    .secondary-img { 
+      opacity: 0; 
+      z-index: 1; 
+    }
+    .image-frame:hover .primary-img { 
+      opacity: 0; 
+    }
+    .image-frame:hover .secondary-img { 
+      opacity: 1; 
+    }
+    @media (hover: none) { 
+      .secondary-img { 
+        opacity: 0; 
+      }
+      .image-frame:hover .primary-img { 
+        opacity: 1; 
+      }
+    }
+
     /* Sale badge positioned top right on image */
     .sale-badge-image {
       position: absolute;
@@ -222,6 +253,7 @@
       z-index: 30;
       overflow: hidden;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      pointer-events: none; /* Prevents badge from interfering with hover */
     }
     .sale-badge-image::after {
       content: '';
@@ -262,17 +294,8 @@
       align-items: center;
       gap: 4px;
       text-transform: uppercase;
+      pointer-events: none; /* Prevents badge from interfering with hover */
     }
-
-    .primary-img, .secondary-img { 
-      position: absolute; inset:0; background-size: cover; background-position: center; 
-      transition: opacity 0.3s ease;
-    }
-    .primary-img { opacity:1; z-index:2; }
-    .secondary-img { opacity:0; z-index:1; }
-    .image-frame:hover .primary-img { opacity:0; }
-    .image-frame:hover .secondary-img { opacity:1; }
-    @media (hover:none) { .secondary-img { opacity:0; } }
 
     .product-category {
       font-size: 0.7rem;
@@ -315,7 +338,7 @@
     .current-price { 
       color: #d4af37; 
       font-weight: 800; 
-      font-size: 1.3rem; 
+      font-size: 1.4rem; 
     }
     .current-price .inr-symbol { 
       font-size: 1rem; 
@@ -577,10 +600,10 @@
                 <p class="product-category">${product.category || 'accessory'}</p>
                 <h3 class="product-title">${product.title}</h3>
                 <div class="product-rating">${window.renderRating ? window.renderRating(product.rating) : '<span>★ 0.0</span>'}</div>
-                <div class="product-price-block">
-                  <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
-                  ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.oldPrice) : product.oldPrice}</span>` : ''}
-                </div>
+          <div class="product-price-block">
+  ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.oldPrice) : product.oldPrice}</span>` : ''}
+  <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
+</div>
               </a>
               <button class="card-add-btn" onclick="handleAccessoryAdd('${product.id}', this); event.stopPropagation();">
                 <i class="fa-solid fa-cart-plus"></i> add
