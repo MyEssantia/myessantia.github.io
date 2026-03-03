@@ -87,7 +87,7 @@
     .thumbnail:hover { border-color: #d4af37; transform: translateY(-2px) scale(0.98); }
     .thumbnail.active { border-color: #d4af37; border-width: 3px; }
 
-    /* Rating Chart Styles - REDUCED SIZE */
+    /* Rating Chart Styles */
     .rating-chart-card {
       background: #ffffff;
       border-radius: 16px;
@@ -179,20 +179,279 @@
       font-size: 0.65rem;
     }
 
-    /* Responsive */
-    @media (max-width: 640px) {
-      .rating-chart-header {
-        gap: 6px;
-      }
-      .rating-main {
-        font-size: 1.6rem;
-      }
-      .rating-stars-large {
-        font-size: 0.8rem;
-      }
-      .bar-container {
-        height: 14px;
-      }
+    /* ========== LIVE EFFECTS FOR BADGES ========== */
+    .sold-badge, .live-badge {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .sold-badge::after, .live-badge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: wave 2s infinite;
+    }
+    
+    @keyframes wave {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+    
+    .live-badge {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    
+    .live-badge i {
+      animation: blink 1.5s infinite;
+    }
+    
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    /* ========== SHIMMERING EFFECT FOR RAZORPAY ========== */
+    .razorpay-promise {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .razorpay-promise::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 215, 0, 0.2),
+        rgba(255, 215, 0, 0.4),
+        rgba(255, 215, 0, 0.2),
+        transparent
+      );
+      transform: rotate(30deg);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    /* ========== PREPAID & COD BUTTONS WITH CLICK EFFECT ========== */
+    .price-option {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .price-option::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .price-option:active::after {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .price-option.prepaid {
+      background: linear-gradient(145deg, #fcf8f0, #fff5e0);
+    }
+    
+    .price-option.cod {
+      background: linear-gradient(145deg, #f4f4f4, #ffffff);
+    }
+    
+    .price-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .price-option.selected {
+      border-width: 3px;
+      transform: scale(0.98);
+    }
+    
+    .price-option.prepaid.selected {
+      background: #d4af37;
+      color: #000;
+    }
+    
+    .price-option.cod.selected {
+      background: #000;
+      color: #d4af37;
+    }
+
+    /* ========== BUTTON HOVER AND CLICK EFFECTS ========== */
+    .btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:active::after {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn:active {
+      transform: scale(0.95);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(145deg, #000, #1a1a1a);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(145deg, #d4af37, #e6c200);
+      color: #000;
+      box-shadow: 0 6px 12px rgba(212, 175, 55, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(145deg, #000, #1a1a1a);
+      color: #d4af37;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ========== DELIVERY CARD FILL EFFECT ========== */
+    .delivery-card {
+      background: linear-gradient(145deg, #ffffff, #f8f8f8);
+      transition: all 0.3s ease;
+    }
+    
+    .delivery-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 0 rgba(212, 175, 55, 0.25);
+    }
+    
+    .progress-fill {
+      background: linear-gradient(90deg, #d4af37, #f5d742);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressWave 2s infinite;
+    }
+    
+    @keyframes progressWave {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    /* ========== SCROLL ANIMATIONS ========== */
+    .scroll-highlight {
+      animation: scrollGlow 1s ease;
+    }
+    
+    @keyframes scrollGlow {
+      0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
+      50% { box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
+    }
+
+    /* ========== REVIEW SECTION ========== */
+    .reviews-container {
+      max-height: 400px;
+      overflow-y: auto;
+      transition: max-height 0.5s ease;
+      scrollbar-width: thin;
+      scrollbar-color: #d4af37 #f0f0f0;
+    }
+    
+    .reviews-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 10px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 10px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-thumb:hover {
+      background: #b3962e;
+    }
+    
+    .reviews-container.expanded {
+      max-height: 800px;
+    }
+    
+    .view-more-btn {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 12px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .view-more-btn:hover {
+      background: #000;
+      color: #d4af37;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .view-more-btn:active {
+      transform: scale(0.95);
     }
 
     /* desktop reviews */
@@ -305,7 +564,7 @@
     .price-option.prepaid .option-label { color: #d4af37; }
     .option-price { font-size: 1.2rem; font-weight: 800; color: #000; line-height: 1.2; }
 
-    /* quantity + stock on same line - NEW STYLING */
+    /* quantity + stock on same line */
     .quantity-stock-row {
       display: flex;
       align-items: center;
@@ -418,6 +677,11 @@
     .feature-item {
       display: flex; align-items: center; gap: 8px; padding: 8px; background: #fafafa;
       border-radius: 14px; border: 2px solid #000;
+      transition: all 0.3s;
+    }
+    .feature-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .feature-icon {
       width: 32px; height: 32px; background: #000; border-radius: 10px;
@@ -496,6 +760,11 @@
     .review-card {
       padding: 16px; background: #fafafa; border-radius: 16px; border: 1px solid #000; margin-bottom: 8px;
       font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+    .review-card:hover {
+      transform: translateX(4px);
+      box-shadow: -4px 4px 0 rgba(212, 175, 55, 0.2);
     }
     .reviewer-avatar {
       width: 36px; height: 36px; background: #000; border-radius: 50%;
@@ -512,6 +781,7 @@
     .related-card {
       text-decoration: none; color: inherit; background: #ffffff; border-radius: 18px;
       padding: 12px; border: 2px solid #000; box-shadow: 3px 3px 0 rgba(0,0,0,0.1); display: block;
+      transition: all 0.3s;
     }
     .related-card:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 rgba(212,175,55,0.25); }
     .related-image { aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; margin-bottom: 8px; border: 1px solid #000; }
@@ -525,6 +795,12 @@
       background: #000; color: #d4af37; padding: 12px 16px; border-radius: 50px;
       display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.85rem; z-index: 1000;
       border: 2px solid #d4af37; box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+      animation: slideInNotification 0.3s ease;
+    }
+    
+    @keyframes slideInNotification {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
 
     /* scroll top */
@@ -535,7 +811,7 @@
       cursor: pointer; opacity: 0; transition: 0.3s; z-index: 90; font-size: 1.2rem;
     }
     .scroll-top.visible { opacity: 1; }
-    .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
+    .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; transform: scale(1.1); }
   </style>
 </head>
 <body>
@@ -563,6 +839,7 @@
   <script>
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
+    let selectedPaymentMethod = 'prepaid';
     
     // Store generated data in sessionStorage to persist across refreshes
     const STORAGE_KEY = 'myessantia_product_data';
@@ -588,14 +865,14 @@
     function getRandomSold() { return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; }
     function getRandomViewers() { return Math.floor(Math.random() * (35 - 8 + 1)) + 8; }
 
-    // Realistic review generator with 12 unique reviews
+    // Realistic review generator with 20 unique reviews
     function generateRealisticReviews(productRating) {
       const reviews = [
         {
           name: 'Priya Sharma',
           city: 'Mumbai',
           avatar: 'PS',
-          comment: 'Absolutely love this product! The quality is exceptional and it arrived well-packaged. Worth every penny.',
+          comment: 'Absolutely love this product! The quality is exceptional and it arrived well-packaged. Worth every penny. The material feels premium and it looks exactly as shown in pictures.',
           rating: 5.0,
           time: 2,
           verified: true
@@ -604,7 +881,7 @@
           name: 'Rahul Verma',
           city: 'Delhi',
           avatar: 'RV',
-          comment: 'Good product for the price. Works as expected. Delivery was quick but the packaging could be better.',
+          comment: 'Good product for the price. Works as expected. Delivery was quick but the packaging could be better. The color is slightly different from what I expected.',
           rating: 4.0,
           time: 5,
           verified: true
@@ -613,7 +890,7 @@
           name: 'Ananya Patel',
           city: 'Bangalore',
           avatar: 'AP',
-          comment: 'Perfect! Exceeded my expectations. The material is premium and it looks exactly as shown in pictures.',
+          comment: 'Perfect! Exceeded my expectations. The material is premium and it looks exactly as shown in pictures. Customer service was also very helpful.',
           rating: 5.0,
           time: 1,
           verified: true
@@ -622,7 +899,7 @@
           name: 'Karthik Iyer',
           city: 'Chennai',
           avatar: 'KI',
-          comment: 'Decent product. Does the job but not amazing. Customer service was helpful though.',
+          comment: 'Decent product. Does the job but not amazing. Customer service was helpful though. Would recommend during sale.',
           rating: 3.5,
           time: 3,
           verified: true
@@ -631,7 +908,7 @@
           name: 'Neha Gupta',
           city: 'Jaipur',
           avatar: 'NG',
-          comment: 'Very disappointed. The product arrived damaged and return process was lengthy.',
+          comment: 'Very disappointed. The product arrived damaged and return process was lengthy. Customer support took 3 days to respond.',
           rating: 2.0,
           time: 7,
           verified: true
@@ -640,7 +917,7 @@
           name: 'Arjun Singh',
           city: 'Lucknow',
           avatar: 'AS',
-          comment: 'Outstanding quality! My second purchase from MyEssantia and they never disappoint.',
+          comment: 'Outstanding quality! My second purchase from MyEssantia and they never disappoint. Fast shipping and great packaging.',
           rating: 5.0,
           time: 4,
           verified: true
@@ -649,7 +926,7 @@
           name: 'Sneha Reddy',
           city: 'Hyderabad',
           avatar: 'SR',
-          comment: 'Good product but slightly overpriced. Would recommend during sale.',
+          comment: 'Good product but slightly overpriced. Would recommend during sale. The quality is good but not worth the full price.',
           rating: 4.0,
           time: 6,
           verified: true
@@ -658,7 +935,7 @@
           name: 'Vikram Mehta',
           city: 'Ahmedabad',
           avatar: 'VM',
-          comment: 'Fast delivery and great quality. The product matches description perfectly.',
+          comment: 'Fast delivery and great quality. The product matches description perfectly. Will buy again from this brand.',
           rating: 4.5,
           time: 2,
           verified: true
@@ -667,7 +944,7 @@
           name: 'Pooja Desai',
           city: 'Pune',
           avatar: 'PD',
-          comment: 'Average product. Nothing special but nothing wrong either.',
+          comment: 'Average product. Nothing special but nothing wrong either. Does what it claims to do. Delivery was on time.',
           rating: 3.0,
           time: 8,
           verified: false
@@ -676,7 +953,7 @@
           name: 'Amit Kumar',
           city: 'Kolkata',
           avatar: 'AK',
-          comment: 'Excellent product! Better than I expected. Will buy again.',
+          comment: 'Excellent product! Better than I expected. Will buy again. The quality is top notch and the design is beautiful.',
           rating: 5.0,
           time: 3,
           verified: true
@@ -685,7 +962,7 @@
           name: 'Divya Nair',
           city: 'Kochi',
           avatar: 'DN',
-          comment: 'Good quality but size runs small. Order one size up.',
+          comment: 'Good quality but size runs small. Order one size up. Otherwise the material is good and it looks premium.',
           rating: 3.5,
           time: 5,
           verified: true
@@ -694,17 +971,89 @@
           name: 'Rajesh Khanna',
           city: 'Chandigarh',
           avatar: 'RK',
-          comment: 'Not worth the money. Quality is average and customer support is slow.',
+          comment: 'Not worth the money. Quality is average and customer support is slow. Would not recommend.',
           rating: 2.5,
           time: 9,
           verified: false
+        },
+        {
+          name: 'Meera Nambiar',
+          city: 'Thiruvananthapuram',
+          avatar: 'MN',
+          comment: 'Beautiful product! The craftsmanship is excellent. Very happy with my purchase. Shipping was fast.',
+          rating: 5.0,
+          time: 2,
+          verified: true
+        },
+        {
+          name: 'Siddharth Malhotra',
+          city: 'Mumbai',
+          avatar: 'SM',
+          comment: 'Good value for money. The product is durable and well-made. Would recommend to friends.',
+          rating: 4.0,
+          time: 4,
+          verified: true
+        },
+        {
+          name: 'Kavya Krishnan',
+          city: 'Chennai',
+          avatar: 'KK',
+          comment: 'Mixed feelings. Product is good but customer service could be better. Had to follow up multiple times.',
+          rating: 3.0,
+          time: 6,
+          verified: true
+        },
+        {
+          name: 'Rohan Joshi',
+          city: 'Pune',
+          avatar: 'RJ',
+          comment: 'Perfect gift for my wife. She loved it! The packaging was beautiful and delivery was ahead of schedule.',
+          rating: 5.0,
+          time: 3,
+          verified: true
+        },
+        {
+          name: 'Shreya Ghosh',
+          city: 'Kolkata',
+          avatar: 'SG',
+          comment: 'Good product but received a defective piece initially. Replacement process was smooth though.',
+          rating: 3.5,
+          time: 7,
+          verified: true
+        },
+        {
+          name: 'Aditya Sharma',
+          city: 'Delhi',
+          avatar: 'AS',
+          comment: 'Excellent quality! Using it for a month now and still looks new. Very happy with the purchase.',
+          rating: 4.5,
+          time: 12,
+          verified: true
+        },
+        {
+          name: 'Tanvi Patel',
+          city: 'Ahmedabad',
+          avatar: 'TP',
+          comment: 'Decent product for the price. Could be better but does the job. Delivery was quick.',
+          rating: 3.0,
+          time: 5,
+          verified: false
+        },
+        {
+          name: 'Nikhil Reddy',
+          city: 'Hyderabad',
+          avatar: 'NR',
+          comment: 'Superb! The quality exceeded my expectations. Will definitely buy more products from this brand.',
+          rating: 5.0,
+          time: 2,
+          verified: true
         }
       ];
       
       // Adjust ratings slightly based on product rating
       return reviews.map(review => ({
         ...review,
-        rating: Math.min(5, Math.max(1, review.rating + (productRating - 4.0) * 0.3))
+        rating: Math.min(5, Math.max(1, review.rating + (productRating - 4.0) * 0.2))
       }));
     }
 
@@ -761,6 +1110,38 @@
         else stars += '<i class="fa-regular fa-star"></i>';
       }
       return stars;
+    }
+
+    // Function to select payment method
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      document.querySelectorAll('.price-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      event.target.closest('.price-option').classList.add('selected');
+      
+      // Scroll to action buttons with highlight effect
+      setTimeout(() => {
+        const actionButtons = document.querySelector('.action-buttons');
+        actionButtons.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        actionButtons.classList.add('scroll-highlight');
+        setTimeout(() => {
+          actionButtons.classList.remove('scroll-highlight');
+        }, 1000);
+      }, 300);
+    }
+
+    // Function to toggle review section
+    function toggleReviews() {
+      const container = document.getElementById('reviews-container');
+      const btn = document.getElementById('view-more-btn');
+      if (container.classList.contains('expanded')) {
+        container.classList.remove('expanded');
+        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
+      } else {
+        container.classList.add('expanded');
+        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
+      }
     }
 
     async function loadProduct() {
@@ -832,7 +1213,7 @@
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
             
-            <!-- RATING CHART - Reduced size -->
+            <!-- RATING CHART -->
             <div class="rating-chart-card">
               <div class="rating-chart-header">
                 <div>
@@ -940,11 +1321,11 @@
               </div>
               <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
               <div class="price-options">
-                <div class="price-option prepaid">
+                <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid')">
                   <div class="option-label">Prepaid</div>
                   <div class="option-price">₹${prepaidPrice}</div>
                 </div>
-                <div class="price-option cod">
+                <div class="price-option cod" onclick="selectPaymentMethod('cod')">
                   <div class="option-label">Cash on Delivery</div>
                   <div class="option-price">₹${codPrice}</div>
                 </div>
@@ -983,7 +1364,7 @@
             </div>
 
             <div class="feature-razor-card">
-              <!-- Razorpay Promise moved to top -->
+              <!-- Razorpay Promise with shimmer effect -->
               <div class="razorpay-promise">
                 <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
                 <div class="promise-content">
@@ -992,7 +1373,7 @@
                 </div>
               </div>
               
-              <!-- Features grid with both items on same line -->
+              <!-- Features grid -->
               <div class="features-grid">
                 <div class="feature-item">
                   <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
@@ -1057,27 +1438,29 @@
               </div>
             </div>
 
-            <!-- mobile reviews - More realistic reviews -->
+            <!-- mobile reviews with view more -->
             <div class="mobile-reviews">
               <div class="reviews-header">
                 <span>Customer Reviews (${reviewCount})</span>
                 <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
               </div>
-              ${reviews.slice(0, 4).map(r => `
-                <div class="review-card">
-                  <div style="display: flex; gap: 10px; margin-bottom: 6px;">
-                    <div class="reviewer-avatar">${r.avatar}</div>
-                    <div>
-                      <div style="font-weight: 700; font-size: 0.85rem;">${r.name}</div>
-                      <div style="font-size: 0.7rem;">${r.city} • ${r.time} days ago ${r.verified ? '✓ Verified' : ''}</div>
+              <div id="reviews-container" class="reviews-container">
+                ${reviews.map(r => `
+                  <div class="review-card">
+                    <div style="display: flex; gap: 10px; margin-bottom: 6px;">
+                      <div class="reviewer-avatar">${r.avatar}</div>
+                      <div>
+                        <div style="font-weight: 700; font-size: 0.85rem;">${r.name}</div>
+                        <div style="font-size: 0.7rem;">${r.city} • ${r.time} days ago ${r.verified ? '✓ Verified' : ''}</div>
+                      </div>
                     </div>
+                    <div class="stars" style="margin-bottom: 6px; font-size: 0.75rem;">${'★'.repeat(Math.floor(r.rating))}${r.rating % 1 >= 0.5 ? '½' : ''}</div>
+                    <p style="font-size: 0.75rem;">${r.comment}</p>
                   </div>
-                  <div class="stars" style="margin-bottom: 6px; font-size: 0.75rem;">${'★'.repeat(Math.floor(r.rating))}${r.rating % 1 >= 0.5 ? '½' : ''}</div>
-                  <p style="font-size: 0.75rem;">${r.comment}</p>
-                </div>
-              `).join('')}
-              <div style="text-align: center; margin-top: 12px;">
-                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.7rem;" onclick="window.location.href='reviews.html?id=${product.id}'">View All Reviews</button>
+                `).join('')}
+              </div>
+              <div id="view-more-btn" class="view-more-btn" onclick="toggleReviews()">
+                <i class="fa-solid fa-chevron-down"></i> View More Reviews
               </div>
             </div>
           </div>
