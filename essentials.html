@@ -539,9 +539,11 @@
       addTestData();
 
       // Filter essentials products
-      const essentialsProducts = (window.products || []).filter(p => 
-        p.category === 'essentials' || p.showOnEssentials === true
-      );
+   const essentialsProducts = (window.products || []).filter(p => 
+  p.category === 'essentials' || 
+  p.category?.toLowerCase() === 'essentials' ||
+  p.showOnEssentials === true
+);
 
       if (essentialsProducts.length === 0) {
         gridContainer.innerHTML = `
