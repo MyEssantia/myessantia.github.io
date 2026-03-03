@@ -34,8 +34,8 @@
       background: #fcfaf7; 
       color: #1e1e1e; 
       overflow-x: hidden;
-      line-height: 1.5;
-      padding: 20px;
+      line-height: 1.4;
+      padding: 12px;
     }
     
     .admin-container { 
@@ -44,30 +44,30 @@
       margin: 0 auto; 
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
     }
     
     @media (min-width: 640px) { 
-      body { padding: 24px 32px; }
+      body { padding: 16px 20px; }
     }
     
     /* ===== BUTTONS ===== */
     .btn { 
-      border-radius: 60px; 
-      padding: 0.85rem 2.2rem; 
+      border-radius: 40px; 
+      padding: 0.6rem 1.5rem; 
       font-weight: 600; 
-      font-size: 1rem;
+      font-size: 0.85rem;
       text-transform: uppercase; 
-      letter-spacing: 0.5px; 
+      letter-spacing: 0.3px; 
       transition: all 0.2s;
       display: inline-flex; 
       align-items: center; 
       justify-content: center; 
-      gap: 8px;
+      gap: 6px;
       border: 2px solid transparent; 
       cursor: pointer;
       text-decoration: none;
-      min-height: 48px;
+      min-height: 40px;
     }
     
     .btn-primary { 
@@ -99,23 +99,23 @@
       cursor: not-allowed;
     }
     
-    /* ===== HEADER ===== */
+    /* ===== COMPACT HEADER ===== */
     .header {
       background: #ffffff;
-      padding: 20px 24px;
-      border-radius: 40px;
+      padding: 12px 16px;
+      border-radius: 30px;
       border: 2px solid #000;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 10px;
     }
 
     .brand h1 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.8rem;
+      font-size: 1.3rem;
       font-weight: 800;
       text-transform: uppercase;
       line-height: 1.2;
@@ -128,9 +128,9 @@
     }
 
     .brand span {
-      font-size: 0.8rem;
+      font-size: 0.65rem;
       color: #666;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       text-transform: uppercase;
       font-weight: 600;
     }
@@ -138,34 +138,34 @@
     .admin-badge {
       background: #000;
       color: #d4af37;
-      padding: 8px 24px;
-      border-radius: 60px;
+      padding: 4px 12px;
+      border-radius: 40px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
       border: 2px solid #d4af37;
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
     }
 
     .admin-info {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
     }
 
     .admin-avatar {
-      width: 48px;
-      height: 48px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1rem;
       color: #d4af37;
-      border: 3px solid #d4af37;
+      border: 2px solid #d4af37;
       overflow: hidden;
     }
 
@@ -178,26 +178,27 @@
         display: block;
       }
       .admin-details .name {
-        font-weight: 800;
+        font-weight: 700;
         color: #000;
+        font-size: 0.85rem;
       }
       .admin-details .email {
-        font-size: 0.8rem;
+        font-size: 0.65rem;
         color: #666;
         text-transform: uppercase;
       }
     }
 
-    /* ===== QUICK ACTIONS ===== */
+    /* ===== COMPACT QUICK ACTIONS ===== */
     .quick-actions {
       background: #ffffff;
-      padding: 24px;
-      border-radius: 40px;
+      padding: 16px;
+      border-radius: 30px;
       border: 2px solid #000;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
 
     @media (min-width: 600px) {
@@ -211,12 +212,12 @@
     .search-bar {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       background: #fcfaf7;
-      padding: 8px 20px;
-      border-radius: 60px;
+      padding: 6px 16px;
+      border-radius: 40px;
       border: 2px solid #000;
-      min-height: 56px;
+      min-height: 44px;
       transition: all 0.2s;
       flex: 1;
       max-width: 500px;
@@ -224,12 +225,12 @@
 
     .search-bar:focus-within {
       border-color: #d4af37;
-      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     .search-bar i {
       color: #d4af37;
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
 
     .search-bar input {
@@ -237,28 +238,28 @@
       outline: none;
       width: 100%;
       background: transparent;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-family: 'Inter', sans-serif;
     }
 
     .action-buttons {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .quick-action-btn {
       background: #fff;
       border: 2px solid #000;
-      padding: 12px 24px;
-      border-radius: 60px;
+      padding: 8px 16px;
+      border-radius: 40px;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 0.9rem;
-      min-height: 48px;
+      font-size: 0.8rem;
+      min-height: 40px;
       transition: all 0.2s;
       color: #000;
       text-transform: uppercase;
@@ -268,60 +269,56 @@
       background: #000;
       color: #d4af37;
       border-color: #d4af37;
-      transform: translateY(-2px);
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      transform: translateY(-1px);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
     }
 
     .quick-action-btn i {
       color: #d4af37;
-      transition: color 0.2s;
+      font-size: 0.8rem;
     }
 
-    .quick-action-btn:hover i {
-      color: #d4af37;
-    }
-
-    /* ===== STATS GRID ===== */
+    /* ===== COMPACT STATS GRID ===== */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+      gap: 12px;
     }
 
     .stat-card {
       background: #ffffff;
-      padding: 20px;
-      border-radius: 30px;
+      padding: 12px;
+      border-radius: 20px;
       border: 2px solid #000;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       transition: all 0.2s;
     }
 
     .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
       border-color: #d4af37;
     }
 
     .stat-icon {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       background: #000;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: 1.2rem;
       color: #d4af37;
-      border: 3px solid #d4af37;
+      border: 2px solid #d4af37;
       flex-shrink: 0;
     }
 
     .stat-info h3 {
-      font-size: 2rem;
+      font-size: 1.4rem;
       font-weight: 800;
       line-height: 1.2;
       color: #000;
@@ -330,34 +327,34 @@
 
     .stat-info p {
       color: #666;
-      font-size: 0.8rem;
+      font-size: 0.6rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
-    /* ===== PRODUCT FORM ===== */
+    /* ===== COMPACT PRODUCT FORM ===== */
     .product-form {
       background: #ffffff;
-      border-radius: 40px;
+      border-radius: 30px;
       border: 2px solid #000;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
       overflow: hidden;
     }
 
     .form-header {
       background: #000;
-      padding: 24px 32px;
-      border-bottom: 4px solid #d4af37;
+      padding: 16px 20px;
+      border-bottom: 3px solid #d4af37;
     }
 
     .form-header .form-title {
       font-family: 'Montserrat', sans-serif;
-      font-size: 2rem;
+      font-size: 1.4rem;
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       color: #fff;
       text-transform: uppercase;
     }
@@ -365,62 +362,69 @@
     .form-header .form-title i {
       color: #d4af37;
       background: #fff;
-      padding: 10px;
+      padding: 6px;
       border-radius: 50%;
       border: 2px solid #d4af37;
+      font-size: 1rem;
     }
 
     .form-header .form-subtitle {
       color: #d4af37;
-      margin-top: 8px;
-      font-size: 0.9rem;
+      margin-top: 4px;
+      font-size: 0.7rem;
       font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
     .form-body {
-      padding: 32px;
+      padding: 20px;
     }
 
     .form-section {
       background: #fcfaf7;
-      border-radius: 30px;
-      padding: 24px;
-      margin-bottom: 24px;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
       border: 2px solid #000;
       transition: all 0.2s;
     }
 
     .form-section:hover {
       border-color: #d4af37;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
     }
 
     .form-section-title {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 1.2rem;
+      gap: 8px;
+      font-size: 1rem;
       font-weight: 800;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       color: #000;
-      padding-bottom: 12px;
-      border-bottom: 3px solid #d4af37;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #d4af37;
       text-transform: uppercase;
       font-family: 'Montserrat', sans-serif;
     }
 
     .form-section-title i {
       color: #d4af37;
-      font-size: 1.4rem;
+      font-size: 1.1rem;
     }
 
     .form-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 500px) {
+      .form-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     .form-group {
@@ -429,18 +433,19 @@
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       color: #000;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
     }
 
     .form-group label i {
       color: #d4af37;
-      margin-right: 6px;
-      width: 20px;
+      margin-right: 4px;
+      width: 16px;
+      font-size: 0.7rem;
     }
 
     .input-wrapper {
@@ -451,9 +456,9 @@
 
     .input-wrapper i.input-icon {
       position: absolute;
-      left: 16px;
+      left: 12px;
       color: #d4af37;
-      font-size: 1rem;
+      font-size: 0.8rem;
       z-index: 2;
     }
 
@@ -461,12 +466,12 @@
     .input-wrapper select,
     .input-wrapper textarea {
       width: 100%;
-      padding: 14px 18px;
-      padding-left: 48px;
+      padding: 10px 12px;
+      padding-left: 36px;
       border: 2px solid #000;
-      border-radius: 20px;
+      border-radius: 16px;
       font-family: 'Inter', sans-serif;
-      font-size: 1rem;
+      font-size: 0.85rem;
       background: #fff;
       transition: all 0.2s;
     }
@@ -476,49 +481,36 @@
     .input-wrapper textarea:focus {
       outline: none;
       border-color: #d4af37;
-      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
 
     .input-wrapper textarea {
-      padding-left: 18px;
+      padding-left: 12px;
       resize: vertical;
-      min-height: 100px;
+      min-height: 60px;
     }
 
     .input-wrapper select {
       appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 16px center;
-      background-size: 16px;
+      background-position: right 12px center;
+      background-size: 12px;
     }
 
-    .field-hint {
-      font-size: 0.75rem;
-      color: #666;
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .field-hint i {
-      color: #d4af37;
-    }
-
-    /* ===== TOGGLE SWITCH ===== */
+    /* ===== COMPACT TOGGLE ===== */
     .high-demand-toggle {
       display: flex;
       align-items: center;
-      padding: 8px 0;
+      padding: 4px 0;
     }
 
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 50px;
-      height: 26px;
-      margin-right: 12px;
+      width: 44px;
+      height: 22px;
+      margin-right: 10px;
     }
 
     .toggle-switch input {
@@ -536,15 +528,15 @@
       bottom: 0;
       background-color: #ccc;
       transition: .3s;
-      border-radius: 26px;
+      border-radius: 22px;
       border: 2px solid #000;
     }
 
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 18px;
-      width: 18px;
+      height: 14px;
+      width: 14px;
       left: 2px;
       bottom: 2px;
       background-color: white;
@@ -558,42 +550,48 @@
     }
 
     input:checked + .toggle-slider:before {
-      transform: translateX(24px);
+      transform: translateX(22px);
       background-color: #000;
     }
 
     .toggle-label {
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       text-transform: uppercase;
     }
 
     .toggle-label i {
       color: #d4af37;
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
-    /* ===== COMPACT MEDIA SECTION ===== */
+    /* ===== COMPACT MEDIA SECTION - 3 PER ROW ON MOBILE ===== */
     .media-section-compact {
       background: #fff;
-      border-radius: 20px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 12px;
       border: 2px solid #000;
     }
 
     .media-grid-compact {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin-bottom: 12px;
     }
 
+    @media (min-width: 500px) {
+      .media-grid-compact {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
     .media-item-compact {
       aspect-ratio: 1;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 2px solid #000;
       overflow: hidden;
       position: relative;
@@ -622,7 +620,7 @@
 
     .media-add-btn {
       aspect-ratio: 1;
-      border-radius: 12px;
+      border-radius: 10px;
       border: 2px dashed #d4af37;
       background: #fcfaf7;
       display: flex;
@@ -632,13 +630,13 @@
       cursor: pointer;
       transition: all 0.2s;
       color: #d4af37;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       text-align: center;
       padding: 4px;
     }
 
     .media-add-btn i {
-      font-size: 1.2rem;
+      font-size: 1rem;
       margin-bottom: 2px;
     }
 
@@ -654,9 +652,9 @@
       right: 2px;
       background: #000;
       color: #d4af37;
-      padding: 2px 4px;
-      border-radius: 8px;
-      font-size: 0.5rem;
+      padding: 1px 3px;
+      border-radius: 4px;
+      font-size: 0.45rem;
       border: 1px solid #d4af37;
     }
 
@@ -664,15 +662,15 @@
       position: absolute;
       top: 2px;
       right: 2px;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       background: #d4af37;
       color: #000;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.6rem;
+      font-size: 0.5rem;
       cursor: pointer;
       border: 1px solid #000;
       opacity: 0;
@@ -685,8 +683,15 @@
 
     .media-upload-row {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       margin-top: 8px;
+    }
+
+    @media (min-width: 500px) {
+      .media-upload-row {
+        flex-direction: row;
+      }
     }
 
     .media-url-input {
@@ -704,7 +709,7 @@
     }
 
     .media-upload-btn {
-      padding: 8px 16px;
+      padding: 8px 12px;
       background: #000;
       color: #d4af37;
       border: 2px solid #000;
@@ -714,6 +719,10 @@
       text-transform: uppercase;
       cursor: pointer;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
 
     .media-upload-btn:hover {
@@ -721,8 +730,39 @@
       color: #000;
     }
 
+    .media-file-input {
+      display: none;
+    }
+
+    .media-file-label {
+      padding: 8px 12px;
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .media-file-label:hover {
+      background: #000;
+      color: #d4af37;
+      border-color: #d4af37;
+    }
+
+    .media-file-label i {
+      color: #d4af37;
+    }
+
     .media-hint {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: #666;
       margin-top: 8px;
       display: flex;
@@ -733,54 +773,33 @@
     /* ===== COMPACT PAGE VISIBILITY SECTION ===== */
     .visibility-section-compact {
       background: #fff;
-      border-radius: 20px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 12px;
       border: 2px solid #000;
     }
 
     .flags-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
       border-bottom: 1px solid #000;
     }
 
     .flag-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
+      gap: 4px;
+      padding: 4px 10px;
       background: #fcfaf7;
       border: 2px solid #000;
-      border-radius: 40px;
-      font-size: 0.7rem;
+      border-radius: 30px;
+      font-size: 0.65rem;
       font-weight: 700;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
-    }
-
-    .flag-chip input[type="checkbox"] {
-      display: none;
-    }
-
-    .flag-chip input[type="checkbox"]:checked + label {
-      background: #000;
-      color: #d4af37;
-    }
-
-    .flag-chip label {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .flag-chip i {
-      color: #d4af37;
-      font-size: 0.8rem;
     }
 
     .flag-chip.active {
@@ -789,15 +808,16 @@
       border-color: #d4af37;
     }
 
-    .flag-chip.active i {
+    .flag-chip i {
       color: #d4af37;
+      font-size: 0.7rem;
     }
 
     .pages-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin: 12px 0;
+      gap: 6px;
+      margin: 10px 0;
     }
 
     .page-chip-compact {
@@ -813,15 +833,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 4px;
+      gap: 4px;
+      padding: 6px 4px;
       background: #fcfaf7;
-      border-radius: 40px;
+      border-radius: 30px;
       cursor: pointer;
       transition: all 0.2s;
       border: 2px solid #000;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
     }
 
@@ -833,7 +853,7 @@
 
     .page-chip-compact label i {
       color: #d4af37;
-      font-size: 0.8rem;
+      font-size: 0.7rem;
     }
 
     .newin-compact-badge {
@@ -841,48 +861,61 @@
       align-items: center;
       justify-content: space-between;
       background: #fcfaf7;
-      padding: 8px 12px;
-      border-radius: 40px;
+      padding: 6px 10px;
+      border-radius: 30px;
       border: 2px solid #d4af37;
-      margin: 12px 0 8px;
-      font-size: 0.7rem;
+      margin: 10px 0 6px;
+      font-size: 0.65rem;
       font-weight: 700;
     }
 
     .newin-compact-timer {
       background: #000;
       color: #d4af37;
-      padding: 2px 8px;
-      border-radius: 30px;
-      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-size: 0.6rem;
       border: 1px solid #d4af37;
     }
 
     .info-note-compact {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
+      gap: 6px;
+      padding: 6px 10px;
       background: #fcfaf7;
-      border-radius: 20px;
-      font-size: 0.65rem;
+      border-radius: 16px;
+      font-size: 0.6rem;
       color: #000;
       border: 1px solid #000;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .info-note-compact i {
       color: #d4af37;
+      font-size: 0.7rem;
+    }
+
+    /* ===== COMPACT FORM ACTIONS ===== */
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .form-actions .btn {
+      flex: 1;
+      padding: 10px;
       font-size: 0.8rem;
     }
 
     /* ===== PRODUCTS TABLE - COMPACT MOBILE CARDS ===== */
     .products-table {
       background: #ffffff;
-      border-radius: 40px;
-      padding: 24px;
+      border-radius: 30px;
+      padding: 16px;
       border: 2px solid #000;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
     }
 
     .table-header {
@@ -890,17 +923,17 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .table-header h3 {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.8rem;
+      font-size: 1.3rem;
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
       text-transform: uppercase;
     }
 
@@ -911,11 +944,12 @@
     #product-count {
       background: #000;
       color: #d4af37;
-      padding: 8px 24px;
-      border-radius: 60px;
+      padding: 4px 16px;
+      border-radius: 40px;
       font-weight: 700;
       border: 2px solid #d4af37;
       white-space: nowrap;
+      font-size: 0.8rem;
     }
 
     /* Desktop table */
@@ -927,24 +961,25 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
+      min-width: 800px;
     }
 
     th {
       text-align: left;
-      padding: 16px 20px;
+      padding: 12px 16px;
       background: #000;
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: #d4af37;
       text-transform: uppercase;
-      border-bottom: 3px solid #d4af37;
+      border-bottom: 2px solid #d4af37;
     }
 
     td {
-      padding: 16px 20px;
+      padding: 12px 16px;
       border-bottom: 2px solid #000;
       vertical-align: middle;
+      font-size: 0.8rem;
     }
 
     tr:hover {
@@ -952,13 +987,13 @@
     }
 
     .product-thumb {
-      width: 60px;
-      height: 60px;
-      border-radius: 16px;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
       background-size: cover;
       background-position: center;
-      border: 3px solid #000;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -969,9 +1004,9 @@
     }
 
     .page-badge {
-      padding: 4px 10px;
-      border-radius: 40px;
-      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 30px;
+      font-size: 0.6rem;
       font-weight: 700;
       display: inline-block;
       border: 2px solid #000;
@@ -985,12 +1020,12 @@
     .newin-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
       background: #d4af37;
       color: #000;
-      padding: 3px 10px;
-      border-radius: 40px;
-      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 30px;
+      font-size: 0.6rem;
       font-weight: 800;
       border: 2px solid #000;
       text-transform: uppercase;
@@ -999,12 +1034,12 @@
     .high-demand-badge-table {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
       background: #000;
       color: #d4af37;
-      padding: 3px 10px;
-      border-radius: 40px;
-      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 30px;
+      font-size: 0.6rem;
       font-weight: 800;
       border: 2px solid #d4af37;
       text-transform: uppercase;
@@ -1012,23 +1047,23 @@
 
     .action-btns {
       display: flex;
-      gap: 8px;
+      gap: 4px;
       flex-wrap: wrap;
     }
 
     .action-btns button {
-      padding: 8px 12px;
+      padding: 6px 8px;
       border: 2px solid #000;
-      border-radius: 40px;
+      border-radius: 30px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       background: #fff;
       color: #000;
-      font-size: 0.85rem;
+      font-size: 0.7rem;
     }
 
     .action-btns button:hover:not(:disabled) {
@@ -1045,34 +1080,34 @@
     .product-cards {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .product-item {
       background: #fcfaf7;
       border: 2px solid #000;
-      border-radius: 20px;
-      padding: 12px;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
       transition: all 0.2s;
     }
 
     .product-item:hover {
       transform: translateY(-1px);
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
       border-color: #d4af37;
     }
 
     .product-item-header {
       display: flex;
-      gap: 10px;
-      margin-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 6px;
     }
 
     .product-item-thumb {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
+      width: 45px;
+      height: 45px;
+      border-radius: 10px;
       background-size: cover;
       background-position: center;
       border: 2px solid #000;
@@ -1088,7 +1123,7 @@
 
     .product-item-title {
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       margin-bottom: 2px;
       display: flex;
       flex-wrap: wrap;
@@ -1107,11 +1142,11 @@
     }
 
     .product-item-category {
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       color: #666;
       text-transform: uppercase;
       font-weight: 600;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
     .product-item-flags {
@@ -1123,16 +1158,16 @@
 
     .product-item-flags .newin-badge,
     .product-item-flags .high-demand-badge-table {
-      padding: 2px 6px;
-      font-size: 0.55rem;
+      padding: 1px 4px;
+      font-size: 0.5rem;
     }
 
     .product-item-details {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 8px 0;
-      padding: 8px 0;
+      gap: 6px;
+      margin: 6px 0;
+      padding: 6px 0;
       border-top: 1px solid #000;
       border-bottom: 1px solid #000;
     }
@@ -1143,7 +1178,7 @@
     }
 
     .product-item-detail .label {
-      font-size: 0.55rem;
+      font-size: 0.5rem;
       text-transform: uppercase;
       color: #666;
       font-weight: 600;
@@ -1153,12 +1188,12 @@
 
     .product-item-detail .value {
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: #000;
     }
 
     .product-item-detail .value small {
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       font-weight: 600;
       color: #666;
     }
@@ -1167,40 +1202,40 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
-      margin: 6px 0;
+      margin: 4px 0;
     }
 
     .product-item-pages .page-badge {
-      padding: 2px 6px;
-      font-size: 0.55rem;
+      padding: 2px 4px;
+      font-size: 0.5rem;
     }
 
     .product-item-actions {
       display: flex;
-      gap: 6px;
-      margin-top: 8px;
+      gap: 4px;
+      margin-top: 6px;
     }
 
     .product-item-actions button {
       flex: 1;
-      padding: 8px 4px;
+      padding: 6px 2px;
       border: 2px solid #000;
-      border-radius: 30px;
+      border-radius: 25px;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 2px;
       background: #fff;
-      min-height: 32px;
+      min-height: 28px;
     }
 
     .product-item-actions button i {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
     }
 
     .product-item-actions button:hover {
@@ -1211,11 +1246,11 @@
 
     .stock-badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 30px;
+      padding: 2px 6px;
+      border-radius: 20px;
       font-weight: 700;
       border: 2px solid #000;
-      font-size: 0.7rem;
+      font-size: 0.6rem;
     }
 
     .stock-badge.low {
@@ -1247,71 +1282,48 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .products-table {
-        padding: 16px;
-      }
-      
-      .table-header h3 {
-        font-size: 1.4rem;
-      }
-      
-      #product-count {
-        padding: 6px 16px;
-        font-size: 0.9rem;
-      }
-      
-      .product-item-actions button {
-        font-size: 0.65rem;
-        padding: 6px 2px;
-      }
-      
-      .product-item-actions button i {
-        display: none;
-      }
-      
-      .pages-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     /* ===== EMPTY STATE ===== */
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 40px 16px;
       color: #666;
       border: 2px dashed #000;
-      border-radius: 40px;
+      border-radius: 30px;
       background: #fcfaf7;
     }
 
     .empty-state i {
-      font-size: 4rem;
+      font-size: 3rem;
       color: #d4af37;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .empty-state h3 {
-      font-size: 2rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-family: 'Montserrat', sans-serif;
       text-transform: uppercase;
+    }
+
+    .empty-state p {
+      font-size: 0.8rem;
     }
 
     /* ===== NOTIFICATION ===== */
     .notification {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 16px 32px;
-      border-radius: 60px;
+      top: 10px;
+      right: 10px;
+      padding: 12px 20px;
+      border-radius: 40px;
       color: #fff;
       font-weight: 700;
       z-index: 9999;
       animation: slideInRight 0.3s ease;
       border: 2px solid #000;
       text-transform: uppercase;
+      font-size: 0.8rem;
     }
 
     .notification.success { background: #000; color: #d4af37; border-color: #d4af37; }
@@ -1323,26 +1335,20 @@
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
-
-    @media (max-width: 640px) {
-      body { padding: 12px; }
-      .form-body { padding: 20px; }
-      .form-header .form-title { font-size: 1.5rem; }
-    }
   </style>
 </head>
 <body>
 
 <div class="admin-container" id="admin-content">
-    <!-- Header -->
+    <!-- Compact Header -->
     <div class="header">
       <div class="brand">
         <h1><strong>MyEssantia</strong> · admin</h1>
         <span>product manager</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
         <div class="admin-badge">
-          <i class="fa-solid fa-crown"></i> master admin
+          <i class="fa-solid fa-crown"></i> admin
         </div>
         <div class="admin-info">
           <div class="admin-avatar">
@@ -1356,7 +1362,7 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- Compact Quick Actions -->
     <div class="quick-actions">
       <div class="search-bar">
         <i class="fa-solid fa-search"></i>
@@ -1372,53 +1378,53 @@
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Compact Stats Cards -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
         <div class="stat-info">
           <h3 id="total-products">0</h3>
-          <p>total products</p>
+          <p>total</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
         <div class="stat-info">
           <h3 id="newin-products">0</h3>
-          <p>new in (24h)</p>
+          <p>new in</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
         <div class="stat-info">
           <h3 id="high-demand-products">0</h3>
-          <p>high demand</p>
+          <p>high</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-cubes"></i></div>
         <div class="stat-info">
           <h3 id="total-stock">0</h3>
-          <p>total stock</p>
+          <p>stock</p>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
         <div class="stat-info">
           <h3 id="total-categories">3</h3>
-          <p>categories</p>
+          <p>cats</p>
         </div>
       </div>
     </div>
 
-    <!-- Product Form -->
+    <!-- Compact Product Form -->
     <div class="product-form">
       <div class="form-header">
         <div class="form-title">
           <i class="fa-solid fa-plus-circle"></i>
-          <span id="form-title">add new product</span>
+          <span id="form-title">add product</span>
         </div>
-        <div class="form-subtitle">fill in the details below to create a stunning product</div>
+        <div class="form-subtitle">fill details below</div>
       </div>
 
       <div class="form-body">
@@ -1426,18 +1432,18 @@
           <input type="hidden" id="product-id">
           <input type="hidden" id="product-creation-date">
 
-          <!-- Section 1: Basic Information -->
+          <!-- Section 1: Basic Information - COMPACT -->
           <div class="form-section">
             <div class="form-section-title">
               <i class="fa-solid fa-info-circle"></i>
-              <span>basic information</span>
+              <span>basic info</span>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label><i class="fa-solid fa-tag"></i> product title</label>
+                <label><i class="fa-solid fa-tag"></i> title</label>
                 <div class="input-wrapper">
                   <i class="input-icon fa-solid fa-pen"></i>
-                  <input type="text" id="product-title" placeholder="e.g. premium leather cardholder" required>
+                  <input type="text" id="product-title" placeholder="product title" required>
                 </div>
               </div>
               <div class="form-group">
@@ -1455,7 +1461,7 @@
                 <div class="input-wrapper">
                   <i class="input-icon fa-solid fa-folder"></i>
                   <select id="product-category" required>
-                    <option value="">select category</option>
+                    <option value="">select</option>
                     <option value="accessories">accessories</option>
                     <option value="essentials">essentials</option>
                     <option value="newarrival">new arrivals</option>
@@ -1463,16 +1469,16 @@
                 </div>
               </div>
               <div class="form-group">
-                <label><i class="fa-solid fa-cubes"></i> stock quantity</label>
+                <label><i class="fa-solid fa-cubes"></i> stock</label>
                 <div class="input-wrapper">
                   <i class="input-icon fa-solid fa-boxes"></i>
-                  <input type="number" id="product-stock" placeholder="e.g. 50" value="10" min="0">
+                  <input type="number" id="product-stock" placeholder="qty" value="10" min="0">
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Section 2: Pricing & Ratings -->
+          <!-- Section 2: Pricing & Ratings - COMPACT -->
           <div class="form-section">
             <div class="form-section-title">
               <i class="fa-solid fa-chart-line"></i>
@@ -1480,14 +1486,14 @@
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label><i class="fa-solid fa-indian-rupee-sign"></i> price (₹)</label>
+                <label><i class="fa-solid fa-indian-rupee-sign"></i> price</label>
                 <div class="input-wrapper">
                   <i class="input-icon fa-solid fa-currency"></i>
-                  <input type="number" id="product-price" step="0.01" min="0" placeholder="1999.99" required>
+                  <input type="number" id="product-price" step="0.01" min="0" placeholder="1999" required>
                 </div>
               </div>
               <div class="form-group">
-                <label><i class="fa-solid fa-star"></i> rating (0-5)</label>
+                <label><i class="fa-solid fa-star"></i> rating</label>
                 <div class="input-wrapper">
                   <i class="input-icon fa-solid fa-star"></i>
                   <input type="number" id="product-rating" step="0.1" min="0" max="5" placeholder="4.5" required>
@@ -1496,30 +1502,36 @@
             </div>
           </div>
 
-          <!-- Section 3: Media - Unified Upload -->
+          <!-- Section 3: Media - Unified Upload - 3 PER ROW ON MOBILE -->
           <div class="form-section">
             <div class="form-section-title">
               <i class="fa-solid fa-images"></i>
-              <span>product media</span>
+              <span>media</span>
             </div>
             <div class="media-section-compact">
               <div class="media-grid-compact" id="media-grid-compact"></div>
               
               <div class="media-upload-row">
-                <input type="text" class="media-url-input" id="media-url-input" placeholder="enter image/video URL...">
-                <button type="button" class="media-upload-btn" onclick="addMediaFromUrl()">
-                  <i class="fa-solid fa-plus"></i> add
-                </button>
+                <input type="text" class="media-url-input" id="media-url-input" placeholder="enter URL...">
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" class="media-upload-btn" onclick="addMediaFromUrl()">
+                    <i class="fa-solid fa-link"></i> add
+                  </button>
+                  <label class="media-file-label">
+                    <i class="fa-solid fa-upload"></i> file
+                    <input type="file" class="media-file-input" id="media-file-input" accept="image/*,video/*" multiple onchange="handleFileUpload(this.files)">
+                  </label>
+                </div>
               </div>
               
               <div class="media-hint">
                 <i class="fa-solid fa-info-circle"></i>
-                <span>click on any media to set as primary. max 8 files. supports images & videos.</span>
+                <span>click to set primary. max 8. images/videos.</span>
               </div>
             </div>
           </div>
 
-          <!-- Section 4: Descriptions -->
+          <!-- Section 4: Descriptions - COMPACT -->
           <div class="form-section">
             <div class="form-section-title">
               <i class="fa-solid fa-align-left"></i>
@@ -1527,25 +1539,25 @@
             </div>
             <div class="form-row">
               <div class="form-group full-width">
-                <label><i class="fa-solid fa-paragraph"></i> short description</label>
+                <label><i class="fa-solid fa-paragraph"></i> short</label>
                 <div class="input-wrapper">
-                  <textarea id="product-short-desc" rows="2" placeholder="brief description for product cards..."></textarea>
+                  <textarea id="product-short-desc" rows="2" placeholder="brief description..."></textarea>
                 </div>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group full-width">
-                <label><i class="fa-solid fa-align-justify"></i> full description</label>
+                <label><i class="fa-solid fa-align-justify"></i> full</label>
                 <div class="input-wrapper">
-                  <textarea id="product-description" rows="4" placeholder="detailed product description..."></textarea>
+                  <textarea id="product-description" rows="3" placeholder="detailed description..."></textarea>
                 </div>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group full-width">
-                <label><i class="fa-solid fa-list"></i> specifications (one per line)</label>
+                <label><i class="fa-solid fa-list"></i> specs</label>
                 <div class="input-wrapper">
-                  <textarea id="product-specs" rows="3" placeholder="e.g. material: premium leather&#10;dimensions: 10cm x 7cm&#10;warranty: 1 year"></textarea>
+                  <textarea id="product-specs" rows="2" placeholder="material: leather..."></textarea>
                 </div>
               </div>
             </div>
@@ -1555,18 +1567,16 @@
           <div class="form-section">
             <div class="form-section-title">
               <i class="fa-solid fa-eye"></i>
-              <span>visibility & flags</span>
+              <span>visibility</span>
             </div>
             
             <div class="visibility-section-compact">
               <!-- Special Flags Row -->
               <div class="flags-row">
                 <div class="flag-chip" onclick="toggleHighDemand()" id="high-demand-chip">
-                  <input type="checkbox" id="product-high-demand" style="display:none;">
-                  <label>
-                    <i class="fa-solid fa-fire"></i> high demand
-                  </label>
+                  <i class="fa-solid fa-fire"></i> high demand
                 </div>
+                <input type="checkbox" id="product-high-demand" style="display:none;">
               </div>
 
               <!-- Pages Grid -->
@@ -1577,15 +1587,15 @@
                 </div>
                 <div class="page-chip-compact">
                   <input type="checkbox" id="show-on-accessories">
-                  <label for="show-on-accessories"><i class="fa-solid fa-bag-shopping"></i> accessories</label>
+                  <label for="show-on-accessories"><i class="fa-solid fa-bag-shopping"></i> acc</label>
                 </div>
                 <div class="page-chip-compact">
                   <input type="checkbox" id="show-on-essentials">
-                  <label for="show-on-essentials"><i class="fa-solid fa-bolt"></i> essentials</label>
+                  <label for="show-on-essentials"><i class="fa-solid fa-bolt"></i> ess</label>
                 </div>
                 <div class="page-chip-compact">
                   <input type="checkbox" id="show-on-new">
-                  <label for="show-on-new"><i class="fa-solid fa-star"></i> new in</label>
+                  <label for="show-on-new"><i class="fa-solid fa-star"></i> new</label>
                 </div>
               </div>
 
@@ -1600,17 +1610,15 @@
               <!-- Info Note -->
               <div class="info-note-compact">
                 <i class="fa-solid fa-info-circle"></i>
-                <span id="auto-assign-message">
-                  new: 24h auto · category auto-sync · home manual
-                </span>
+                <span id="auto-assign-message">new:24h · cat auto · home manual</span>
               </div>
             </div>
           </div>
 
-          <!-- Form Actions -->
-          <div class="form-actions" style="display: flex; gap: 16px; margin-top: 24px;">
+          <!-- Form Actions - COMPACT -->
+          <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="save-product-btn">
-              <i class="fa-solid fa-save"></i> save product
+              <i class="fa-solid fa-save"></i> save
             </button>
             <button type="button" class="btn btn-outline" id="cancel-edit">
               <i class="fa-solid fa-times"></i> cancel
@@ -1620,18 +1628,18 @@
       </div>
     </div>
 
-    <!-- Products Table -->
+    <!-- Products Table - COMPACT -->
     <div class="products-table">
       <div class="table-header">
-        <h3><i class="fa-solid fa-list"></i> product inventory</h3>
+        <h3><i class="fa-solid fa-list"></i> inventory</h3>
         <span id="product-count"></span>
       </div>
 
       <div id="products-list"></div>
       <div id="empty-products" class="empty-state" style="display:none;">
         <i class="fa-solid fa-box-open"></i>
-        <h3>no products yet</h3>
-        <p>add your first product using the form above.</p>
+        <h3>no products</h3>
+        <p>add your first product above</p>
       </div>
     </div>
   </div>
@@ -1654,9 +1662,8 @@
 
     // ========== GLOBAL VARIABLES ==========
     let products = [];
-    let productMedia = []; // Array of {url, type} - unified media array
+    let productMedia = []; // Array of {url, type, file} - unified media array
     let selectedMediaIndex = 0; // Primary media index
-    let currentMediaTab = 'images';
     let newInCheckInterval = null;
 
     // DOM Elements
@@ -1756,7 +1763,7 @@
         html += `
           <div class="media-add-btn" onclick="document.getElementById('media-url-input').focus()">
             <i class="fa-solid fa-plus"></i>
-            <span>add media</span>
+            <span>add</span>
           </div>
         `;
       }
@@ -1767,6 +1774,35 @@
     window.selectMedia = function(index) {
       selectedMediaIndex = index;
       renderMediaGridCompact();
+    };
+
+    // Handle file upload from device
+    window.handleFileUpload = function(files) {
+      for (let i = 0; i < files.length; i++) {
+        if (productMedia.length >= 8) {
+          showNotification('maximum 8 files allowed', 'error');
+          break;
+        }
+        
+        const file = files[i];
+        const url = URL.createObjectURL(file);
+        const isVideo = file.type.startsWith('video/');
+        
+        productMedia.push({
+          url: url,
+          type: isVideo ? 'video' : 'image',
+          file: file,
+          isBlob: true
+        });
+      }
+      
+      // Auto-select first media as primary if this is the first one
+      if (productMedia.length > 0 && selectedMediaIndex === undefined) {
+        selectedMediaIndex = 0;
+      }
+      
+      renderMediaGridCompact();
+      showNotification('files added successfully!', 'success');
     };
 
     window.addMediaFromUrl = function() {
@@ -1816,6 +1852,11 @@
     };
 
     window.removeMedia = function(index) {
+      // Revoke blob URL if it's a local file
+      if (productMedia[index].isBlob) {
+        URL.revokeObjectURL(productMedia[index].url);
+      }
+      
       productMedia.splice(index, 1);
       
       // Adjust selected index if needed
@@ -1852,7 +1893,7 @@
             ...data,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-          showNotification('product updated successfully!', 'success');
+          showNotification('product updated!', 'success');
         } else {
           // Add new product
           await db.collection('products').add({
@@ -1860,7 +1901,7 @@
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-          showNotification('product added successfully!', 'success');
+          showNotification('product added!', 'success');
         }
         loadProducts(); // Reload products
         resetForm();
@@ -1873,7 +1914,7 @@
     async function deleteProductFromFirebase(id) {
       try {
         await db.collection('products').doc(id).delete();
-        showNotification('product deleted successfully!', 'success');
+        showNotification('product deleted!', 'success');
         loadProducts(); // Reload products
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -1944,7 +1985,7 @@
       
       const totalStockValue = products.reduce((sum, p) => sum + (p.stock || 0), 0);
       totalStock.textContent = totalStockValue;
-      productCount.textContent = `${products.length} products`;
+      productCount.textContent = `${products.length}`;
     }
 
     function filterProducts() {
@@ -2000,8 +2041,7 @@
           <td>
             <strong>${product.title}</strong>
             ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-            ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
-            ${product.brand ? `<div style="font-size:0.7rem; color:#666; text-transform:uppercase;">${product.brand}</div>` : ''}
+            ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
           </td>
           <td><span style="text-transform:uppercase;">${product.category}</span></td>
           <td><strong>₹${product.price?.toFixed(2)}</strong></td>
@@ -2011,24 +2051,12 @@
             </span>
           </td>
           <td>${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i></td>
-          <td>
-            <div style="display:flex; gap:4px; flex-wrap:wrap;">
-              ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
-              ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-            </div>
-          </td>
-          <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
+          <td><div style="display:flex; gap:2px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
           <td>
             <div class="action-btns">
-              <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button class="edit-btn" onclick="editProduct('${product.id}')">
-                <i class="fa-solid fa-edit"></i>
-              </button>
-              <button class="delete-btn" onclick="deleteProduct('${product.id}')">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')"><i class="fa-solid fa-eye"></i></button>
+              <button class="edit-btn" onclick="editProduct('${product.id}')"><i class="fa-solid fa-edit"></i></button>
+              <button class="delete-btn" onclick="deleteProduct('${product.id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
           </td>
         </tr>`;
@@ -2075,15 +2103,9 @@
             ` : ''}
             
             <div class="product-item-actions">
-              <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
-                <i class="fa-solid fa-eye"></i> view
-              </button>
-              <button class="edit-btn" onclick="editProduct('${product.id}')">
-                <i class="fa-solid fa-edit"></i> edit
-              </button>
-              <button class="delete-btn" onclick="deleteProduct('${product.id}')">
-                <i class="fa-solid fa-trash"></i> delete
-              </button>
+              <button onclick="window.open('product.html?id=${product.id}', '_blank')"><i class="fa-solid fa-eye"></i> view</button>
+              <button onclick="editProduct('${product.id}')"><i class="fa-solid fa-edit"></i> edit</button>
+              <button onclick="deleteProduct('${product.id}')"><i class="fa-solid fa-trash"></i> del</button>
             </div>
           </div>
         `;
@@ -2099,11 +2121,10 @@
               <tr>
                 <th>media</th>
                 <th>title</th>
-                <th>category</th>
+                <th>cat</th>
                 <th>price</th>
                 <th>stock</th>
                 <th>rating</th>
-                <th>flags</th>
                 <th>pages</th>
                 <th>actions</th>
               </tr>
@@ -2126,9 +2147,9 @@
       showOnAccessories.checked = (category === 'accessories');
       showOnEssentials.checked = (category === 'essentials');
       
-      let message = 'new: 24h auto · ';
+      let message = 'new:24h · ';
       if (category) {
-        message += `${category} auto-sync · `;
+        message += `${category} auto · `;
       }
       message += 'home manual';
       autoAssignMessage.textContent = message;
@@ -2140,6 +2161,12 @@
       const price = parseFloat(productPrice.value);
       const rating = parseFloat(productRating.value);
       
+      // For now, we'll just store URLs. In a real app, you'd upload files to storage
+      const mediaForStorage = productMedia.map(m => ({
+        url: m.url,
+        type: m.type
+      }));
+      
       const productData = {
         title: productTitle.value,
         category: productCategory.value,
@@ -2147,7 +2174,7 @@
         rating: rating,
         stock: parseInt(productStock.value) || 10,
         brand: productBrand.value || 'MyEssantia',
-        media: productMedia, // Unified media array
+        media: mediaForStorage,
         primaryImg: productMedia[selectedMediaIndex]?.url || '',
         shortDesc: productShortDesc.value,
         description: productDescription.value,
@@ -2218,7 +2245,7 @@
     };
 
     window.deleteProduct = function(id) {
-      if (confirm('are you sure you want to delete this product?')) {
+      if (confirm('delete this product?')) {
         deleteProductFromFirebase(id);
       }
     };
@@ -2227,6 +2254,14 @@
       productForm.reset();
       productId.value = '';
       productCreationDate.value = '';
+      
+      // Clean up blob URLs
+      productMedia.forEach(media => {
+        if (media.isBlob) {
+          URL.revokeObjectURL(media.url);
+        }
+      });
+      
       productMedia = [];
       selectedMediaIndex = 0;
       renderMediaGridCompact();
@@ -2237,7 +2272,7 @@
       productHighDemand.checked = false;
       updateHighDemandChip();
       newinStatusContainer.style.display = 'none';
-      formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
+      formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add product';
       updateCategorySync();
     }
 
@@ -2251,7 +2286,7 @@
       a.download = `myessantia_products_${new Date().toISOString().slice(0,10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      showNotification('products exported successfully!', 'success');
+      showNotification('exported!', 'success');
     };
 
     window.importProducts = function() {
@@ -2274,11 +2309,11 @@
                   updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
               }
-              showNotification('products imported successfully!', 'success');
+              showNotification('imported!', 'success');
               loadProducts(); // Reload products
             }
           } catch {
-            showNotification('invalid file format', 'error');
+            showNotification('invalid file', 'error');
           }
         };
         reader.readAsText(file);
@@ -2294,7 +2329,7 @@
       document.body.appendChild(notification);
       setTimeout(() => {
         notification.remove();
-      }, 3000);
+      }, 2000);
     }
   </script>
 </body>
