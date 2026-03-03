@@ -87,7 +87,7 @@
     .thumbnail:hover { border-color: #d4af37; transform: translateY(-2px) scale(0.98); }
     .thumbnail.active { border-color: #d4af37; border-width: 3px; }
 
-    /* Rating Chart Styles */
+    /* Rating Chart Styles – will be repositioned for mobile via JS */
     .rating-chart-card {
       background: #ffffff;
       border-radius: 16px;
@@ -180,12 +180,12 @@
     }
 
     /* ========== LIVE EFFECTS FOR BADGES ========== */
-    .sold-badge, .live-badge, .high-demand-badge {
+    .sold-badge, .live-badge {
       position: relative;
       overflow: hidden;
     }
     
-    .sold-badge::after, .live-badge::after, .high-demand-badge::after {
+    .sold-badge::after, .live-badge::after {
       content: '';
       position: absolute;
       top: 0;
@@ -202,7 +202,7 @@
       100% { left: 100%; }
     }
     
-    .live-badge, .high-demand-badge {
+    .live-badge {
       animation: pulse 1.5s infinite;
     }
     
@@ -212,7 +212,7 @@
       100% { transform: scale(1); }
     }
     
-    .live-badge i, .high-demand-badge i {
+    .live-badge i {
       animation: blink 1.5s infinite;
     }
     
@@ -220,20 +220,6 @@
       0% { opacity: 1; }
       50% { opacity: 0.5; }
       100% { opacity: 1; }
-    }
-    
-    .high-demand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #ff6b6b;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border: 2px solid #000;
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
     }
 
     /* ========== SHIMMERING EFFECT FOR RAZORPAY ========== */
@@ -490,6 +476,7 @@
       scrollbar-width: thin;
       scrollbar-color: #d4af37 #f0f0f0;
     }
+    
     .reviews-container::-webkit-scrollbar {
       width: 6px;
     }
@@ -560,13 +547,7 @@
     }
 
     /* ========== PRODUCT INFO ========== */
-    .social-strip {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    
+    .social-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .sold-badge {
       display: inline-flex; align-items: center; gap: 6px; background: #dc2626; color: white;
       padding: 6px 14px; border-radius: 60px; font-size: 0.75rem; font-weight: 700; 
@@ -852,196 +833,184 @@
       font-weight: 800;
     }
 
-    /* ===== HIGH DEMAND NOTIFICATION POPUP ===== */
+    /* HIGH DEMAND NOTIFICATION POPUP */
     .high-demand-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      border: 4px solid #ff6b6b;
-      border-radius: 30px;
-      padding: 25px;
-      max-width: 400px;
-      width: 90%;
-      z-index: 10000;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.2);
-      animation: popupFadeIn 0.3s ease;
-    }
-    
-    .high-demand-popup.show {
-      display: block;
-    }
-    
-    @keyframes popupFadeIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -40%);
-      }
-      to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-      }
-    }
-    
-    .popup-overlay {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
       z-index: 9999;
-      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
     }
     
-    .popup-overlay.show {
-      display: block;
+    .high-demand-popup.show {
+      display: flex;
     }
     
-    .high-demand-popup .popup-header {
+    .popup-content {
+      background: #fff;
+      border-radius: 40px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 90%;
+      border: 4px solid #d4af37;
+      box-shadow: 12px 12px 0 #000;
+      position: relative;
+      animation: popScale 0.3s ease;
+    }
+    
+    @keyframes popScale {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .popup-content h3 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: #000;
+      text-transform: uppercase;
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 15px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #ff6b6b;
     }
     
-    .high-demand-popup .popup-header i {
+    .popup-content h3 i {
+      color: #d4af37;
       font-size: 2rem;
-      color: #ff6b6b;
-      background: #000;
-      border-radius: 50%;
-      padding: 10px;
     }
     
-    .high-demand-popup .popup-header h3 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #000;
-    }
-    
-    .high-demand-popup .popup-content {
-      margin-bottom: 20px;
-    }
-    
-    .high-demand-popup .popup-content p {
-      font-size: 0.95rem;
-      margin-bottom: 10px;
+    .popup-content p {
+      margin-bottom: 16px;
+      font-size: 0.9rem;
       color: #333;
       line-height: 1.5;
     }
     
-    .high-demand-popup .limited-badge {
-      background: #ff6b6b;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 40px;
+    .popup-content .warning {
+      background: #fef8e7;
+      border: 2px solid #d4af37;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: #000;
+      font-weight: 600;
+    }
+    
+    .popup-content .warning i {
+      color: #d4af37;
+      margin-right: 6px;
+    }
+    
+    .email-input-group {
+      margin-bottom: 20px;
+    }
+    
+    .email-input-group label {
+      display: block;
       font-weight: 700;
+      margin-bottom: 8px;
       font-size: 0.85rem;
-      display: inline-block;
-      margin-bottom: 15px;
-      border: 2px solid #000;
+      text-transform: uppercase;
     }
     
-    .high-demand-popup .email-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 15px 0;
-    }
-    
-    .high-demand-popup .email-input-group input {
+    .email-input-group input {
+      width: 100%;
       padding: 14px 18px;
-      border: 3px solid #000;
+      border: 2px solid #000;
       border-radius: 40px;
       font-size: 1rem;
-      width: 100%;
+      font-family: 'Inter', sans-serif;
     }
     
-    .high-demand-popup .email-input-group input:focus {
+    .email-input-group input:focus {
       outline: none;
-      border-color: #ff6b6b;
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
     
-    .high-demand-popup .notify-btn {
-      background: #000;
-      color: #ff6b6b;
-      border: 3px solid #ff6b6b;
+    .popup-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .popup-actions button {
+      flex: 1;
       padding: 14px;
       border-radius: 40px;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.9rem;
       text-transform: uppercase;
       cursor: pointer;
+      border: 2px solid #000;
       transition: all 0.2s;
-      width: 100%;
     }
     
-    .high-demand-popup .notify-btn:hover:not(:disabled) {
-      background: #ff6b6b;
+    .popup-actions .btn-primary {
+      background: #d4af37;
       color: #000;
     }
     
-    .high-demand-popup .notify-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .popup-actions .btn-primary:hover {
+      background: #000;
+      color: #d4af37;
+      border-color: #d4af37;
     }
     
-    .high-demand-popup .success-message {
-      background: #e8f5e8;
-      border: 2px solid #4caf50;
-      border-radius: 40px;
-      padding: 12px;
+    .popup-actions .btn-secondary {
+      background: #fff;
+      color: #000;
+    }
+    
+    .popup-actions .btn-secondary:hover {
+      background: #000;
+      color: #d4af37;
+    }
+    
+    .already-notified {
       text-align: center;
-      font-weight: 700;
-      color: #2e7d32;
-      display: none;
-    }
-    
-    .high-demand-popup .success-message.show {
-      display: block;
-    }
-    
-    .high-demand-popup .already-submitted {
-      background: #fff3e0;
-      border: 2px solid #ff9800;
-      border-radius: 40px;
       padding: 12px;
-      text-align: center;
+      background: #f0f0f0;
+      border-radius: 40px;
+      border: 2px solid #000;
       font-weight: 700;
-      color: #ed6c02;
-      margin-bottom: 10px;
+      color: #000;
+      margin-top: 16px;
     }
     
-    .high-demand-popup .popup-close-btn {
+    .already-notified i {
+      color: #d4af37;
+      margin-right: 6px;
+    }
+    
+    .popup-close-btn {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 16px;
+      right: 16px;
       width: 36px;
       height: 36px;
-      background: #000;
-      color: #ff6b6b;
       border-radius: 50%;
+      background: #000;
+      color: #d4af37;
+      border: 2px solid #d4af37;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #ff6b6b;
       cursor: pointer;
-      font-weight: 700;
+      font-size: 1.2rem;
+      transition: all 0.2s;
     }
     
-    .btn-notify {
-      background: #ff6b6b !important;
-      color: #000 !important;
-      border-color: #000 !important;
-    }
-    
-    .btn-notify i {
-      color: #000 !important;
+    .popup-close-btn:hover {
+      transform: scale(1.1);
+      background: #d4af37;
+      color: #000;
     }
 
     /* action buttons */
@@ -1059,16 +1028,18 @@
     .btn-primary:hover { background: #d4af37; color: #000; border-color: #000; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .btn-secondary:hover { background: #000; color: #d4af37; border-color: #d4af37; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     
-    .btn-notify-requested {
-      background: #4caf50 !important;
-      color: #000 !important;
-      border-color: #000 !important;
-      opacity: 0.8;
+    /* Disabled buttons for high demand */
+    .btn.high-demand-disabled {
+      background: #666 !important;
+      color: #ccc !important;
+      border-color: #999 !important;
       cursor: not-allowed !important;
+      opacity: 0.7;
     }
     
-    .btn-notify-requested i {
-      color: #000 !important;
+    .btn.high-demand-disabled:hover {
+      transform: none !important;
+      box-shadow: none !important;
     }
 
     /* tabs (description, specs, videos) */
@@ -1174,34 +1145,33 @@
   <div id="header"></div>
   <div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></div>
 
-  <div class="popup-overlay" id="popupOverlay" onclick="closeHighDemandPopup()"></div>
-  
+  <!-- HIGH DEMAND NOTIFICATION POPUP -->
   <div class="high-demand-popup" id="highDemandPopup">
-    <div class="popup-close-btn" onclick="closeHighDemandPopup()">✕</div>
-    <div class="popup-header">
-      <i class="fa-solid fa-fire"></i>
-      <h3>High Demand!</h3>
-    </div>
     <div class="popup-content">
+      <div class="popup-close-btn" onclick="closeHighDemandPopup()">✕</div>
+      <h3>
+        <i class="fa-solid fa-fire"></i> High Demand!
+      </h3>
       <p>This product is currently in <strong>high demand</strong> and we have limited stock available.</p>
-      <div class="limited-badge">
-        <i class="fa-solid fa-exclamation-triangle"></i> Only limited stocks are supplied
-      </div>
-      <p>Don't worry! We'll notify you as soon as the product is ready to dispatch.</p>
       
-      <div id="alreadyNotifiedMessage" class="already-submitted" style="display: none;">
-        <i class="fa-solid fa-check-circle"></i> You've already requested notification for this product
+      <div class="warning">
+        <i class="fa-solid fa-exclamation-triangle"></i> Only limited stocks are supplied. We'll notify you when the product is ready to dispatch.
       </div>
       
-      <div class="email-input-group" id="emailInputGroup">
-        <input type="email" id="notifyEmail" placeholder="Enter your email address" required>
-        <button class="notify-btn" id="notifySubmitBtn" onclick="submitNotificationRequest()">
-          <i class="fa-regular fa-bell"></i> Notify Me
-        </button>
+      <div id="emailNotificationForm">
+        <div class="email-input-group">
+          <label><i class="fa-regular fa-envelope"></i> Enter your email</label>
+          <input type="email" id="notificationEmail" placeholder="your@email.com" required>
+        </div>
+        
+        <div class="popup-actions">
+          <button class="btn-primary" onclick="submitNotification('buy')">Notify Me</button>
+          <button class="btn-secondary" onclick="closeHighDemandPopup()">Cancel</button>
+        </div>
       </div>
       
-      <div class="success-message" id="successMessage">
-        <i class="fa-solid fa-check-circle"></i> Thanks! We'll notify you at <span id="notifiedEmail"></span> when the product is ready.
+      <div id="alreadyNotifiedMessage" class="already-notified" style="display: none;">
+        <i class="fa-solid fa-check-circle"></i> You've already requested notification for this product. We'll email you when it's ready!
       </div>
     </div>
   </div>
@@ -1227,9 +1197,10 @@
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
     let selectedPaymentMethod = 'prepaid';
+    let currentAction = null; // 'buy' or 'cart' for high demand popup
     
     const STORAGE_KEY = 'myessantia_product_data';
-    const NOTIFICATION_KEY_PREFIX = 'myessantia_notification_';
+    const NOTIFICATION_STORAGE_KEY = 'myessantia_notifications';
     
     function getStoredProductData(productId) {
       const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -1249,12 +1220,50 @@
       }));
     }
 
+    // Check if user has already requested notification for this product
+    function hasRequestedNotification(productId) {
+      const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
+      return !!notifications[productId];
+    }
+
+    // Mark that user has requested notification for this product
+    function markNotificationRequested(productId, email) {
+      const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
+      notifications[productId] = {
+        email: email,
+        timestamp: new Date().toISOString(),
+        productTitle: currentProduct?.title || 'Unknown Product'
+      };
+      localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications));
+    }
+
+    // Submit notification to Firestore
+    async function submitNotificationToFirebase(productId, email, actionType) {
+      try {
+        if (typeof db !== 'undefined' && db) {
+          await db.collection('notifications').add({
+            productId: productId,
+            productTitle: currentProduct?.title || 'Unknown Product',
+            email: email,
+            actionType: actionType, // 'buy' or 'cart'
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            status: 'pending'
+          });
+          console.log('Notification saved to Firebase');
+        } else {
+          // Fallback to localStorage if Firebase not available
+          console.log('Firebase not available, saving to localStorage only');
+        }
+      } catch (error) {
+        console.error('Error saving notification to Firebase:', error);
+      }
+    }
+
     function getRandomSold() { return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; }
     function getRandomViewers() { return Math.floor(Math.random() * (35 - 8 + 1)) + 8; }
 
     function generateRealisticReviews(productRating) {
       const reviews = [
-        // ... (keep all existing reviews from your original code)
         {
           name: 'Priya Sharma',
           city: 'Mumbai',
@@ -1344,6 +1353,96 @@
           rating: 5.0,
           time: 3,
           verified: true
+        },
+        {
+          name: 'Divya Nair',
+          city: 'Kochi',
+          avatar: 'DN',
+          comment: 'Good quality but size runs small. Order one size up. Otherwise the material is good and it looks premium.',
+          rating: 3.5,
+          time: 5,
+          verified: true
+        },
+        {
+          name: 'Rajesh Khanna',
+          city: 'Chandigarh',
+          avatar: 'RK',
+          comment: 'Not worth the money. Quality is average and customer support is slow. Would not recommend.',
+          rating: 2.5,
+          time: 9,
+          verified: false
+        },
+        {
+          name: 'Meera Nambiar',
+          city: 'Thiruvananthapuram',
+          avatar: 'MN',
+          comment: 'Beautiful product! The craftsmanship is excellent. Very happy with my purchase. Shipping was fast.',
+          rating: 5.0,
+          time: 2,
+          verified: true
+        },
+        {
+          name: 'Siddharth Malhotra',
+          city: 'Mumbai',
+          avatar: 'SM',
+          comment: 'Good value for money. The product is durable and well-made. Would recommend to friends.',
+          rating: 4.0,
+          time: 4,
+          verified: true
+        },
+        {
+          name: 'Kavya Krishnan',
+          city: 'Chennai',
+          avatar: 'KK',
+          comment: 'Mixed feelings. Product is good but customer service could be better. Had to follow up multiple times.',
+          rating: 3.0,
+          time: 6,
+          verified: true
+        },
+        {
+          name: 'Rohan Joshi',
+          city: 'Pune',
+          avatar: 'RJ',
+          comment: 'Perfect gift for my wife. She loved it! The packaging was beautiful and delivery was ahead of schedule.',
+          rating: 5.0,
+          time: 3,
+          verified: true
+        },
+        {
+          name: 'Shreya Ghosh',
+          city: 'Kolkata',
+          avatar: 'SG',
+          comment: 'Good product but received a defective piece initially. Replacement process was smooth though.',
+          rating: 3.5,
+          time: 7,
+          verified: true
+        },
+        {
+          name: 'Aditya Sharma',
+          city: 'Delhi',
+          avatar: 'AS',
+          comment: 'Excellent quality! Using it for a month now and still looks new. Very happy with the purchase.',
+          rating: 4.5,
+          time: 12,
+          verified: true
+        },
+        {
+          name: 'Tanvi Patel',
+          city: 'Ahmedabad',
+          avatar: 'TP',
+          comment: 'Decent product for the price. Could be better but does the job. Delivery was quick.',
+          rating: 3.0,
+          time: 5,
+          verified: false
+        },
+        {
+          name: 'Nikhil Reddy',
+          city: 'Hyderabad',
+          avatar: 'NR',
+          comment: 'Superb! The quality exceeded my expectations. Will definitely buy more products from this brand.',
+          rating: 5.0,
+          time: 2,
+          verified: true
         }
       ];
       
@@ -1430,7 +1529,7 @@
       }, 300);
     }
 
-    // Toggle Razorpay popup
+    // Toggle Razorpay popup (square card above guarantee)
     window.toggleRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.toggle('show');
@@ -1448,184 +1547,220 @@
       }
     }
 
-    // ========== HIGH DEMAND NOTIFICATION FUNCTIONS ==========
-    
-    // Check if user has already requested notification for this product
-    function hasRequestedNotification(productId) {
-      const key = NOTIFICATION_KEY_PREFIX + productId;
-      return localStorage.getItem(key) === 'true';
+    // High Demand Popup Functions
+    window.showHighDemandPopup = function(action) {
+      currentAction = action;
+      const popup = document.getElementById('highDemandPopup');
+      const emailForm = document.getElementById('emailNotificationForm');
+      const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
+      
+      // Check if already requested
+      if (hasRequestedNotification(currentProduct.id)) {
+        emailForm.style.display = 'none';
+        alreadyMessage.style.display = 'block';
+      } else {
+        emailForm.style.display = 'block';
+        alreadyMessage.style.display = 'none';
+        document.getElementById('notificationEmail').value = '';
+      }
+      
+      popup.classList.add('show');
+    };
+
+    window.closeHighDemandPopup = function() {
+      document.getElementById('highDemandPopup').classList.remove('show');
+      currentAction = null;
+    };
+
+    window.submitNotification = async function(actionType) {
+      if (!currentProduct) return;
+      
+      const email = document.getElementById('notificationEmail').value.trim();
+      if (!email || !isValidEmail(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+      }
+      
+      // Mark as requested in localStorage
+      markNotificationRequested(currentProduct.id, email);
+      
+      // Submit to Firebase
+      await submitNotificationToFirebase(currentProduct.id, email, actionType);
+      
+      // Update UI
+      document.getElementById('emailNotificationForm').style.display = 'none';
+      document.getElementById('alreadyNotifiedMessage').style.display = 'block';
+      
+      showNotification('We\'ll notify you when this product is ready to dispatch!');
+      
+      // Update button states if needed
+      updateButtonStates();
+    };
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    // Mark that user has requested notification
-    function markNotificationRequested(productId, email) {
-      const key = NOTIFICATION_KEY_PREFIX + productId;
-      localStorage.setItem(key, 'true');
-      // Also store the email for display purposes
-      localStorage.setItem(key + '_email', email);
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      if (type === 'error') {
+        notification.style.background = '#ff4444';
+        notification.style.color = 'white';
+        notification.style.borderColor = '#000';
+      }
+      notification.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
     }
 
-    // Get the email used for notification (if any)
-    function getNotifiedEmail(productId) {
-      const key = NOTIFICATION_KEY_PREFIX + productId + '_email';
-      return localStorage.getItem(key);
-    }
+    // Override addToCart and buyNow for high demand products
+    window.addToCart = function() {
+      if (!currentProduct) return;
+      
+      // Check if product is in high demand
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('cart');
+        return;
+      }
+      
+      // Normal add to cart flow
+      const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
+      const product = currentProduct;
+      
+      if (product.stock <= 0) {
+        showNotification('Sorry, this product is out of stock!');
+        return;
+      }
 
-    // Show high demand popup
-    window.showHighDemandPopup = function() {
-      if (!currentProduct || !currentProduct.id) return;
-      
-      const productId = currentProduct.id;
-      const alreadyRequested = hasRequestedNotification(productId);
-      
-      document.getElementById('popupOverlay').classList.add('show');
-      document.getElementById('highDemandPopup').classList.add('show');
-      
-      if (alreadyRequested) {
-        // Show already submitted message
-        document.getElementById('alreadyNotifiedMessage').style.display = 'block';
-        document.getElementById('emailInputGroup').style.display = 'none';
-        document.getElementById('successMessage').classList.remove('show');
+      if (quantity > product.stock) {
+        showNotification(`Only ${product.stock} items available!`);
+        return;
+      }
+
+      if (window.cart && Array.isArray(window.cart)) {
+        const existingItem = window.cart.find(item => item.id === product.id);
         
-        const email = getNotifiedEmail(productId);
-        if (email) {
-          document.getElementById('notifiedEmail').textContent = email;
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          window.cart.push({
+            id: product.id,
+            title: product.title,
+            category: product.category || 'accessory',
+            price: product.price,
+            primaryImg: product.primaryImg || (product.images && product.images[0]) || (product.media?.images && product.media.images[0]?.url),
+            quantity: quantity
+          });
+        }
+        
+        localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+        
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        }
+      }
+      
+      showNotification(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart!`);
+      
+      setTimeout(() => {
+        if (typeof window.openCart === 'function') {
+          window.openCart();
+        }
+      }, 500);
+    };
+
+    window.buyNow = function() {
+      if (!currentProduct) return;
+      
+      // Check if product is in high demand
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('buy');
+        return;
+      }
+      
+      // Normal buy now flow
+      addToCart();
+      setTimeout(() => {
+        window.location.href = 'checkout.html';
+      }, 500);
+    };
+
+    function updateButtonStates() {
+      const addToCartBtn = document.querySelector('.btn-secondary');
+      const buyNowBtn = document.querySelector('.btn-primary');
+      
+      if (!addToCartBtn || !buyNowBtn || !currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        // Check if already requested
+        if (hasRequestedNotification(currentProduct.id)) {
+          addToCartBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
+          buyNowBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
+          addToCartBtn.classList.add('high-demand-disabled');
+          buyNowBtn.classList.add('high-demand-disabled');
+          addToCartBtn.disabled = true;
+          buyNowBtn.disabled = true;
+        } else {
+          // Keep buttons active but they'll trigger popup
+          addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
+          buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
+          addToCartBtn.classList.remove('high-demand-disabled');
+          buyNowBtn.classList.remove('high-demand-disabled');
+          addToCartBtn.disabled = false;
+          buyNowBtn.disabled = false;
         }
       } else {
-        // Show email input
-        document.getElementById('alreadyNotifiedMessage').style.display = 'none';
-        document.getElementById('emailInputGroup').style.display = 'block';
-        document.getElementById('successMessage').classList.remove('show');
-        document.getElementById('notifyEmail').value = '';
-      }
-    };
-
-    // Close popup
-    window.closeHighDemandPopup = function() {
-      document.getElementById('popupOverlay').classList.remove('show');
-      document.getElementById('highDemandPopup').classList.remove('show');
-    };
-
-    // Submit notification request
-    window.submitNotificationRequest = function() {
-      if (!currentProduct || !currentProduct.id) return;
-      
-      const productId = currentProduct.id;
-      const email = document.getElementById('notifyEmail').value.trim();
-      
-      if (!email) {
-        showNotification('Please enter your email address');
-        return;
-      }
-      
-      if (!email.includes('@') || !email.includes('.')) {
-        showNotification('Please enter a valid email address');
-        return;
-      }
-      
-      // In a real implementation, you would send this to Firebase
-      // For demo, we'll just store in localStorage
-      markNotificationRequested(productId, email);
-      
-      // Show success message
-      document.getElementById('emailInputGroup').style.display = 'none';
-      document.getElementById('successMessage').classList.add('show');
-      document.getElementById('notifiedEmail').textContent = email;
-      
-      // Update buttons to show "Will notify soon!"
-      updateActionButtonsForHighDemand(true);
-      
-      // Show confirmation notification
-      showNotification('Notification request submitted! We\'ll email you when ready.');
-      
-      // Close popup after 2 seconds
-      setTimeout(() => {
-        closeHighDemandPopup();
-      }, 2000);
-    };
-
-    // Update action buttons based on high demand status
-    function updateActionButtonsForHighDemand(alreadyRequested = false) {
-      const actionButtons = document.querySelector('.action-buttons');
-      if (!actionButtons) return;
-      
-      if (alreadyRequested) {
-        actionButtons.innerHTML = `
-          <button class="btn btn-notify-requested" disabled>
-            <i class="fa-regular fa-bell"></i> Will Notify Soon!
-          </button>
-          <button class="btn btn-notify-requested" disabled>
-            <i class="fa-regular fa-bell"></i> Will Notify Soon!
-          </button>
-        `;
-      } else {
-        actionButtons.innerHTML = `
-          <button class="btn btn-notify" onclick="handleHighDemandAction('cart')">
-            <i class="fa-regular fa-bell"></i> Will Notify Soon!
-          </button>
-          <button class="btn btn-notify" onclick="handleHighDemandAction('buy')">
-            <i class="fa-regular fa-bell"></i> Will Notify Soon!
-          </button>
-        `;
+        // Normal mode
+        addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
+        buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
+        addToCartBtn.classList.remove('high-demand-disabled');
+        buyNowBtn.classList.remove('high-demand-disabled');
+        addToCartBtn.disabled = false;
+        buyNowBtn.disabled = false;
       }
     }
 
-    // Handle high demand button clicks
-    window.handleHighDemandAction = function(action) {
-      if (!currentProduct || !currentProduct.id) return;
-      
-      const alreadyRequested = hasRequestedNotification(currentProduct.id);
-      
-      if (alreadyRequested) {
-        showNotification('You\'ve already requested notification for this product');
-      } else {
-        showHighDemandPopup();
-      }
-    };
-
-    // ========== ORIGINAL FUNCTIONS (MODIFIED FOR HIGH DEMAND) ==========
-    
     async function loadProduct() {
       const productId = getProductId();
       if (!productId) return showNotFound();
       
       try {
         if (typeof db === 'undefined' || !db) {
-          // Demo product with high demand for testing
           currentProduct = {
-            id: productId || 'demo123',
+            id: 'demo123',
             title: 'Minimalist Leather Backpack',
             category: 'Bags',
             price: 2499,
             rating: 4.7,
             stock: 15,
-            highDemand: true, // Set to true to test high demand feature
             description: 'Handcrafted genuine leather backpack with premium metal hardware.',
-            primaryImg: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600'
+            primaryImg: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600',
+            highDemand: false
           };
           document.getElementById('breadcrumb-product').textContent = currentProduct.title;
           renderProduct(currentProduct);
           return;
         }
-        
         const doc = await db.collection('products').doc(productId).get();
         if (!doc.exists) return showNotFound();
-        
         currentProduct = { id: doc.id, ...doc.data() };
         document.getElementById('breadcrumb-product').textContent = currentProduct.title;
         renderProduct(currentProduct);
       } catch (error) { 
         console.error('Error loading product:', error); 
-        // Fallback demo product
         currentProduct = {
-          id: productId || 'demo123',
+          id: 'demo123',
           title: 'Urban Canvas Sneakers',
           category: 'Footwear',
           price: 1899,
           rating: 4.3,
           stock: 8,
-          highDemand: true,
           description: 'Comfortable and stylish sneakers for daily wear.',
-          primaryImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600'
+          primaryImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600',
+          highDemand: false
         };
         document.getElementById('breadcrumb-product').textContent = currentProduct.title;
         renderProduct(currentProduct);
@@ -1670,51 +1805,6 @@
         reviews = generateRealisticReviews(product.rating || 4.5);
         storeProductData(product.id, { ratingDist, reviewCount, reviews });
       }
-      
-      // Check if this is a high demand product
-      const isHighDemand = product.highDemand === true;
-      const alreadyRequested = isHighDemand ? hasRequestedNotification(product.id) : false;
-
-      // Determine action buttons HTML
-      let actionButtonsHTML = '';
-      
-      if (isHighDemand) {
-        if (alreadyRequested) {
-          actionButtonsHTML = `
-            <button class="btn btn-notify-requested" disabled>
-              <i class="fa-regular fa-bell"></i> Will Notify Soon!
-            </button>
-            <button class="btn btn-notify-requested" disabled>
-              <i class="fa-regular fa-bell"></i> Will Notify Soon!
-            </button>
-          `;
-        } else {
-          actionButtonsHTML = `
-            <button class="btn btn-notify" onclick="handleHighDemandAction('cart')">
-              <i class="fa-regular fa-bell"></i> Will Notify Soon!
-            </button>
-            <button class="btn btn-notify" onclick="handleHighDemandAction('buy')">
-              <i class="fa-regular fa-bell"></i> Will Notify Soon!
-            </button>
-          `;
-        }
-      } else {
-        actionButtonsHTML = `
-          <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-          </button>
-          <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-bolt"></i> Buy Now
-          </button>
-        `;
-      }
-
-      // Add high demand badge to social strip if needed
-      const socialStripHTML = `
-        <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-        <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-        ${isHighDemand ? '<span class="high-demand-badge"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
-      `;
 
       const container = document.getElementById('product-container');
       container.innerHTML = `
@@ -1757,7 +1847,8 @@
           <!-- INFO -->
           <div class="product-info">
             <div class="social-strip">
-              ${socialStripHTML}
+              <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
+              <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
             </div>
             <div class="product-category">${product.category || 'Accessories'}</div>
             <h1 class="product-title">${product.title}</h1>
@@ -1833,7 +1924,7 @@
             </div>
 
             <div class="feature-razor-card">
-              <!-- Razorpay popup card -->
+              <!-- Razorpay popup card (square, appears above guarantee) -->
               <div id="razorpayPopup" class="razorpay-popup">
                 <div class="popup-close" onclick="toggleRazorpayPopup()">✕</div>
                 <div class="popup-title">
@@ -1905,10 +1996,19 @@
                 <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
               </div>
               <div>
+                <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery Guarantee</div>
+                <div style="font-size: 0.8rem; color: #555;" id="deliveryDates">Loading dates...</div>
+              </div>
+            </div>
 
-            <!-- ACTION BUTTONS (Dynamic based on high demand) -->
+            <!-- ACTION BUTTONS -->
             <div class="action-buttons">
-              ${actionButtonsHTML}
+              <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-bolt"></i> Buy Now
+              </button>
             </div>
 
             <!-- TABS (description appears first on mobile) -->
@@ -1947,6 +2047,7 @@
               </div>
             </div>
             
+
             <!-- mobile reviews -->
             <div class="mobile-reviews">
               <div id="mobileRatingChart"></div>
@@ -1977,7 +2078,7 @@
         </div>
       `;
 
-      // Move rating chart into #mobileRatingChart for mobile
+      // Move rating chart into #mobileRatingChart for mobile (desktop unaffected)
       const chartHTML = `
         <div class="rating-chart-card">
           <div class="rating-chart-header">
@@ -2004,7 +2105,10 @@
 
       updateDeliveryBar(product.price);
       
-      // Set delivery dates
+      // Update button states based on high demand
+      updateButtonStates();
+      
+      // Update delivery dates
       const dates = getDeliveryDates();
       document.getElementById('deliveryDates').textContent = dates.display;
     }
@@ -2074,82 +2178,6 @@
       
       if (shareUrl) window.open(shareUrl, '_blank');
     };
-
-    window.addToCart = function() {
-      if (currentProduct?.highDemand) {
-        handleHighDemandAction('cart');
-        return;
-      }
-      
-      const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
-      const product = currentProduct;
-      
-      if (!product) {
-        showNotification('Error: Product not found');
-        return;
-      }
-
-      if (product.stock <= 0) {
-        showNotification('Sorry, this product is out of stock!');
-        return;
-      }
-
-      if (quantity > product.stock) {
-        showNotification(`Only ${product.stock} items available!`);
-        return;
-      }
-
-      if (window.cart && Array.isArray(window.cart)) {
-        const existingItem = window.cart.find(item => item.id === product.id);
-        
-        if (existingItem) {
-          existingItem.quantity += quantity;
-        } else {
-          window.cart.push({
-            id: product.id,
-            title: product.title,
-            category: product.category || 'accessory',
-            price: product.price,
-            primaryImg: product.primaryImg || (product.images && product.images[0]) || (product.media?.images && product.media.images[0]?.url),
-            quantity: quantity
-          });
-        }
-        
-        localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-        
-        if (typeof window.updateCartCount === 'function') {
-          window.updateCartCount();
-        }
-      }
-      
-      showNotification(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart!`);
-      
-      setTimeout(() => {
-        if (typeof window.openCart === 'function') {
-          window.openCart();
-        }
-      }, 500);
-    };
-
-    window.buyNow = function() { 
-      if (currentProduct?.highDemand) {
-        handleHighDemandAction('buy');
-        return;
-      }
-      
-      addToCart();
-      setTimeout(() => {
-        window.location.href = 'checkout.html';
-      }, 500);
-    };
-
-    function showNotification(m) { 
-      const n = document.createElement('div'); 
-      n.className = 'notification'; 
-      n.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${m}`; 
-      document.body.appendChild(n); 
-      setTimeout(() => n.remove(), 2000); 
-    }
 
     window.switchTab = function(t) { 
       document.querySelectorAll('.tab-header').forEach(h => h.classList.remove('active')); 
