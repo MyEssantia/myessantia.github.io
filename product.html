@@ -252,93 +252,108 @@
       100% { transform: translateX(100%) rotate(30deg); }
     }
 
-   /* ========== PREPAID & COD BUTTONS WITH SUBTLE PULSE ========== */
+   /* ========== PREPAID & COD BUTTONS WITH FILL ========== */
+.price-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
 .price-option {
+  padding: 10px 8px;
+  border-radius: 14px;
+  text-align: center;
+  border: 2px solid;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  animation: softPulse 2s infinite ease-in-out;
 }
 
 .price-option.prepaid {
-  background: #fcf8f0;
-  border-color: #d4af37;
-  animation-delay: 0s;
+  background: #d4af37;  /* Gold fill */
+  border-color: #000;
+  color: #000;  /* Black text for contrast */
 }
 
 .price-option.cod {
-  background: #f4f4f4;
-  border-color: #000;
-  animation-delay: 0.5s;
+  background: #000;  /* Black fill */
+  border-color: #d4af37;
+  color: #d4af37;  /* Gold text for contrast */
 }
 
-@keyframes softPulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.3);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 0 8px 2px rgba(212, 175, 55, 0.2);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.3);
-  }
+.price-option.prepaid .option-label {
+  color: #000;
+  font-weight: 800;
+  opacity: 0.9;
 }
 
-.price-option:hover {
+.price-option.prepaid .option-price {
+  color: #000;
+  font-weight: 900;
+}
+
+.price-option.cod .option-label {
+  color: #d4af37;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.price-option.cod .option-price {
+  color: #d4af37;
+  font-weight: 900;
+}
+
+.option-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.option-price {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Hover effects */
+.price-option.prepaid:hover {
+  background: #c4a030;  /* Darker gold on hover */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  animation-play-state: paused;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.price-option:active {
+.price-option.cod:hover {
+  background: #1a1a1a;  /* Lighter black on hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Selected state */
+.price-option.selected {
+  border-width: 3px;
   transform: scale(0.98);
 }
 
-.price-option.selected {
-  border-width: 3px;
-  animation: selectedGlow 1.5s infinite;
-}
-
 .price-option.prepaid.selected {
-  background: #fcf8f0;
-  border-color: #d4af37;
-}
-
-.price-option.cod.selected {
-  background: #f4f4f4;
+  background: #d4af37;
   border-color: #000;
-}
-
-@keyframes selectedGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 12px 4px rgba(212, 175, 55, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
-  }
+  box-shadow: 0 0 0 2px #d4af37;
 }
 
 .price-option.cod.selected {
-  animation-name: selectedGlowDark;
+  background: #000;
+  border-color: #d4af37;
+  box-shadow: 0 0 0 2px #000;
 }
 
-@keyframes selectedGlowDark {
-  0% {
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4);
-  }
+/* Click effect */
+.price-option:active {
+  transform: scale(0.95);
 }
     /* ========== BUTTON HOVER AND CLICK EFFECTS ========== */
     .btn {
