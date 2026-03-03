@@ -1904,24 +1904,28 @@
               </div>
             </div>
 
-            <!-- DELIVERY CARD -->
-            <div class="delivery-card">
-              <div class="delivery-header">
-                <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-                <span class="delivery-min">Min. ₹1,299</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
-              </div>
-              <div class="delivery-message" id="deliveryMessage">
-                <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-                <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
-              </div>
-              <div class="delivery-eta">
-                <i class="fa-regular fa-calendar"></i> 
-                <span>Delivery by <span class="eta-bold">5–7 business days</span></span>
-              </div>
-            </div>
+       <div class="delivery-card">
+  <div class="delivery-header">
+    <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
+    <span class="delivery-min">Min. ₹1,299</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
+  </div>
+  <div class="delivery-message" id="deliveryMessage">
+    <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+    <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
+  </div>
+  <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
+    <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+      <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
+    </div>
+    <div>
+      <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
+      <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
+    </div>
+  </div>
+</div>
 
             <div class="feature-razor-card">
               <!-- Razorpay popup card (square, appears above guarantee) -->
@@ -1991,15 +1995,6 @@
               </div>
             </div>
 
-            <div style="margin-top: 16px; padding-top: 12px; border-top: 2px dashed #d4af37; display: flex; align-items: center; gap: 10px;">
-              <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000;">
-                <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
-              </div>
-              <div>
-                <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery Guarantee</div>
-                <div style="font-size: 0.8rem; color: #555;" id="deliveryDates">Loading dates...</div>
-              </div>
-            </div>
 
             <!-- ACTION BUTTONS -->
             <div class="action-buttons">
