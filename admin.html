@@ -1901,562 +1901,573 @@
   </div>
 
   <script>
-    // ========== FIREBASE CONFIGURATION ==========
-    const firebaseConfig = {
-      apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
-      authDomain: "myessantia.firebaseapp.com",
-      projectId: "myessantia",
-      storageBucket: "myessantia.firebasestorage.app",
-      messagingSenderId: "701726517205",
-      appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
-      measurementId: "G-SZF11SHZBH"
-    };
+// ========== FIREBASE CONFIGURATION ==========
+const firebaseConfig = {
+  apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
+  authDomain: "myessantia.firebaseapp.com",
+  projectId: "myessantia",
+  storageBucket: "myessantia.firebasestorage.app",
+  messagingSenderId: "701726517205",
+  appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
+  measurementId: "G-SZF11SHZBH"
+};
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    // ========== GLOBAL VARIABLES ==========
-    let products = [];
-    let productMedia = []; // Array of {url, type} - unified media array
-    let selectedMediaIndex = 0; // Primary media index
-    let newInCheckInterval = null;
+// ========== GLOBAL VARIABLES ==========
+let products = [];
+let productMedia = []; // Array of {url, type} - unified media array
+let selectedMediaIndex = 0; // Primary media index
+let newInCheckInterval = null;
 
-    // DOM Elements
-    const productForm = document.getElementById('product-form');
-    const productId = document.getElementById('product-id');
-    const productCreationDate = document.getElementById('product-creation-date');
-    const productTitle = document.getElementById('product-title');
-    const productCategory = document.getElementById('product-category');
-    const productPrice = document.getElementById('product-price');
-    const productRating = document.getElementById('product-rating');
-    const productStock = document.getElementById('product-stock');
-    const productBrand = document.getElementById('product-brand');
-    const productShortDesc = document.getElementById('product-short-desc');
-    const productDescription = document.getElementById('product-description');
-    const productSpecs = document.getElementById('product-specs');
-    const productHighDemand = document.getElementById('product-high-demand');
-    const showOnHome = document.getElementById('show-on-home');
-    const showOnAccessories = document.getElementById('show-on-accessories');
-    const showOnEssentials = document.getElementById('show-on-essentials');
-    const showOnNew = document.getElementById('show-on-new');
-    const newinStatusContainer = document.getElementById('newin-status-container');
-    const newinTimer = document.getElementById('newin-timer');
-    const productsList = document.getElementById('products-list');
-    const emptyProducts = document.getElementById('empty-products');
-    const totalProducts = document.getElementById('total-products');
-    const newinProducts = document.getElementById('newin-products');
-    const highDemandProducts = document.getElementById('high-demand-products');
-    const totalStock = document.getElementById('total-stock');
-    const productCount = document.getElementById('product-count');
-    const formTitle = document.getElementById('form-title');
-    const cancelEdit = document.getElementById('cancel-edit');
-    const searchInput = document.getElementById('search-products');
-    const autoAssignMessage = document.getElementById('auto-assign-message');
-    const highDemandChip = document.getElementById('high-demand-chip');
-    const mediaGrid = document.getElementById('media-grid');
+// DOM Elements
+const productForm = document.getElementById('product-form');
+const productId = document.getElementById('product-id');
+const productCreationDate = document.getElementById('product-creation-date');
+const productTitle = document.getElementById('product-title');
+const productCategory = document.getElementById('product-category');
+const productPrice = document.getElementById('product-price');
+const productRating = document.getElementById('product-rating');
+const productStock = document.getElementById('product-stock');
+const productBrand = document.getElementById('product-brand');
+const productShortDesc = document.getElementById('product-short-desc');
+const productDescription = document.getElementById('product-description');
+const productSpecs = document.getElementById('product-specs');
+const productHighDemand = document.getElementById('product-high-demand');
+const showOnHome = document.getElementById('show-on-home');
+const showOnAccessories = document.getElementById('show-on-accessories');
+const showOnEssentials = document.getElementById('show-on-essentials');
+const showOnNew = document.getElementById('show-on-new');
+const newinStatusContainer = document.getElementById('newin-status-container');
+const newinTimer = document.getElementById('newin-timer');
+const productsList = document.getElementById('products-list');
+const emptyProducts = document.getElementById('empty-products');
+const totalProducts = document.getElementById('total-products');
+const newinProducts = document.getElementById('newin-products');
+const highDemandProducts = document.getElementById('high-demand-products');
+const totalStock = document.getElementById('total-stock');
+const productCount = document.getElementById('product-count');
+const formTitle = document.getElementById('form-title');
+const cancelEdit = document.getElementById('cancel-edit');
+const searchInput = document.getElementById('search-products');
+const autoAssignMessage = document.getElementById('auto-assign-message');
+const highDemandChip = document.getElementById('high-demand-chip');
+const mediaGrid = document.getElementById('media-grid');
 
-    // ========== INITIALIZE ==========
-    document.addEventListener('DOMContentLoaded', () => {
-      initializeMediaArray();
-      loadProducts();
-      setupEventListeners();
-    });
+// ========== INITIALIZE ==========
+document.addEventListener('DOMContentLoaded', () => {
+  initializeMediaArray();
+  loadProducts();
+  setupEventListeners();
+});
 
-    function initializeMediaArray() {
-      productMedia = [];
-      selectedMediaIndex = 0;
-      renderMediaGrid();
-    }
+function initializeMediaArray() {
+  productMedia = [];
+  selectedMediaIndex = 0;
+  renderMediaGrid();
+}
 
-    function setupEventListeners() {
-      productCategory.addEventListener('change', updateCategorySync);
-      productForm.addEventListener('submit', handleProductSubmit);
-      cancelEdit.addEventListener('click', resetForm);
-      searchInput.addEventListener('input', filterProducts);
-      productHighDemand.addEventListener('change', updateHighDemandChip);
-    }
+function setupEventListeners() {
+  productCategory.addEventListener('change', updateCategorySync);
+  productForm.addEventListener('submit', handleProductSubmit);
+  cancelEdit.addEventListener('click', resetForm);
+  searchInput.addEventListener('input', filterProducts);
+  productHighDemand.addEventListener('change', updateHighDemandChip);
+}
 
-    function updateHighDemandChip() {
-      if (productHighDemand.checked) {
-        highDemandChip.classList.add('active');
-      } else {
-        highDemandChip.classList.remove('active');
-      }
-    }
+function updateHighDemandChip() {
+  if (productHighDemand.checked) {
+    highDemandChip.classList.add('active');
+  } else {
+    highDemandChip.classList.remove('active');
+  }
+}
 
-    window.toggleHighDemand = function() {
-      productHighDemand.checked = !productHighDemand.checked;
-      updateHighDemandChip();
-    };
+window.toggleHighDemand = function() {
+  productHighDemand.checked = !productHighDemand.checked;
+  updateHighDemandChip();
+};
 
-    // ========== MEDIA FUNCTIONS ==========
-    function renderMediaGrid() {
-      let html = '';
-      
-      // Show existing media (max 8)
-      for (let i = 0; i < Math.min(productMedia.length, 8); i++) {
-        const media = productMedia[i];
-        const isVideo = media.type === 'video';
-        const isSelected = (i === selectedMediaIndex);
-        
-        html += `
-          <div class="media-item ${isSelected ? 'selected' : ''}" onclick="selectMedia(${i})">
-            ${isVideo ? 
-              `<video src="${media.url}"></video>` : 
-              `<img src="${media.url}" alt="media">`
-            }
-            <span class="media-type-badge">${isVideo ? 'VID' : 'IMG'}</span>
-            <span class="media-remove-btn" onclick="removeMedia(${i}); event.stopPropagation();">
-              <i class="fa-solid fa-times"></i>
-            </span>
-          </div>
-        `;
-      }
-      
-      // Show add buttons for remaining slots (up to 8 total)
-      for (let i = productMedia.length; i < 8; i++) {
-        html += `
-          <div class="media-add-item" onclick="document.getElementById('media-url-input').focus()">
-            <i class="fa-solid fa-plus"></i>
-            <span>add media</span>
-          </div>
-        `;
-      }
-      
-      mediaGrid.innerHTML = html;
-    }
-
-    window.selectMedia = function(index) {
-      selectedMediaIndex = index;
-      renderMediaGrid();
-    };
-
-    window.addMediaFromUrl = function() {
-      const urlInput = document.getElementById('media-url-input');
-      const url = urlInput.value.trim();
-      
-      if (!url) {
-        showNotification('please enter a url', 'error');
-        return;
-      }
-
-      // Basic URL validation
-      try {
-        new URL(url);
-      } catch {
-        showNotification('please enter a valid url', 'error');
-        return;
-      }
-
-      // Detect if it's a video (common video extensions/patterns)
-      const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || 
-                     url.includes('youtube.com') || 
-                     url.includes('youtu.be') || 
-                     url.includes('vimeo.com') ||
-                     url.includes('player.vimeo');
-      
-      const mediaItem = {
-        url: url,
-        type: isVideo ? 'video' : 'image'
-      };
-
-      if (productMedia.length >= 8) {
-        showNotification('maximum 8 media files allowed', 'error');
-        return;
-      }
-
-      productMedia.push(mediaItem);
-      
-      // Auto-select first media as primary if this is the first one
-      if (productMedia.length === 1) {
-        selectedMediaIndex = 0;
-      }
-      
-      urlInput.value = '';
-      renderMediaGrid();
-      showNotification('media added successfully!', 'success');
-    };
-
-    window.handleFileUpload = function(files) {
-      if (productMedia.length + files.length > 8) {
-        showNotification('maximum 8 media files allowed', 'error');
-        return;
-      }
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const url = URL.createObjectURL(file);
-        const isVideo = file.type.startsWith('video/');
-        
-        const mediaItem = {
-          url: url,
-          type: isVideo ? 'video' : 'image',
-          file: file // Store file for later upload if needed
-        };
-
-        productMedia.push(mediaItem);
-      }
-
-      if (productMedia.length > 0 && selectedMediaIndex === 0 && productMedia.length === files.length) {
-        selectedMediaIndex = 0;
-      }
-
-      renderMediaGrid();
-      showNotification(`${files.length} file(s) added successfully!`, 'success');
-    };
-
-    window.removeMedia = function(index) {
-      productMedia.splice(index, 1);
-      
-      // Adjust selected index if needed
-      if (selectedMediaIndex >= productMedia.length) {
-        selectedMediaIndex = Math.max(0, productMedia.length - 1);
-      }
-      
-      renderMediaGrid();
-    };
-
-    // ========== FIREBASE FUNCTIONS ==========
-    async function loadProducts() {
-      try {
-        const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-        products = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        renderProducts();
-        updateStats();
-        startNewInMonitor();
-      } catch (error) {
-        console.error('Error loading products:', error);
-        showNotification('failed to load products', 'error');
-      }
-    }
-
-    async function saveProduct(productData) {
-      try {
-        if (productData.id) {
-          // Update existing product
-          const { id, ...data } = productData;
-          await db.collection('products').doc(id).update({
-            ...data,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          showNotification('product updated successfully!', 'success');
-        } else {
-          // Add new product
-          await db.collection('products').add({
-            ...productData,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          showNotification('product added successfully!', 'success');
+// ========== MEDIA FUNCTIONS ==========
+function renderMediaGrid() {
+  let html = '';
+  
+  // Show existing media (max 8)
+  for (let i = 0; i < Math.min(productMedia.length, 8); i++) {
+    const media = productMedia[i];
+    const isVideo = media.type === 'video';
+    const isSelected = (i === selectedMediaIndex);
+    
+    html += `
+      <div class="media-item ${isSelected ? 'selected' : ''}" onclick="selectMedia(${i})">
+        ${isVideo ? 
+          `<video src="${media.url}"></video>` : 
+          `<img src="${media.url}" alt="media">`
         }
-        loadProducts(); // Reload products
-        resetForm();
-      } catch (error) {
-        console.error('Error saving product:', error);
-        showNotification('failed to save product', 'error');
-      }
-    }
+        <span class="media-type-badge">${isVideo ? 'VID' : 'IMG'}</span>
+        <span class="media-remove-btn" onclick="removeMedia(${i}); event.stopPropagation();">
+          <i class="fa-solid fa-times"></i>
+        </span>
+      </div>
+    `;
+  }
+  
+  // Show add buttons for remaining slots (up to 8 total)
+  for (let i = productMedia.length; i < 8; i++) {
+    html += `
+      <div class="media-add-item" onclick="document.getElementById('media-url-input').focus()">
+        <i class="fa-solid fa-plus"></i>
+        <span>add media</span>
+      </div>
+    `;
+  }
+  
+  mediaGrid.innerHTML = html;
+}
 
-    async function deleteProductFromFirebase(id) {
-      try {
-        await db.collection('products').doc(id).delete();
-        showNotification('product deleted successfully!', 'success');
-        loadProducts(); // Reload products
-      } catch (error) {
-        console.error('Error deleting product:', error);
-        showNotification('failed to delete product', 'error');
-      }
-    }
+window.selectMedia = function(index) {
+  selectedMediaIndex = index;
+  renderMediaGrid();
+};
 
-    // ========== NEW IN MANAGEMENT ==========
-    function updateNewInStatus() {
-      const now = new Date();
-      let changed = false;
+window.addMediaFromUrl = function() {
+  const urlInput = document.getElementById('media-url-input');
+  const url = urlInput.value.trim();
+  
+  if (!url) {
+    showNotification('please enter a url', 'error');
+    return;
+  }
 
-      products.forEach(product => {
-        if (product.createdAt) {
-          const creationDate = product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt);
-          const hoursDiff = (now - creationDate) / (1000 * 60 * 60);
-          
-          const shouldBeNew = hoursDiff < 24;
-          if (product.showOnNew !== shouldBeNew) {
-            product.showOnNew = shouldBeNew;
-            changed = true;
-            
-            // Update in Firebase
-            db.collection('products').doc(product.id).update({
-              showOnNew: shouldBeNew
-            }).catch(error => console.error('Error updating new status:', error));
-          }
-        }
+  // Basic URL validation
+  try {
+    new URL(url);
+  } catch {
+    showNotification('please enter a valid url', 'error');
+    return;
+  }
+
+  // Detect if it's a video (common video extensions/patterns)
+  const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || 
+                 url.includes('youtube.com') || 
+                 url.includes('youtu.be') || 
+                 url.includes('vimeo.com') ||
+                 url.includes('player.vimeo');
+  
+  const mediaItem = {
+    url: url,
+    type: isVideo ? 'video' : 'image'
+  };
+
+  if (productMedia.length >= 8) {
+    showNotification('maximum 8 media files allowed', 'error');
+    return;
+  }
+
+  productMedia.push(mediaItem);
+  
+  // Auto-select first media as primary if this is the first one
+  if (productMedia.length === 1) {
+    selectedMediaIndex = 0;
+  }
+  
+  urlInput.value = '';
+  renderMediaGrid();
+  showNotification('media added successfully!', 'success');
+};
+
+window.handleFileUpload = function(files) {
+  if (productMedia.length + files.length > 8) {
+    showNotification('maximum 8 media files allowed', 'error');
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith('video/');
+    
+    const mediaItem = {
+      url: url,
+      type: isVideo ? 'video' : 'image',
+      file: file // Store file for later upload if needed
+    };
+
+    productMedia.push(mediaItem);
+  }
+
+  if (productMedia.length > 0 && selectedMediaIndex === 0 && productMedia.length === files.length) {
+    selectedMediaIndex = 0;
+  }
+
+  renderMediaGrid();
+  showNotification(`${files.length} file(s) added successfully!`, 'success');
+};
+
+window.removeMedia = function(index) {
+  productMedia.splice(index, 1);
+  
+  // Adjust selected index if needed
+  if (selectedMediaIndex >= productMedia.length) {
+    selectedMediaIndex = Math.max(0, productMedia.length - 1);
+  }
+  
+  renderMediaGrid();
+};
+
+// ========== FIREBASE FUNCTIONS ==========
+async function loadProducts() {
+  try {
+    const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderProducts();
+    updateStats();
+    startNewInMonitor();
+  } catch (error) {
+    console.error('Error loading products:', error);
+    showNotification('failed to load products', 'error');
+  }
+}
+
+async function saveProduct(productData) {
+  try {
+    if (productData.id) {
+      // Update existing product
+      const { id, ...data } = productData;
+      await db.collection('products').doc(id).update({
+        ...data,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      showNotification('product updated successfully!', 'success');
+    } else {
+      // Add new product
+      await db.collection('products').add({
+        ...productData,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showNotification('product added successfully!', 'success');
+    }
+    loadProducts(); // Reload products
+    resetForm();
+  } catch (error) {
+    console.error('Error saving product:', error);
+    showNotification('failed to save product', 'error');
+  }
+}
 
-      if (changed) {
-        renderProducts();
-        updateStats();
+async function deleteProductFromFirebase(id) {
+  try {
+    await db.collection('products').doc(id).delete();
+    showNotification('product deleted successfully!', 'success');
+    loadProducts(); // Reload products
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    showNotification('failed to delete product', 'error');
+  }
+}
+
+// ========== NEW IN MANAGEMENT ==========
+function updateNewInStatus() {
+  const now = new Date();
+  let changed = false;
+
+  products.forEach(product => {
+    if (product.createdAt) {
+      const creationDate = product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt);
+      const hoursDiff = (now - creationDate) / (1000 * 60 * 60);
+      
+      const shouldBeNew = hoursDiff < 24;
+      if (product.showOnNew !== shouldBeNew) {
+        product.showOnNew = shouldBeNew;
+        changed = true;
+        
+        // Update in Firebase
+        db.collection('products').doc(product.id).update({
+          showOnNew: shouldBeNew
+        }).catch(error => console.error('Error updating new status:', error));
       }
     }
+  });
 
-    function startNewInMonitor() {
-      if (newInCheckInterval) clearInterval(newInCheckInterval);
-      updateNewInStatus();
-      newInCheckInterval = setInterval(updateNewInStatus, 60000); // Check every minute
-    }
+  if (changed) {
+    renderProducts();
+    updateStats();
+  }
+}
 
-    function getTimeRemaining(creationDate) {
-      if (!creationDate) return null;
-      const now = new Date();
-      const creation = creationDate.toDate ? creationDate.toDate() : new Date(creationDate);
-      const expiryTime = new Date(creation.getTime() + 24 * 60 * 60 * 1000);
-      if (now >= expiryTime) return null;
-      const diffMs = expiryTime - now;
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      return `${hours}h ${minutes}m`;
-    }
+function startNewInMonitor() {
+  if (newInCheckInterval) clearInterval(newInCheckInterval);
+  updateNewInStatus();
+  newInCheckInterval = setInterval(updateNewInStatus, 60000); // Check every minute
+}
 
-    // ========== PRODUCT CRUD ==========
-    function updateStats() {
-      totalProducts.textContent = products.length;
-      const now = new Date();
-      const newInCount = products.filter(p => {
-        if (!p.createdAt) return false;
-        const creationDate = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
-        return (now - creationDate) < (24 * 60 * 60 * 1000);
-      }).length;
-      newinProducts.textContent = newInCount;
-      
-      const highDemandCount = products.filter(p => p.highDemand).length;
-      highDemandProducts.textContent = highDemandCount;
-      
-      const totalStockValue = products.reduce((sum, p) => sum + (p.stock || 0), 0);
-      totalStock.textContent = totalStockValue;
-      productCount.textContent = `${products.length} products`;
-    }
+function getTimeRemaining(creationDate) {
+  if (!creationDate) return null;
+  const now = new Date();
+  const creation = creationDate.toDate ? creationDate.toDate() : new Date(creationDate);
+  const expiryTime = new Date(creation.getTime() + 24 * 60 * 60 * 1000);
+  if (now >= expiryTime) return null;
+  const diffMs = expiryTime - now;
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+}
 
-    function filterProducts() {
-      const term = searchInput.value.toLowerCase();
-      const filtered = products.filter(p => 
-        p.title.toLowerCase().includes(term) ||
-        p.category.toLowerCase().includes(term) ||
-        (p.brand && p.brand.toLowerCase().includes(term))
-      );
-      renderProducts(filtered);
-    }
+// ========== PRODUCT CRUD ==========
+function updateStats() {
+  totalProducts.textContent = products.length;
+  const now = new Date();
+  const newInCount = products.filter(p => {
+    if (!p.createdAt) return false;
+    const creationDate = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
+    return (now - creationDate) < (24 * 60 * 60 * 1000);
+  }).length;
+  newinProducts.textContent = newInCount;
+  
+  const highDemandCount = products.filter(p => p.highDemand).length;
+  highDemandProducts.textContent = highDemandCount;
+  
+  const totalStockValue = products.reduce((sum, p) => sum + (p.stock || 0), 0);
+  totalStock.textContent = totalStockValue;
+  productCount.textContent = `${products.length} products`;
+}
 
-    function renderProducts(productsToRender = products) {
-      if (productsToRender.length === 0 && products.length === 0) {
-        emptyProducts.style.display = 'block';
-        productsList.innerHTML = '';
-        return;
-      }
-      
-      emptyProducts.style.display = 'none';
-      
-      // Desktop table view
-      let desktopHTML = '';
-      // Mobile cards view - COMPACT VERSION
-      let mobileHTML = '<div class="product-cards">';
-      
-      productsToRender.forEach(product => {
-        const pages = [];
-        if (product.showOnHome) pages.push('<span class="page-badge home"><i class="fa-solid fa-house"></i> home</span>');
-        if (product.showOnAccessories) pages.push('<span class="page-badge accessories"><i class="fa-solid fa-bag-shopping"></i> acc</span>');
-        if (product.showOnEssentials) pages.push('<span class="page-badge essentials"><i class="fa-solid fa-bolt"></i> ess</span>');
-        
-        const isNewIn = product.createdAt && 
-                        (new Date() - (product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt))) < (24 * 60 * 60 * 1000);
-        
-        let mainMedia = product.primaryImg || 
-                       (product.media?.[0]?.url) || 
-                       'https://via.placeholder.com/300/f0f0f0/999999?text=no+image';
-        
-        // Determine stock level class
-        let stockClass = 'high';
-        if (product.stock <= 5) stockClass = 'low';
-        else if (product.stock <= 15) stockClass = 'medium';
-        
-        // Desktop table row
-        desktopHTML += `<tr>
-          <td>
-            <div class="product-thumb" 
-                 style="background-image: url('${mainMedia}')" 
-                 onclick="window.open('product.html?id=${product.id}', '_blank')">
+function filterProducts() {
+  const term = searchInput.value.toLowerCase();
+  const filtered = products.filter(p => 
+    p.title.toLowerCase().includes(term) ||
+    p.category.toLowerCase().includes(term) ||
+    (p.brand && p.brand.toLowerCase().includes(term))
+  );
+  renderProducts(filtered);
+}
+
+function renderProducts(productsToRender = products) {
+  if (productsToRender.length === 0 && products.length === 0) {
+    emptyProducts.style.display = 'block';
+    productsList.innerHTML = '';
+    return;
+  }
+  
+  emptyProducts.style.display = 'none';
+  
+  // Desktop table view
+  let desktopHTML = '';
+  // Mobile cards view - COMPACT VERSION
+  let mobileHTML = '<div class="product-cards">';
+  
+  productsToRender.forEach(product => {
+    const pages = [];
+    if (product.showOnHome) pages.push('<span class="page-badge home"><i class="fa-solid fa-house"></i> home</span>');
+    if (product.showOnAccessories) pages.push('<span class="page-badge accessories"><i class="fa-solid fa-bag-shopping"></i> acc</span>');
+    if (product.showOnEssentials) pages.push('<span class="page-badge essentials"><i class="fa-solid fa-bolt"></i> ess</span>');
+    
+    const isNewIn = product.createdAt && 
+                    (new Date() - (product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt))) < (24 * 60 * 60 * 1000);
+    
+    let mainMedia = product.primaryImg || 
+                   (product.media?.[0]?.url) || 
+                   'https://via.placeholder.com/300/f0f0f0/999999?text=no+image';
+    
+    // Determine stock level class
+    let stockClass = 'high';
+    if (product.stock <= 5) stockClass = 'low';
+    else if (product.stock <= 15) stockClass = 'medium';
+    
+    // Desktop table row
+    desktopHTML += `<tr>
+      <td>
+        <div class="product-thumb" 
+             style="background-image: url('${mainMedia}')" 
+             onclick="window.open('product.html?id=${product.id}', '_blank')">
+        </div>
+      </td>
+      <td>
+        <strong>${product.title}</strong>
+        ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
+        ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
+        ${product.brand ? `<div style="font-size:0.7rem; color:#666; text-transform:uppercase;">${product.brand}</div>` : ''}
+      </td>
+      <td><span style="text-transform:uppercase;">${product.category}</span></td>
+      <td><strong>₹${product.price?.toFixed(2)}</strong></td>
+      <td>
+        <span class="stock-badge ${stockClass}">
+          ${product.stock || 0}
+        </span>
+      </td>
+      <td>${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i></td>
+      <td>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
+          ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
+        </div>
+      </td>
+      <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
+      <td>
+        <div class="action-btns">
+          <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <button class="edit-btn" onclick="editProduct('${product.id}')">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="delete-btn" onclick="deleteProduct('${product.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+    
+    // Mobile card view - COMPACT VERSION
+    mobileHTML += `
+      <div class="product-item">
+        <div class="product-item-header">
+          <div class="product-item-thumb" 
+               style="background-image: url('${mainMedia}')"
+               onclick="window.open('product.html?id=${product.id}', '_blank')">
+          </div>
+          <div class="product-item-info">
+            <div class="product-item-category">${product.category}</div>
+            <div class="product-item-title">
+              <strong>${product.title}</strong>
             </div>
-          </td>
-          <td>
-            <strong>${product.title}</strong>
-            ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-            ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
-            ${product.brand ? `<div style="font-size:0.7rem; color:#666; text-transform:uppercase;">${product.brand}</div>` : ''}
-          </td>
-          <td><span style="text-transform:uppercase;">${product.category}</span></td>
-          <td><strong>₹${product.price?.toFixed(2)}</strong></td>
-          <td>
-            <span class="stock-badge ${stockClass}">
-              ${product.stock || 0}
-            </span>
-          </td>
-          <td>${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i></td>
-          <td>
-            <div style="display:flex; gap:4px; flex-wrap:wrap;">
-              ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
+            <div class="product-item-flags">
               ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-            </div>
-          </td>
-          <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
-          <td>
-            <div class="action-btns">
-              <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
-                <i class="fa-solid fa-eye"></i>
-              </button>
-              <button class="edit-btn" onclick="editProduct('${product.id}')">
-                <i class="fa-solid fa-edit"></i>
-              </button>
-              <button class="delete-btn" onclick="deleteProduct('${product.id}')">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>`;
-        
-        // Mobile card view - COMPACT VERSION
-        mobileHTML += `
-          <div class="product-item">
-            <div class="product-item-header">
-              <div class="product-item-thumb" 
-                   style="background-image: url('${mainMedia}')"
-                   onclick="window.open('product.html?id=${product.id}', '_blank')">
-              </div>
-              <div class="product-item-info">
-                <div class="product-item-category">${product.category}</div>
-                <div class="product-item-title">
-                  <strong>${product.title}</strong>
-                </div>
-                <div class="product-item-flags">
-                  ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-                  ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
-                </div>
-              </div>
-            </div>
-            
-            <div class="product-item-details">
-              <div class="product-item-detail">
-                <span class="label">price</span>
-                <span class="value">₹${product.price?.toFixed(2)}</span>
-              </div>
-              <div class="product-item-detail">
-                <span class="label">stock</span>
-                <span class="value"><span class="stock-badge ${stockClass}">${product.stock || 0}</span></span>
-              </div>
-              <div class="product-item-detail">
-                <span class="label">rating</span>
-                <span class="value">${product.rating?.toFixed(1)} <small>★</small></span>
-              </div>
-            </div>
-            
-            ${pages.length > 0 ? `
-              <div class="product-item-pages">
-                ${pages.join(' ')}
-              </div>
-            ` : ''}
-            
-            <div class="product-item-actions">
-              <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
-                <i class="fa-solid fa-eye"></i> view
-              </button>
-              <button class="edit-btn" onclick="editProduct('${product.id}')">
-                <i class="fa-solid fa-edit"></i> edit
-              </button>
-              <button class="delete-btn" onclick="deleteProduct('${product.id}')">
-                <i class="fa-solid fa-trash"></i> delete
-              </button>
+              ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
             </div>
           </div>
-        `;
-      });
-      
-      mobileHTML += '</div>';
-      
-      // Update the products list container with both views
-      productsList.innerHTML = `
-        <div class="desktop-table">
-          <table>
-            <thead>
-              <tr>
-                <th>media</th>
-                <th>title</th>
-                <th>category</th>
-                <th>price</th>
-                <th>stock</th>
-                <th>rating</th>
-                <th>flags</th>
-                <th>pages</th>
-                <th>actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${desktopHTML}
-            </tbody>
-          </table>
         </div>
-        <div class="products-list">
-          ${mobileHTML}
+        
+        <div class="product-item-details">
+          <div class="product-item-detail">
+            <span class="label">price</span>
+            <span class="value">₹${product.price?.toFixed(2)}</span>
+          </div>
+          <div class="product-item-detail">
+            <span class="label">stock</span>
+            <span class="value"><span class="stock-badge ${stockClass}">${product.stock || 0}</span></span>
+          </div>
+          <div class="product-item-detail">
+            <span class="label">rating</span>
+            <span class="value">${product.rating?.toFixed(1)} <small>★</small></span>
+          </div>
         </div>
-      `;
-      
-      updateStats();
-    }
+        
+        ${pages.length > 0 ? `
+          <div class="product-item-pages">
+            ${pages.join(' ')}
+          </div>
+        ` : ''}
+        
+        <div class="product-item-actions">
+          <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
+            <i class="fa-solid fa-eye"></i> view
+          </button>
+          <button class="edit-btn" onclick="editProduct('${product.id}')">
+            <i class="fa-solid fa-edit"></i> edit
+          </button>
+          <button class="delete-btn" onclick="deleteProduct('${product.id}')">
+            <i class="fa-solid fa-trash"></i> delete
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  mobileHTML += '</div>';
+  
+  // Update the products list container with both views
+  productsList.innerHTML = `
+    <div class="desktop-table">
+      <table>
+        <thead>
+          <tr>
+            <th>media</th>
+            <th>title</th>
+            <th>category</th>
+            <th>price</th>
+            <th>stock</th>
+            <th>rating</th>
+            <th>flags</th>
+            <th>pages</th>
+            <th>actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${desktopHTML}
+        </tbody>
+      </table>
+    </div>
+    <div class="products-list">
+      ${mobileHTML}
+    </div>
+  `;
+  
+  updateStats();
+}
 
-    function updateCategorySync() {
-      const category = productCategory.value;
-      showOnAccessories.checked = (category === 'accessories');
-      showOnEssentials.checked = (category === 'essentials');
-      
-      let message = 'new products auto-added to "new in" for 24h · ';
-      if (category) {
-        message += `${category} auto-sync · `;
-      }
-      message += 'home manual';
-      autoAssignMessage.textContent = message;
-    }
+function updateCategorySync() {
+  const category = productCategory.value;
+  showOnAccessories.checked = (category === 'accessories');
+  showOnEssentials.checked = (category === 'essentials');
+  
+  let message = 'new products auto-added to "new in" for 24h · ';
+  if (category) {
+    message += `${category} auto-sync · `;
+  }
+  message += 'home manual';
+  if (autoAssignMessage) autoAssignMessage.textContent = message;
+}
 
-    async function handleProductSubmit(e) {
-      e.preventDefault();
+async function handleProductSubmit(e) {
+  e.preventDefault();
 
-      const price = parseFloat(productPrice.value);
-      const rating = parseFloat(productRating.value);
-      
-      const productData = {
-        title: productTitle.value,
-        category: productCategory.value,
-        price: price,
-        rating: rating,
-        stock: parseInt(productStock.value) || 10,
-        brand: productBrand.value || 'MyEssantia',
-        media: productMedia.map(m => ({ url: m.url, type: m.type })), // Store only url and type
-        primaryImg: productMedia[selectedMediaIndex]?.url || '',
-        shortDesc: productShortDesc.value,
-        description: productDescription.value,
-        specs: productSpecs.value ? productSpecs.value.split('\n').filter(s => s.trim()) : [],
-        showOnHome: showOnHome.checked,
-        showOnAccessories: showOnAccessories.checked,
-        showOnEssentials: showOnEssentials.checked,
-        showOnNew: true, // Always true for new products
-        highDemand: productHighDemand.checked
-      };
+  const price = parseFloat(productPrice.value);
+  const rating = parseFloat(productRating.value);
+  
+  const productData = {
+    title: productTitle.value,
+    category: productCategory.value,
+    price: price,
+    rating: rating,
+    stock: parseInt(productStock.value) || 10,
+    brand: productBrand.value || 'MyEssantia',
+    media: productMedia.map(m => ({ url: m.url, type: m.type })), // Store only url and type
+    primaryImg: productMedia[selectedMediaIndex]?.url || '',
+    shortDesc: productShortDesc.value,
+    description: productDescription.value,
+    specs: productSpecs.value ? productSpecs.value.split('\n').filter(s => s.trim()) : [],
+    showOnHome: showOnHome.checked,
+    showOnAccessories: showOnAccessories.checked,
+    showOnEssentials: showOnEssentials.checked,
+    showOnNew: true, // Always true for new products
+    highDemand: productHighDemand.checked
+  };
 
-      // Add ID if editing
-      if (productId.value) {
-        productData.id = productId.value;
-      }
+  // Add ID if editing
+  if (productId.value) {
+    productData.id = productId.value;
+  }
 
-      await saveProduct(productData);
-    }
+  await saveProduct(productData);
+}
+
+// Scroll to form function
+function scrollToForm() {
+  const formSection = document.querySelector('.product-form');
+  if (formSection) {
+    formSection.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }
+}
 
 window.editProduct = async function(id) {
   const product = products.find(p => p.id === id);
@@ -2495,7 +2506,7 @@ window.editProduct = async function(id) {
   updateHighDemandChip();
   
   // Update timer if needed
-  if (product.createdAt) {
+  if (product.createdAt && newinStatusContainer && newinTimer) {
     const timeLeft = getTimeRemaining(product.createdAt);
     if (timeLeft) {
       newinStatusContainer.style.display = 'block';
@@ -2503,100 +2514,92 @@ window.editProduct = async function(id) {
     }
   }
   
-  // Add this line to scroll to form
+  // Change form title to indicate editing
+  formTitle.innerHTML = '<i class="fa-solid fa-edit"></i> edit product';
+  
+  // Scroll to form
   scrollToForm();
 };
 
-    window.deleteProduct = function(id) {
-      if (confirm('are you sure you want to delete this product?')) {
-        deleteProductFromFirebase(id);
-      }
-    };
-    
-    // Add this function to handle smooth scrolling to form
-function scrollToForm() {
-  const formSection = document.querySelector('.product-form');
-  if (formSection) {
-    formSection.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
-    });
+window.deleteProduct = function(id) {
+  if (confirm('are you sure you want to delete this product?')) {
+    deleteProductFromFirebase(id);
   }
+};
+
+function resetForm() {
+  productForm.reset();
+  productId.value = '';
+  productCreationDate.value = '';
+  productMedia = [];
+  selectedMediaIndex = 0;
+  renderMediaGrid();
+  showOnHome.checked = false;
+  showOnAccessories.checked = false;
+  showOnEssentials.checked = false;
+  showOnNew.checked = false;
+  productHighDemand.checked = false;
+  updateHighDemandChip();
+  if (newinStatusContainer) newinStatusContainer.style.display = 'none';
+  formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
+  updateCategorySync();
 }
 
-    function resetForm() {
-      productForm.reset();
-      productId.value = '';
-      productCreationDate.value = '';
-      productMedia = [];
-      selectedMediaIndex = 0;
-      renderMediaGrid();
-      showOnHome.checked = false;
-      showOnAccessories.checked = false;
-      showOnEssentials.checked = false;
-      showOnNew.checked = false;
-      productHighDemand.checked = false;
-      updateHighDemandChip();
-      newinStatusContainer.style.display = 'none';
-      formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
-      updateCategorySync();
-    }
+// ========== EXPORT / IMPORT ==========
+window.exportProducts = function() {
+  const data = JSON.stringify(products, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `myessantia_products_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showNotification('products exported successfully!', 'success');
+};
 
-    // ========== EXPORT / IMPORT ==========
-    window.exportProducts = function() {
-      const data = JSON.stringify(products, null, 2);
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `myessantia_products_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showNotification('products exported successfully!', 'success');
-    };
-
-    window.importProducts = function() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-          try {
-            const imported = JSON.parse(ev.target.result);
-            if (Array.isArray(imported)) {
-              // Import each product to Firebase
-              for (const product of imported) {
-                const { id, ...productData } = product;
-                await db.collection('products').add({
-                  ...productData,
-                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-              }
-              showNotification('products imported successfully!', 'success');
-              loadProducts(); // Reload products
-            }
-          } catch {
-            showNotification('invalid file format', 'error');
+window.importProducts = function() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        if (Array.isArray(imported)) {
+          // Import each product to Firebase
+          for (const product of imported) {
+            const { id, ...productData } = product;
+            await db.collection('products').add({
+              ...productData,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
           }
-        };
-        reader.readAsText(file);
-      };
-      input.click();
+          showNotification('products imported successfully!', 'success');
+          loadProducts(); // Reload products
+        }
+      } catch {
+        showNotification('invalid file format', 'error');
+      }
     };
+    reader.readAsText(file);
+  };
+  input.click();
+};
 
-    // ========== NOTIFICATION ==========
-    function showNotification(message, type = 'info') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
+// ========== NOTIFICATION ==========
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
   </script>
 </body>
 </html>
