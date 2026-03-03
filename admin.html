@@ -848,7 +848,7 @@
       font-size: 1.2rem;
     }
 
-    /* ===== PRODUCTS TABLE - FULLY RESPONSIVE ===== */
+    /* ===== PRODUCTS TABLE - COMPACT MOBILE CARDS ===== */
     .products-table {
       background: #ffffff;
       border-radius: 40px;
@@ -1009,7 +1009,7 @@
       border-color: #d4af37;
     }
 
-    /* Mobile card-based product list */
+    /* Mobile card-based product list - COMPACT VERSION */
     .products-list {
       display: none;
     }
@@ -1017,84 +1017,96 @@
     .product-cards {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
     }
 
     .product-item {
       background: #fcfaf7;
       border: 2px solid #000;
-      border-radius: 30px;
-      padding: 20px;
-      box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
       transition: all 0.2s;
     }
 
     .product-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
       border-color: #d4af37;
     }
 
     .product-item-header {
       display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
     .product-item-thumb {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
       background-size: cover;
       background-position: center;
       border: 2px solid #000;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
       flex-shrink: 0;
       cursor: pointer;
     }
 
     .product-item-info {
       flex: 1;
+      min-width: 0;
     }
 
     .product-item-title {
       font-weight: 800;
-      font-size: 1.1rem;
-      margin-bottom: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 2px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .product-item-title strong {
       color: #000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .product-item-category {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       color: #666;
       text-transform: uppercase;
       font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      letter-spacing: 0.3px;
     }
 
     .product-item-flags {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin: 8px 0;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .product-item-flags .newin-badge,
+    .product-item-flags .high-demand-badge-table {
+      padding: 2px 6px;
+      font-size: 0.55rem;
     }
 
     .product-item-details {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 16px 0;
-      padding: 16px 0;
-      border-top: 2px solid #000;
-      border-bottom: 2px solid #000;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 8px 0;
+      padding: 8px 0;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
     }
 
     .product-item-detail {
@@ -1103,22 +1115,22 @@
     }
 
     .product-item-detail .label {
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       text-transform: uppercase;
       color: #666;
       font-weight: 600;
-      letter-spacing: 0.3px;
-      margin-bottom: 2px;
+      letter-spacing: 0.2px;
+      margin-bottom: 1px;
     }
 
     .product-item-detail .value {
       font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 0.85rem;
       color: #000;
     }
 
     .product-item-detail .value small {
-      font-size: 0.7rem;
+      font-size: 0.6rem;
       font-weight: 600;
       color: #666;
     }
@@ -1126,31 +1138,41 @@
     .product-item-pages {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin: 12px 0;
+      gap: 4px;
+      margin: 6px 0;
+    }
+
+    .product-item-pages .page-badge {
+      padding: 2px 6px;
+      font-size: 0.55rem;
     }
 
     .product-item-actions {
       display: flex;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 6px;
+      margin-top: 8px;
     }
 
     .product-item-actions button {
       flex: 1;
-      padding: 12px;
+      padding: 8px 4px;
       border: 2px solid #000;
-      border-radius: 40px;
+      border-radius: 30px;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 4px;
       background: #fff;
+      min-height: 32px;
+    }
+
+    .product-item-actions button i {
+      font-size: 0.7rem;
     }
 
     .product-item-actions button:hover {
@@ -1161,10 +1183,11 @@
 
     .stock-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 40px;
+      padding: 2px 8px;
+      border-radius: 30px;
       font-weight: 700;
       border: 2px solid #000;
+      font-size: 0.7rem;
     }
 
     .stock-badge.low {
@@ -1210,26 +1233,13 @@
         font-size: 0.9rem;
       }
       
-      .product-item-header {
-        flex-direction: column;
-      }
-      
-      .product-item-thumb {
-        width: 100%;
-        height: 160px;
-      }
-      
-      .product-item-details {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-      
-      .product-item-actions {
-        flex-direction: column;
-      }
-      
       .product-item-actions button {
-        width: 100%;
+        font-size: 0.65rem;
+        padding: 6px 2px;
+      }
+      
+      .product-item-actions button i {
+        display: none;
       }
     }
 
@@ -1911,7 +1921,7 @@
       
       // Desktop table view
       let desktopHTML = '';
-      // Mobile cards view  
+      // Mobile cards view - COMPACT VERSION
       let mobileHTML = '<div class="product-cards">';
       
       productsToRender.forEach(product => {
@@ -1977,7 +1987,7 @@
           </td>
         </tr>`;
         
-        // Mobile card view
+        // Mobile card view - COMPACT VERSION
         mobileHTML += `
           <div class="product-item">
             <div class="product-item-header">
@@ -1990,10 +2000,9 @@
                 <div class="product-item-title">
                   <strong>${product.title}</strong>
                 </div>
-                ${product.brand ? `<div style="font-size:0.7rem; color:#666;">${product.brand}</div>` : ''}
                 <div class="product-item-flags">
                   ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
-                  ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
+                  ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
                 </div>
               </div>
             </div>
