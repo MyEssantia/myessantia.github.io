@@ -92,6 +92,7 @@
       text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       border: 2px solid transparent; cursor: pointer;
+      text-decoration: none; /* Remove underline from buttons */
     }
     .btn-primary { background: #000; color: #fff; border-color: #000; }
     .btn-primary:hover { background: #d4af37; color: #000; border-color: #000; }
@@ -103,6 +104,26 @@
       .hero-title { font-size: 2rem; }
       .hero-desc { font-size: 1rem; }
       .btn { padding: 0.7rem 1.5rem; font-size: 0.9rem; }
+      
+      /* Align buttons on same line for mobile */
+      .hero-buttons {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .hero-buttons .btn {
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        padding: 0.7rem 0.8rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .hero-buttons .btn {
+        font-size: 0.8rem;
+        padding: 0.6rem 0.5rem;
+      }
     }
 
     /* ===== VALUE STRIP ===== */
@@ -354,6 +375,7 @@
       min-height: 44px;
       transition: all 0.15s; 
       text-transform: uppercase;
+      text-decoration: none; /* Remove underline from button text */
     }
     .card-add-btn i { color: #d4af37; transition: color 0.15s; }
     .card-add-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; }
@@ -653,6 +675,7 @@
       border: 2px solid #d4af37; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
       opacity: 0; transform: translateY(15px); transition: 0.2s; z-index: 100;
       font-size: 1.4rem; cursor: pointer;
+      text-decoration: none; /* Remove underline from scroll button */
     }
     .scroll-top.visible { opacity: 1; transform: translateY(0); }
     .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
@@ -972,15 +995,20 @@
           if (typeof window.openCart === 'function') {
             window.openCart();
           }
+          // Reset button back to "add" after cart opens
           setTimeout(() => {
             btn.classList.remove('added');
             btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
-          }, 500);
+          }, 2000); // Show "added" for 2 seconds before reverting
         }, 200);
       } else {
         // Fallback
         if (typeof window.addToCart === 'function') {
           window.addToCart(productId);
+          setTimeout(() => {
+            btn.classList.remove('added');
+            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
+          }, 2000);
         }
       }
     };
