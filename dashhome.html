@@ -1,0 +1,248 @@
+<!-- dashboard.html - This contains only the dashboard content, no header/menu -->
+<!-- Stats Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+    <div class="stat-info">
+      <h3 id="total-products">0</h3>
+      <p>total products</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+    <div class="stat-info">
+      <h3 id="newin-products">0</h3>
+      <p>new in (24h)</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
+    <div class="stat-info">
+      <h3 id="high-demand-products">0</h3>
+      <p>high demand</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-cubes"></i></div>
+    <div class="stat-info">
+      <h3 id="total-stock">0</h3>
+      <p>total stock</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+    <div class="stat-info">
+      <h3 id="total-categories">3</h3>
+      <p>categories</p>
+    </div>
+  </div>
+</div>
+
+<!-- Product Form -->
+<div class="product-form">
+  <div class="form-header">
+    <div class="form-title">
+      <i class="fa-solid fa-plus-circle"></i>
+      <span id="form-title">add new product</span>
+    </div>
+    <div class="form-subtitle">fill in the details below to create a stunning product</div>
+  </div>
+
+  <div class="form-body">
+    <form id="product-form">
+      <input type="hidden" id="product-id">
+      <input type="hidden" id="product-creation-date">
+
+      <!-- Section 1: Basic Information -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>basic information</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fa-solid fa-tag"></i> product title</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-pen"></i>
+              <input type="text" id="product-title" placeholder="e.g. premium leather cardholder" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-building"></i> brand</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-copyright"></i>
+              <input type="text" id="product-brand" placeholder="MyEssantia" value="MyEssantia">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fa-solid fa-layer-group"></i> category</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-folder"></i>
+              <select id="product-category" required>
+                <option value="">select category</option>
+                <option value="accessories">accessories</option>
+                <option value="essentials">essentials</option>
+                <option value="newarrival">new arrivals</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-cubes"></i> stock quantity</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-boxes"></i>
+              <input type="number" id="product-stock" placeholder="e.g. 50" value="10" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Pricing & Ratings -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>pricing & ratings</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fa-solid fa-indian-rupee-sign"></i> price (₹)</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-currency"></i>
+              <input type="number" id="product-price" step="0.01" min="0" placeholder="1999.99" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-star"></i> rating (0-5)</label>
+            <div class="input-wrapper">
+              <i class="input-icon fa-solid fa-star"></i>
+              <input type="number" id="product-rating" step="0.1" min="0" max="5" placeholder="4.5" required>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Media - Unified Upload -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-images"></i>
+          <span>product media</span>
+        </div>
+        <div class="media-section">
+          <div class="media-grid" id="media-grid"></div>
+          
+          <div class="media-upload-row">
+            <input type="text" class="media-url-input" id="media-url-input" placeholder="enter image/video URL...">
+            <button type="button" class="media-upload-btn" onclick="addMediaFromUrl()">
+              <i class="fa-solid fa-plus"></i> add url
+            </button>
+            <input type="file" id="media-file-input" class="media-file-input" accept="image/*,video/*" multiple onchange="handleFileUpload(this.files)">
+            <label for="media-file-input" class="media-file-label">
+              <i class="fa-solid fa-upload"></i> browse files
+            </label>
+          </div>
+          
+          <div class="media-hint">
+            <i class="fa-solid fa-info-circle"></i>
+            <span>click on any media to set as primary. max 8 files. supports images & videos.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Descriptions -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-align-left"></i>
+          <span>descriptions</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label><i class="fa-solid fa-paragraph"></i> short description</label>
+            <div class="input-wrapper">
+              <textarea id="product-short-desc" rows="2" placeholder="brief description for product cards..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label><i class="fa-solid fa-align-justify"></i> full description</label>
+            <div class="input-wrapper">
+              <textarea id="product-description" rows="4" placeholder="detailed product description..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label><i class="fa-solid fa-list"></i> specifications (one per line)</label>
+            <div class="input-wrapper">
+              <textarea id="product-specs" rows="3" placeholder="e.g. material: premium leather&#10;dimensions: 10cm x 7cm&#10;warranty: 1 year"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Page Visibility & Special Flags -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <i class="fa-solid fa-eye"></i>
+          <span>visibility & flags</span>
+        </div>
+        
+        <div class="visibility-section">
+          <!-- Special Flags Row -->
+          <div class="flags-row">
+            <div class="flag-chip" onclick="toggleHighDemand()" id="high-demand-chip">
+              <input type="checkbox" id="product-high-demand" style="display:none;">
+              <i class="fa-solid fa-fire"></i> high demand
+            </div>
+          </div>
+
+          <!-- Pages Grid -->
+          <div class="pages-grid">
+            <div class="page-chip">
+              <input type="checkbox" id="show-on-home">
+              <label for="show-on-home"><i class="fa-solid fa-house"></i> home</label>
+            </div>
+            <div class="page-chip">
+              <input type="checkbox" id="show-on-accessories">
+              <label for="show-on-accessories"><i class="fa-solid fa-bag-shopping"></i> accessories</label>
+            </div>
+            <div class="page-chip">
+              <input type="checkbox" id="show-on-essentials">
+              <label for="show-on-essentials"><i class="fa-solid fa-bolt"></i> essentials</label>
+            </div>
+            <div class="page-chip">
+              <input type="checkbox" id="show-on-new">
+              <label for="show-on-new"><i class="fa-solid fa-star"></i> new in</label>
+            </div>
+          </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="save-product-btn">
+          <i class="fa-solid fa-save"></i> save product
+        </button>
+        <button type="button" class="btn btn-outline" id="cancel-edit">
+          <i class="fa-solid fa-times"></i> cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Products Table -->
+<div class="products-table">
+  <div class="table-header">
+    <h3><i class="fa-solid fa-list"></i> product inventory</h3>
+    <span id="product-count"></span>
+  </div>
+
+  <div id="products-list"></div>
+  <div id="empty-products" class="empty-state" style="display:none;">
+    <i class="fa-solid fa-box-open"></i>
+    <h3>no products yet</h3>
+    <p>add your first product using the form above.</p>
+  </div>
+</div> can i name this dashhome.html
