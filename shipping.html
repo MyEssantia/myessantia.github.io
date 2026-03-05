@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Shipping Policy · MyEssantia</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="footer.css">
+
+  <style>
+    /* ===== GLOBAL & RESETS ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Inter', 'Montserrat', sans-serif; 
+      background: #ffffff; 
+      color: #1e1e1e; 
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+    .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 640px) { .container { padding: 0 32px; } }
+    @media (min-width: 1600px) { .container { max-width: 1600px; } }
+
+    /* ===== ACTIVE NAV ===== */
+    .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
+    .nav-link.active::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
+      background: #d4af37; animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
+
+    /* ===== SHIPPING HERO ===== */
+    .shipping-hero {
+      background: #fcfaf7;
+      padding: 2.5rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 2px solid #000;
+    }
+    .shipping-hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover; background-position: 50% 60%; opacity: 0.06;
+    }
+    .shipping-hero .container { position: relative; z-index: 2; }
+    .shipping-hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .shipping-hero-sub {
+      font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: #000;
+      margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .shipping-hero-title {
+      font-size: 2.8rem;
+      font-weight: 800; line-height: 1.1; color: #000; margin-bottom: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      word-break: break-word;
+    }
+    .shipping-hero-title span { 
+      color: #d4af37; font-weight: 900;
+      background: linear-gradient(145deg, #d4af37, #b07e2e); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      background-clip: text;
+    }
+    .shipping-hero-desc { 
+      font-size: 1.1rem; color: #2a2a2a; 
+      max-width: 580px; margin: 0 auto 1rem;
+      border-left: 4px solid #d4af37; padding-left: 1.2rem;
+      background: rgba(255,255,255,0.7); border-radius: 0 20px 20px 0;
+    }
+    .policy-badge {
+      display: inline-block;
+      background: #000; color: #fff; padding: 0.3rem 1.5rem;
+      border-radius: 60px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid #d4af37;
+    }
+
+    /* ===== CONTENT CARD ===== */
+    .shipping-card {
+      background: #ffffff;
+      border: 2px solid #000;
+      border-radius: 40px;
+      padding: 3rem 2.5rem;
+      margin: 3rem 0 5rem;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.1);
+    }
+    @media (max-width: 600px) {
+      .shipping-card { padding: 2rem 1.5rem; }
+    }
+
+    .shipping-section {
+      margin-bottom: 2.8rem;
+    }
+    .shipping-section:last-child { margin-bottom: 0; }
+
+    .shipping-section h2 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-family: 'Montserrat', sans-serif;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 3px solid #d4af37;
+      padding-bottom: 0.5rem;
+    }
+    .shipping-section h2 i {
+      color: #d4af37;
+      background: #000;
+      padding: 0.5rem;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .shipping-section h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 1.5rem 0 0.8rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .shipping-section p {
+      margin-bottom: 1rem;
+      color: #2a2a2a;
+      font-size: 1.05rem;
+    }
+    .shipping-section ul, .shipping-section ol {
+      margin: 1rem 0 1.5rem 1.5rem;
+    }
+    .shipping-section li {
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+    .shipping-section li strong { color: #d4af37; }
+
+    /* Highlight box */
+    .highlight-box {
+      background: #fcfaf7;
+      border: 2px solid #000;
+      border-radius: 30px;
+      padding: 1.8rem;
+      margin: 2rem 0;
+      position: relative;
+      box-shadow: inset 0 0 0 2px #fff, 0 6px 0 #d4af37;
+    }
+    .highlight-box::before {
+      content: "🇮🇳";
+      position: absolute;
+      top: -15px;
+      left: 30px;
+      background: #d4af37;
+      color: #000;
+      font-size: 1.5rem;
+      padding: 0.2rem 1rem;
+      border-radius: 60px;
+      border: 2px solid #000;
+    }
+
+    /* Shipping rates grid */
+    .rates-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .rate-card {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 5px 5px 0 #d4af37;
+      transition: transform 0.2s;
+    }
+    .rate-card:hover {
+      transform: translateY(-4px);
+    }
+    .rate-card i {
+      font-size: 2rem;
+      color: #d4af37;
+      background: #000;
+      padding: 0.7rem;
+      border-radius: 50%;
+      margin-bottom: 0.8rem;
+    }
+    .rate-card h4 {
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-size: 1.3rem;
+    }
+    .rate-card .price {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #d4af37;
+      margin: 0.5rem 0;
+    }
+    .rate-card .time {
+      color: #666;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .rate-card.free-shipping {
+      background: #fcfaf7;
+      border: 3px solid #d4af37;
+    }
+    .rate-card.free-shipping .price {
+      color: #000;
+    }
+
+    /* Timeline */
+    .timeline {
+      margin: 2rem 0;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      align-items: flex-start;
+    }
+    .timeline-dot {
+      background: #000;
+      color: #d4af37;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border: 2px solid #d4af37;
+      flex-shrink: 0;
+    }
+    .timeline-content {
+      flex: 1;
+    }
+    .timeline-content strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 1.1rem;
+    }
+
+    /* Metro cities grid */
+    .metro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .metro-item {
+      background: #fcfaf7;
+      border: 2px solid #000;
+      border-radius: 60px;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+    .metro-item i {
+      color: #d4af37;
+    }
+
+    /* Tracking box */
+    .tracking-box {
+      background: #000;
+      color: #fff;
+      border-radius: 30px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 2px solid #d4af37;
+    }
+    .tracking-box h4 {
+      color: #d4af37;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .tracking-box a {
+      color: #d4af37;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 2px solid #d4af37;
+    }
+    .tracking-box a:hover {
+      color: #fff;
+    }
+
+    .signature-block {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 3px double #000;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge-policy {
+      background: #000; color: #d4af37; padding: 0.4rem 1.5rem;
+      border-radius: 60px; border: 1px solid #d4af37;
+    }
+
+    /* ===== SCROLL TOP ===== */
+    .scroll-top {
+      position: fixed; bottom: 20px; right: 20px; 
+      background: #000; color: #d4af37; width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; 
+      border: 2px solid #d4af37; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(15px); transition: 0.2s; z-index: 100;
+      font-size: 1.4rem; cursor: pointer;
+      text-decoration: none;
+    }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
+
+    @media (max-width: 500px) {
+      .shipping-hero-title { font-size: 2.2rem; }
+      .shipping-section h2 { font-size: 1.6rem; }
+      .shipping-section h2 i { width: 40px; height: 40px; }
+      .rates-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header"></div>
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
+
+  <main>
+    <!-- SHIPPING HERO -->
+    <section class="shipping-hero">
+      <div class="shipping-hero-bg"></div>
+      <div class="container">
+        <div class="shipping-hero-content">
+          <div class="shipping-hero-sub">proudly shipping across india</div>
+          <h1 class="shipping-hero-title"><span>shipping</span> policy</h1>
+          <p class="shipping-hero-desc">We deliver premium essentials to every corner of India — fast, tracked, and insured.</p>
+          <span class="policy-badge"><i class="fas fa-rupee-sign"></i> free shipping above ₹999</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT CARD -->
+    <div class="container">
+      <div class="shipping-card">
+        
+        <!-- INDIA ONLY BANNER -->
+        <div class="shipping-section">
+          <div class="highlight-box">
+            <p style="margin-bottom:0;"><strong>🇮🇳 We ship only within India.</strong> From metro cities to remote towns — if you have an Indian pincode, we deliver.</p>
+          </div>
+        </div>
+
+        <!-- SHIPPING RATES -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-truck"></i> shipping rates</h2>
+          <div class="rates-grid">
+            <div class="rate-card free-shipping">
+              <i class="fas fa-gift"></i>
+              <h4>free shipping</h4>
+              <div class="price">₹0</div>
+              <div class="time">on orders above ₹999</div>
+              <p style="margin-top:0.5rem; font-size:0.9rem;">5–8 business days · tracked</p>
+            </div>
+            <div class="rate-card">
+              <i class="fas fa-box"></i>
+              <h4>standard</h4>
+              <div class="price">₹60</div>
+              <div class="time">5–8 business days</div>
+              <p style="margin-top:0.5rem; font-size:0.9rem;">tracked · all India</p>
+            </div>
+            <div class="rate-card">
+              <i class="fas fa-gauge-high"></i>
+              <h4>express</h4>
+              <div class="price">₹149</div>
+              <div class="time">2–4 business days</div>
+              <p style="margin-top:0.5rem; font-size:0.9rem;">priority · metro cities</p>
+            </div>
+          </div>
+          <p style="margin-top:1rem;"><i class="fas fa-circle-info" style="color:#d4af37;"></i> All shipments are fully tracked and insured.</p>
+        </div>
+
+        <!-- ORDER PROCESSING TIMELINE -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-timeline"></i> order timeline</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot">1</div>
+              <div class="timeline-content">
+                <strong>order placed</strong>
+                <p>You receive order confirmation email with order number and invoice.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">2</div>
+              <div class="timeline-content">
+                <strong>order processed (2–5 days)</strong>
+                <p>We carefully pack your items, quality-check each product, and generate shipping label.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">3</div>
+              <div class="timeline-content">
+                <strong>dispatch & tracking</strong>
+                <p>Shipping partner picks up; tracking link sent via email and SMS with live updates.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">4</div>
+              <div class="timeline-content">
+                <strong>delivery</strong>
+                <p>Package arrives. Please inspect immediately and record unboxing video for your records.</p>
+              </div>
+            </div>
+          </div>
+          <p><i class="fas fa-clock" style="color:#d4af37;"></i> <strong>Dispatch note:</strong> Orders placed before 12 PM IST are often dispatched the same business day.</p>
+        </div>
+
+        <!-- EXPRESS SHIPPING CITIES -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-city"></i> express shipping cities</h2>
+          <p>Express shipping (2–4 business days) is available in these metro areas and surrounding regions:</p>
+          <div class="metro-grid">
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Mumbai</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Delhi NCR</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Bengaluru</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Chennai</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Kolkata</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Hyderabad</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Pune</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Ahmedabad</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Jaipur</div>
+            <div class="metro-item"><i class="fas fa-location-dot"></i> Lucknow</div>
+          </div>
+          <p>For other cities, standard shipping (5–8 days) applies. Enter your pincode at checkout to see exact delivery estimates.</p>
+        </div>
+
+        <!-- ORDER TRACKING -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-magnifying-glass"></i> track your order</h2>
+          <div class="tracking-box">
+            <h4><i class="fas fa-circle-check"></i> real-time tracking</h4>
+            <p>Once your order is dispatched, you'll receive:</p>
+            <ul style="color:#fff; margin-bottom:1.5rem;">
+              <li>Tracking number via email & SMS</li>
+              <li>Direct link to carrier's tracking portal</li>
+              <li>SMS updates at every milestone</li>
+              <li>Estimated delivery date</li>
+            </ul>
+            <p><a href="#"><i class="fas fa-arrow-right"></i> Track your order here</a> (requires order number & email)</p>
+          </div>
+        </div>
+
+        <!-- SHIPPING RESTRICTIONS -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-triangle-exclamation"></i> important notes</h2>
+          <ul>
+            <li><strong>Address accuracy:</strong> Please ensure your shipping address (including pincode) is correct. We cannot redirect packages once dispatched.</li>
+            <li><strong>Delivery attempts:</strong> Courier partners typically make 3 delivery attempts. After that, package may be returned to us.</li>
+            <li><strong>Undeliverable packages:</strong> If package is returned due to wrong address, recipient unavailable, or failed attempts, re-shipping fees (₹60) apply.</li>
+            <li><strong>Delivery delays:</strong> While we work with fastest carriers, occasional delays due to weather, festivals (Diwali, holidays), or remote locations are beyond our control.</li>
+            <li><strong>Cash on Delivery (COD):</strong> Available on orders below ₹5,000. Additional ₹40 COD charges apply.</li>
+          </ul>
+        </div>
+
+        <!-- LOST/DAMAGED IN TRANSIT -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-shield"></i> lost or damaged in transit</h2>
+          <p>If your package is lost or arrives damaged:</p>
+          <ul>
+            <li><strong>Lost packages:</strong> Contact us within 15 days of expected delivery. We'll initiate a trace with the carrier. If confirmed lost, we'll reship or issue full refund.</li>
+            <li><strong>Damaged in transit:</strong> Follow our <a href="returns.html" style="color:#d4af37; font-weight:600;">return policy</a> — provide unboxing video showing damage, and we'll replace the item immediately at no cost.</li>
+          </ul>
+          <p>📦 <strong>Pro tip:</strong> Always record an unboxing video — it's the fastest way to resolve damage claims and protects both you and us.</p>
+        </div>
+
+        <!-- NON-SERVICEABLE AREAS -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-map"></i> non-serviceable areas</h2>
+          <p>While we cover 99% of Indian pincodes, some remote locations (certain parts of Andaman & Nicobar, Lakshadweep, and extreme North-East regions) may not be serviceable by our courier partners. If your pincode is non-serviceable, we'll notify you immediately and issue a full refund.</p>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="shipping-section">
+          <h2><i class="fas fa-message"></i> shipping questions?</h2>
+          <p>For shipping inquiries, order status, or address changes before dispatch:</p>
+          <ul style="list-style: none; margin-left:0;">
+            <li><i class="fas fa-envelope" style="color:#d4af37;"></i> <strong>myessantia@gmail.com</strong></li>
+            <li><i class="fas fa-clock" style="color:#d4af37;"></i> Response within 24 hours (usually faster)</li>
+          </ul>
+          <p style="margin-top:1rem;">Please include your order number for faster assistance.</p>
+        </div>
+
+        <!-- SIGNATURE -->
+        <div class="signature-block">
+          <span class="signature"><i class="fas fa-truck-fast"></i> delivering across India — MyEssantia</span>
+          <span class="badge-policy"><i class="fas fa-star"></i> free shipping above ₹999</span>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+  <div id="common-modals"></div>
+
+  <script src="common.js"></script>
+  <script>
+    function setShippingActive() {
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const shippingLink = document.querySelector('a[href="shipping.html"]');
+        if (shippingLink) shippingLink.classList.add('active');
+      }, 300);
+    }
+
+    function handleScroll() {
+      const btn = document.getElementById('scrollTop');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof window.loadComponents === 'function') {
+        await window.loadComponents();
+      }
+      setShippingActive();
+      window.addEventListener('scroll', handleScroll);
+    });
+  </script>
+</body>
+</html>
