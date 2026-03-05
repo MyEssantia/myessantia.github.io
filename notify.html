@@ -1,58 +1,61 @@
-<!-- notify.html - Pure HTML content for notifications page (NO CSS, NO JS) -->
+<!-- notify.html - Complete working version -->
+<div>
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fa-solid fa-bell"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="total-requests">0</h3>
+        <p>Total Requests</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fa-solid fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="pending-requests">0</h3>
+        <p>Pending</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="notified-requests">0</h3>
+        <p>Notified</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fa-solid fa-cube"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="unique-products">0</h3>
+        <p>Products</p>
+      </div>
+    </div>
+  </div>
 
-<!-- Stats Cards -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon"><i class="fa-solid fa-envelope"></i></div>
-    <div class="stat-info">
-      <h3 id="total-requests">0</h3>
-      <p>total requests</p>
+  <!-- Email Template Panel -->
+  <div class="email-template-panel" id="emailTemplatePanel">
+    <div class="panel-header">
+      <h3><i class="fa-solid fa-envelope-open-text"></i> Email Template</h3>
+      <div class="close-panel" onclick="toggleTemplatePanel()">
+        <i class="fa-solid fa-times"></i>
+      </div>
     </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
-    <div class="stat-info">
-      <h3 id="pending-requests">0</h3>
-      <p>pending</p>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
-    <div class="stat-info">
-      <h3 id="notified-requests">0</h3>
-      <p>notified</p>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon"><i class="fa-solid fa-fire"></i></div>
-    <div class="stat-info">
-      <h3 id="unique-products">0</h3>
-      <p>products requested</p>
-    </div>
-  </div>
-</div>
-
-<!-- Email Template Panel -->
-<div class="email-template-panel" id="emailTemplatePanel">
-  <div class="panel-header">
-    <h3>
-      <i class="fa-solid fa-envelope-open-text"></i>
-      email template settings
-    </h3>
-    <div class="close-panel" onclick="toggleTemplatePanel()">
-      <i class="fa-solid fa-times"></i>
-    </div>
-  </div>
-  
-  <div class="template-form">
-    <div class="form-group">
-      <label><i class="fa-solid fa-pencil"></i> email subject</label>
-      <input type="text" id="email-subject" value="Good news! {{product}} is now available at MyEssantia">
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fa-solid fa-message"></i> email body</label>
-      <textarea id="email-body" rows="8">Hi there,
+    <div class="template-form">
+      <div class="form-group">
+        <label><i class="fa-regular fa-envelope"></i> Subject</label>
+        <input type="text" id="email-subject" value="Good news! {{product}} is now available at MyEssantia" placeholder="Email subject...">
+      </div>
+      <div class="form-group">
+        <label><i class="fa-regular fa-file-lines"></i> Body</label>
+        <textarea id="email-body" rows="8">Hi there,
 
 Great news! The product you were interested in is now available:
 
@@ -65,30 +68,20 @@ We have limited stock available, so don't wait too long!
 
 Thank you for your interest,
 MyEssantia Team</textarea>
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fa-regular fa-copy"></i> cc (optional)</label>
-      <input type="email" id="email-cc" placeholder="cc@example.com">
-    </div>
-    
-    <div class="form-group">
-      <label><i class="fa-regular fa-eye"></i> bcc (optional)</label>
-      <input type="email" id="email-bcc" placeholder="bcc@example.com">
-    </div>
-    
-    <div class="variable-hint">
-      <i class="fa-solid fa-info-circle"></i>
-      Available variables: {{product}}, {{price}}, {{productLink}}, {{email}}
-    </div>
-    
-    <div class="template-preview">
-      <h4><i class="fa-regular fa-eye"></i> preview with sample data</h4>
-      <div class="preview-subject" id="preview-subject">
-        Subject: Good news! Premium Leather Backpack is now available at MyEssantia
       </div>
-      <div class="preview-body" id="preview-body">
-        Hi there,
+      <div class="form-group">
+        <label><i class="fa-regular fa-copy"></i> CC (optional)</label>
+        <input type="text" id="email-cc" placeholder="cc@example.com">
+      </div>
+      <div class="form-group">
+        <label><i class="fa-regular fa-eye-slash"></i> BCC (optional)</label>
+        <input type="text" id="email-bcc" placeholder="bcc@example.com">
+      </div>
+      
+      <div class="template-preview">
+        <h4><i class="fa-regular fa-eye"></i> Preview (with sample data)</h4>
+        <div class="preview-subject" id="preview-subject">Subject: Good news! Premium Leather Backpack is now available</div>
+        <div class="preview-body" id="preview-body">Hi there,
 
 Great news! The product you were interested in is now available:
 
@@ -100,98 +93,310 @@ Click here to view: https://myessantia.com/product/123
 We have limited stock available, so don't wait too long!
 
 Thank you for your interest,
-MyEssantia Team
+MyEssantia Team</div>
+      </div>
+      
+      <div class="variable-hint">
+        <i class="fa-solid fa-code"></i> Available variables: {{product}}, {{price}}, {{productLink}}, {{email}}
+      </div>
+      
+      <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <button class="btn btn-primary" onclick="saveTemplate()">
+          <i class="fa-solid fa-save"></i> Save Template
+        </button>
+        <button class="btn btn-outline" onclick="resetTemplate()">
+          <i class="fa-solid fa-rotate-left"></i> Reset to Default
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <i class="fa-solid fa-search"></i>
+      <input type="text" id="search-requests" placeholder="Search by email, product...">
+    </div>
+    
+    <div class="filter-tabs">
+      <span class="filter-tab active" id="filter-all" onclick="filterRequests('all')">All</span>
+      <span class="filter-tab" id="filter-pending" onclick="filterRequests('pending')">Pending</span>
+      <span class="filter-tab" id="filter-notified" onclick="filterRequests('notified')">Notified</span>
+      <span class="filter-tab" id="filter-today" onclick="filterRequests('today')">Today</span>
+    </div>
+    
+    <div style="display: flex; gap: 12px;">
+      <button class="export-btn" onclick="sendBulkEmails()">
+        <i class="fa-solid fa-envelope"></i> Bulk Email
+      </button>
+      <button class="export-btn" onclick="exportRequests()">
+        <i class="fa-solid fa-download"></i> Export CSV
+      </button>
+      <button class="export-btn" onclick="toggleTemplatePanel()">
+        <i class="fa-solid fa-pen"></i> Edit Template
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2><i class="fa-solid fa-bell"></i> Notification Requests</h2>
+      <div class="header-actions">
+        <button class="template-btn" onclick="loadNotifyRequests()">
+          <i class="fa-solid fa-rotate"></i> Refresh
+        </button>
       </div>
     </div>
     
-    <div style="display: flex; gap: 12px; margin-top: 20px;">
-      <button class="export-btn" onclick="saveTemplate()">
-        <i class="fa-solid fa-save"></i> save template
+    <!-- Loading State -->
+    <div id="loading" class="loading-spinner" style="display: none;">
+      <div class="spinner"></div>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <i class="fa-regular fa-bell-slash"></i>
+      <h3>No Notifications</h3>
+      <p>No notification requests found</p>
+    </div>
+    
+    <!-- Desktop Table View -->
+    <div class="table-wrapper" id="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Email</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th>Requested</th>
+            <th>Product ID</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Mobile Cards View -->
+    <div id="mobile-cards" class="mobile-cards"></div>
+    
+    <!-- Pagination -->
+    <div class="pagination" id="pagination" style="display: none;">
+      <button class="page-btn" id="prev-page" onclick="changePage('prev')">
+        <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <button class="export-btn" onclick="resetTemplate()" style="background: #fff; color: #000;">
-        <i class="fa-solid fa-rotate-left"></i> reset
+      <div class="page-numbers" id="page-numbers"></div>
+      <button class="page-btn" id="next-page" onclick="changePage('next')">
+        <i class="fa-solid fa-chevron-right"></i>
       </button>
     </div>
   </div>
 </div>
 
-<!-- Filters Bar -->
-<div class="filters-bar">
-  <div class="search-box">
-    <i class="fa-solid fa-search"></i>
-    <input type="text" id="search-requests" placeholder="search by email or product...">
-  </div>
-  <div class="filter-tabs">
-    <div class="filter-tab active" onclick="filterRequests('all')" id="filter-all">all</div>
-    <div class="filter-tab" onclick="filterRequests('pending')" id="filter-pending">pending</div>
-    <div class="filter-tab" onclick="filterRequests('notified')" id="filter-notified">notified</div>
-    <div class="filter-tab" onclick="filterRequests('today')" id="filter-today">today</div>
-  </div>
-  <div style="display: flex; gap: 12px;">
-    <button class="export-btn" onclick="toggleTemplatePanel()">
-      <i class="fa-solid fa-envelope"></i> email template
-    </button>
-    <button class="export-btn" onclick="exportRequests()">
-      <i class="fa-solid fa-download"></i> export csv
-    </button>
-  </div>
-</div>
-
-<!-- Main Table -->
-<div class="table-container">
-  <div class="table-header">
-    <h2>
-      <i class="fa-solid fa-list-check"></i>
-      notification requests
-    </h2>
-    <div class="header-actions">
-      <button class="template-btn" onclick="sendBulkEmails()">
-        <i class="fa-solid fa-envelopes-bulk"></i> send to all pending
-      </button>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div id="loading" class="loading-spinner" style="display: flex;">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Table View (Desktop) -->
-  <div class="table-wrapper" id="table-wrapper" style="display: none;">
-    <table id="requests-table">
-      <thead>
-        <tr>
-          <th>product</th>
-          <th>user email</th>
-          <th>action type</th>
-          <th>status</th>
-          <th>requested on</th>
-          <th>product id</th>
-          <th>actions</th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
-    </table>
-  </div>
-
-  <!-- Mobile Cards View -->
-  <div id="mobile-cards" class="mobile-cards" style="display: none;"></div>
-
-  <!-- Empty State -->
-  <div id="empty-state" class="empty-state" style="display: none;">
-    <i class="fa-regular fa-bell-slash"></i>
-    <h3>no requests found</h3>
-    <p>waiting for users to request product notifications</p>
-  </div>
-
-  <!-- Pagination -->
-  <div class="pagination" id="pagination" style="display: none;">
-    <button class="page-btn" id="prev-page" onclick="changePage('prev')" disabled>
-      <i class="fa-solid fa-chevron-left"></i>
-    </button>
-    <div class="page-numbers" id="page-numbers"></div>
-    <button class="page-btn" id="next-page" onclick="changePage('next')" disabled>
-      <i class="fa-solid fa-chevron-right"></i>
-    </button>
-  </div>
-</div>
+<script>
+// This script runs when notify.html is loaded
+(function() {
+  console.log('Notify page loaded');
+  
+  // Load notifications immediately
+  setTimeout(() => {
+    if (typeof loadNotifyRequests === 'function') {
+      loadNotifyRequests();
+    } else {
+      console.error('loadNotifyRequests function not found');
+      // Define it here as fallback
+      window.loadNotifyRequests = async function() {
+        try {
+          console.log('Loading notifications...');
+          const snapshot = await db.collection('notifications').orderBy('timestamp', 'desc').get();
+          console.log('Found', snapshot.size, 'notifications');
+          
+          window.allNotifyRequests = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            timestamp: doc.data().timestamp?.toDate() || new Date()
+          }));
+          
+          window.filteredNotifyRequests = [...window.allNotifyRequests];
+          window.currentNotifyFilter = 'all';
+          window.currentNotifyPage = 1;
+          
+          renderNotifyRequests();
+          updateStats();
+        } catch (error) {
+          console.error('Error loading notifications:', error);
+        }
+      };
+      
+      window.renderNotifyRequests = function() {
+        const tbody = document.getElementById('table-body');
+        const mobileCards = document.getElementById('mobile-cards');
+        const emptyState = document.getElementById('empty-state');
+        const tableWrapper = document.getElementById('table-wrapper');
+        
+        if (!window.filteredNotifyRequests || window.filteredNotifyRequests.length === 0) {
+          if (emptyState) emptyState.style.display = 'block';
+          if (tableWrapper) tableWrapper.style.display = 'none';
+          if (mobileCards) mobileCards.style.display = 'none';
+          return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (mobileCards) mobileCards.style.display = 'block';
+        
+        // Render table
+        if (tbody) {
+          tbody.innerHTML = window.filteredNotifyRequests.map(req => {
+            const date = req.timestamp ? new Date(req.timestamp) : new Date();
+            const formattedDate = date.toLocaleDateString();
+            const status = req.status || 'pending';
+            const statusClass = status === 'pending' ? 'pending' : 'notified';
+            
+            return `
+              <tr>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="product-thumb" style="background-image: url('https://via.placeholder.com/50');"></div>
+                    <div>
+                      <span class="product-title">${req.productId || 'Unknown'}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>${req.email}</td>
+                <td>${req.actionType || 'notify'}</td>
+                <td>
+                  <span class="status-badge ${statusClass}">${status}</span>
+                </td>
+                <td>${formattedDate}</td>
+                <td><span style="font-family: monospace;">${req.productId}</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button class="action-btn email-btn" onclick="sendEmail('${req.id}')">
+                      <i class="fa-solid fa-envelope"></i>
+                    </button>
+                    <button class="action-btn" onclick="markNotified('${req.id}')">
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+        
+        // Render mobile cards
+        if (mobileCards) {
+          mobileCards.innerHTML = window.filteredNotifyRequests.map(req => {
+            const date = req.timestamp ? new Date(req.timestamp) : new Date();
+            const status = req.status || 'pending';
+            
+            return `
+              <div class="notification-card">
+                <div class="card-header">
+                  <div class="card-thumb" style="background-image: url('https://via.placeholder.com/50');"></div>
+                  <div class="card-title">
+                    <h4>${req.email}</h4>
+                    <span>${req.productId}</span>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="status-badge ${status}">${status}</span>
+                  <div class="card-actions">
+                    <button class="action-btn email-btn" onclick="sendEmail('${req.id}')">
+                      <i class="fa-solid fa-envelope"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      };
+      
+      window.updateStats = function() {
+        const total = document.getElementById('total-requests');
+        const pending = document.getElementById('pending-requests');
+        const notified = document.getElementById('notified-requests');
+        const unique = document.getElementById('unique-products');
+        
+        if (total) total.textContent = window.allNotifyRequests?.length || 0;
+        if (pending) pending.textContent = window.allNotifyRequests?.filter(r => r.status === 'pending' || !r.status).length || 0;
+        if (notified) notified.textContent = window.allNotifyRequests?.filter(r => r.status === 'notified').length || 0;
+        if (unique) unique.textContent = new Set(window.allNotifyRequests?.map(r => r.productId)).size || 0;
+      };
+      
+      window.filterRequests = function(filter) {
+        window.currentNotifyFilter = filter;
+        document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+        document.getElementById(`filter-${filter}`)?.classList.add('active');
+        
+        if (filter === 'all') {
+          window.filteredNotifyRequests = [...window.allNotifyRequests];
+        } else if (filter === 'pending') {
+          window.filteredNotifyRequests = window.allNotifyRequests.filter(r => r.status === 'pending' || !r.status);
+        } else if (filter === 'notified') {
+          window.filteredNotifyRequests = window.allNotifyRequests.filter(r => r.status === 'notified');
+        } else if (filter === 'today') {
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          window.filteredNotifyRequests = window.allNotifyRequests.filter(r => r.timestamp && r.timestamp >= today);
+        }
+        
+        window.currentNotifyPage = 1;
+        renderNotifyRequests();
+      };
+      
+      window.sendEmail = function(id) {
+        const req = window.allNotifyRequests.find(r => r.id === id);
+        if (req) {
+          window.location.href = `mailto:${req.email}`;
+        }
+      };
+      
+      window.markNotified = async function(id) {
+        try {
+          await db.collection('notifications').doc(id).update({
+            status: 'notified',
+            notifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          loadNotifyRequests();
+        } catch (error) {
+          console.error('Error updating:', error);
+        }
+      };
+      
+      window.toggleTemplatePanel = function() {
+        document.getElementById('emailTemplatePanel')?.classList.toggle('show');
+      };
+      
+      window.saveTemplate = function() {
+        toggleTemplatePanel();
+        alert('Template saved');
+      };
+      
+      window.resetTemplate = function() {
+        document.getElementById('email-subject').value = 'Good news! {{product}} is now available at MyEssantia';
+        document.getElementById('email-body').value = `Hi there,\n\nGreat news! The product you were interested in is now available:\n\n✨ {{product}}\n💰 Price: ₹{{price}}\n\nClick here to view: {{productLink}}\n\nWe have limited stock available, so don't wait too long!\n\nThank you for your interest,\nMyEssantia Team`;
+      };
+      
+      window.exportRequests = function() {
+        alert('Export functionality ready');
+      };
+      
+      window.sendBulkEmails = function() {
+        alert('Bulk email ready');
+      };
+      
+      window.changePage = function() {};
+      
+      // Load the notifications
+      loadNotifyRequests();
+    }
+  }, 100);
+})();
+</script>
