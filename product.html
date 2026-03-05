@@ -96,6 +96,55 @@
       border: 2px solid #000000;
       box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
     }
+    
+    /* Mobile Responsive Razorpay Popup */
+@media (max-width: 640px) {
+  .razorpay-popup {
+    padding: 16px !important;
+    margin: 10px 0 !important;
+    max-width: 100% !important;
+  }
+  
+  .razorpay-popup .popup-title {
+    font-size: 1rem !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .razorpay-popup .popup-desc {
+    font-size: 0.8rem !important;
+  }
+  
+  .razorpay-popup p {
+    font-size: 0.75rem !important;
+  }
+  
+  .razorpay-popup div[style*="background: #f5f5f5"] {
+    padding: 10px !important;
+  }
+  
+  .razorpay-popup div[style*="background: #f5f5f5"] div {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  
+  .razorpay-popup button {
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Ensure popup is centered and readable on very small screens */
+@media (max-width: 480px) {
+  .razorpay-popup {
+    border-radius: 16px !important;
+    box-shadow: 4px 4px 0 #000 !important;
+  }
+  
+  .razorpay-popup .popup-title i {
+    font-size: 0.9rem !important;
+    padding: 6px !important;
+  }
+}
 
     .rating-chart-header {
       display: flex;
@@ -1530,10 +1579,10 @@
     }
 
     // Toggle Razorpay popup (square card above guarantee)
-    window.toggleRazorpayPopup = function() {
-      const popup = document.getElementById('razorpayPopup');
-      if (popup) popup.classList.toggle('show');
-    };
+  window.closeRazorpayPopup = function() {
+  const popup = document.getElementById('razorpayPopup');
+  if (popup) popup.classList.remove('show');
+};
 
     function toggleReviews() {
       const container = document.getElementById('reviews-container');
@@ -1937,46 +1986,46 @@
               </div>
             </div>
 
-            <div class="feature-razor-card">
-              <!-- Razorpay popup card (square, appears above guarantee) -->
-              <div id="razorpayPopup" class="razorpay-popup">
-                <div class="popup-close" onclick="toggleRazorpayPopup()">✕</div>
-                <div class="popup-title">
-                  <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-                </div>
-                <div class="popup-desc" style="font-weight: 600; margin-bottom: 12px;">
-                  Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-                </div>
-                <p style="font-size: 0.85rem; margin-bottom: 16px; line-height: 1.5;">
-                  If your order is incorrect, damaged, or not delivered, you'll be eligible for full refund at no additional cost from Razorpay. Valid only on Prepaid orders above ₹200.
-                </p>
-                
-                <div style="background: #f5f5f5; border-radius: 12px; padding: 12px; margin-bottom: 16px; border: 1px solid #000;">
-                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                    <span style="font-weight: 700; font-size: 0.9rem;">100% refund</span>
-                    <span style="font-size: 0.8rem; color: #555;">on non-delivery or damaged / defective items</span>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                    <span style="font-weight: 700; font-size: 0.9rem;">100% free</span>
-                    <span style="font-size: 0.8rem; color: #555;">with no hidden costs</span>
-                  </div>
-                </div>
-                
-                <p style="font-size: 0.8rem; margin-bottom: 16px; font-style: italic;">
-                  Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-                </p>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                  <button onclick="toggleRazorpayPopup()" style="background: #000; color: #d4af37; border: 2px solid #d4af37; padding: 8px 20px; border-radius: 40px; font-weight: 700; font-size: 0.8rem; cursor: pointer;">
-                    Yes, got it
-                  </button>
-                  <a href="shipping.html" style="color: #d4af37; font-weight: 600; font-size: 0.75rem; text-decoration: underline; cursor: pointer;">
-                    To read detailed terms and conditions, click here.
-                  </a>
-                </div>
-              </div>
+            <!-- Razorpay popup card (square, appears above guarantee) - UPDATED -->
+<div id="razorpayPopup" class="razorpay-popup">
+  <!-- REMOVED the separate close button -->
+  <div class="popup-title">
+    <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
+  </div>
+  <div class="popup-desc" style="font-weight: 600; margin-bottom: 12px;">
+    Your purchase from MyEssantia is protected by Razorpay Money Back Promise
+  </div>
+  <p style="font-size: 0.85rem; margin-bottom: 16px; line-height: 1.5;">
+    If your order is incorrect, damaged, or not delivered, you'll be eligible for full refund at no additional cost from Razorpay. Valid only on Prepaid orders above ₹200.
+  </p>
+  
+  <div style="background: #f5f5f5; border-radius: 12px; padding: 12px; margin-bottom: 16px; border: 1px solid #000;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+      <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+      <span style="font-weight: 700; font-size: 0.9rem;">100% refund</span>
+      <span style="font-size: 0.8rem; color: #555;">on non-delivery or damaged items</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+      <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+      <span style="font-weight: 700; font-size: 0.9rem;">100% free</span>
+      <span style="font-size: 0.8rem; color: #555;">with no hidden costs</span>
+    </div>
+  </div>
+  
+  <p style="font-size: 0.8rem; margin-bottom: 16px; font-style: italic;">
+    Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
+  </p>
+  
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+    <!-- UPDATED: Yes, got it button now closes the popup -->
+    <button onclick="closeRazorpayPopup()" style="background: #000; color: #d4af37; border: 2px solid #d4af37; padding: 12px 20px; border-radius: 40px; font-weight: 700; font-size: 0.9rem; cursor: pointer; width: 100%;">
+      Yes, got it
+    </button>
+    <a href="shipping.html" style="color: #d4af37; font-weight: 600; font-size: 0.75rem; text-decoration: underline; cursor: pointer; text-align: center;">
+      View detailed terms and conditions
+    </a>
+  </div>
+</div>
               
               <!-- Razorpay Promise clickable -->
               <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
@@ -2053,31 +2102,32 @@
             
 
             <!-- mobile reviews -->
-            <div class="mobile-reviews">
-              <div id="mobileRatingChart"></div>
-              <div class="reviews-header">
-                <span>Customer Reviews (${reviewCount})</span>
-                <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
-              </div>
-              <div id="reviews-container" class="reviews-container">
-                ${reviews.map(r => `
-                  <div class="review-card">
-                    <div style="display: flex; gap: 10px; margin-bottom: 6px;">
-                      <div class="reviewer-avatar">${r.avatar}</div>
-                      <div>
-                        <div style="font-weight: 700; font-size: 0.85rem;">${r.name}</div>
-                        <div style="font-size: 0.7rem;">${r.city} • ${r.time} days ago ${r.verified ? '✓ Verified' : ''}</div>
-                      </div>
-                    </div>
-                    <div class="stars" style="margin-bottom: 6px; font-size: 0.75rem;">${'★'.repeat(Math.floor(r.rating))}${r.rating % 1 >= 0.5 ? '½' : ''}</div>
-                    <p style="font-size: 0.75rem;">${r.comment}</p>
-                  </div>
-                `).join('')}
-              </div>
-              <div id="view-more-btn" class="view-more-btn" onclick="toggleReviews()">
-                <i class="fa-solid fa-chevron-down"></i> View More Reviews
-              </div>
-            </div>
+      // Replace this section in renderProduct() function - around line 1120-1150
+<div class="mobile-reviews">
+  <div id="mobileRatingChart"></div>  <!-- This line is correct -->
+  <div class="reviews-header">
+    <span>Customer Reviews (${reviewCount})</span>
+    <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
+  </div>
+  <div id="reviews-container" class="reviews-container">
+    ${reviews.map(r => `
+      <div class="review-card">
+        <div style="display: flex; gap: 10px; margin-bottom: 6px;">
+          <div class="reviewer-avatar">${r.avatar}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.85rem;">${r.name}</div>
+            <div style="font-size: 0.7rem;">${r.city} • ${r.time} days ago ${r.verified ? '✓ Verified' : ''}</div>
+          </div>
+        </div>
+        <div class="stars" style="margin-bottom: 6px; font-size: 0.75rem;">${'★'.repeat(Math.floor(r.rating))}${r.rating % 1 >= 0.5 ? '½' : ''}</div>
+        <p style="font-size: 0.75rem;">${r.comment}</p>
+      </div>
+    `).join('')}
+  </div>
+  <div id="view-more-btn" class="view-more-btn" onclick="toggleReviews()">
+    <i class="fa-solid fa-chevron-down"></i> View More Reviews
+  </div>
+</div>
           </div>
         </div>
       `;
