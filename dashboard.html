@@ -3260,18 +3260,15 @@ function renderNotifyRequests() {
   const emptyState = document.getElementById('empty-state');
   const pagination = document.getElementById('pagination');
   
-  if (pageRequests.length === 0) {
-    if (tableWrapper) tableWrapper.style.display = 'none';
-    if (mobileCards) mobileCards.style.display = 'none';
-    if (emptyState) emptyState.style.display = 'block';
-    if (pagination) pagination.style.display = 'none';
-    return;
-  }
+if (pageRequests.length === 0) {
+  if (emptyState) emptyState.style.display = 'block';
+  if (pagination) pagination.style.display = 'none';
+  return;
+}
 
-  if (emptyState) emptyState.style.display = 'none';
-  if (tableWrapper) tableWrapper.style.display = 'block';
-  if (mobileCards) mobileCards.style.display = 'block';
-  if (pagination) pagination.style.display = window.filteredNotifyRequests.length > window.notifyItemsPerPage ? 'flex' : 'none';
+if (emptyState) emptyState.style.display = 'none';
+if (pagination) pagination.style.display =
+  window.filteredNotifyRequests.length > window.notifyItemsPerPage ? 'flex' : 'none';
   
   // Render table rows (desktop view)
   const tableBody = document.getElementById('table-body');
