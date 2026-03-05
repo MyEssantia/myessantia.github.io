@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Return Policy · MyEssantia</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="footer.css">
+
+  <style>
+    /* ===== GLOBAL & RESETS ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Inter', 'Montserrat', sans-serif; 
+      background: #ffffff; 
+      color: #1e1e1e; 
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+    .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 640px) { .container { padding: 0 32px; } }
+    @media (min-width: 1600px) { .container { max-width: 1600px; } }
+
+    /* ===== ACTIVE NAV ===== */
+    .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
+    .nav-link.active::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
+      background: #d4af37; animation: slideIn 0.3s ease;
+    }
+
+    /* ===== RETURNS HERO ===== */
+    .returns-hero {
+      background: #fcfaf7;
+      padding: 2.5rem 0 2rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 2px solid #000;
+    }
+    .returns-hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover; background-position: 50% 50%; opacity: 0.06;
+    }
+    .returns-hero .container { position: relative; z-index: 2; }
+    .returns-hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .returns-hero-sub {
+      font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: #000;
+      margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .returns-hero-title {
+      font-size: 2.8rem;
+      font-weight: 800; line-height: 1.1; color: #000; margin-bottom: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      word-break: break-word;
+    }
+    .returns-hero-title span { 
+      color: #d4af37; font-weight: 900;
+      background: linear-gradient(145deg, #d4af37, #b07e2e); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      background-clip: text;
+    }
+    .returns-hero-desc { 
+      font-size: 1.1rem; color: #2a2a2a; 
+      max-width: 580px; margin: 0 auto 1rem;
+      border-left: 4px solid #d4af37; padding-left: 1.2rem;
+      background: rgba(255,255,255,0.7); border-radius: 0 20px 20px 0;
+    }
+    .policy-badge {
+      display: inline-block;
+      background: #000; color: #fff; padding: 0.3rem 1.5rem;
+      border-radius: 60px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid #d4af37;
+    }
+
+    /* ===== CONTENT CARD ===== */
+    .returns-card {
+      background: #ffffff;
+      border: 2px solid #000;
+      border-radius: 40px;
+      padding: 3rem 2.5rem;
+      margin: 3rem 0 5rem;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.1);
+    }
+    @media (max-width: 600px) {
+      .returns-card { padding: 2rem 1.5rem; }
+    }
+
+    .returns-section {
+      margin-bottom: 2.8rem;
+    }
+    .returns-section:last-child { margin-bottom: 0; }
+
+    .returns-section h2 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      font-family: 'Montserrat', sans-serif;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 3px solid #d4af37;
+      padding-bottom: 0.5rem;
+    }
+    .returns-section h2 i {
+      color: #d4af37;
+      background: #000;
+      padding: 0.5rem;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .returns-section h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 1.5rem 0 0.8rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .returns-section p {
+      margin-bottom: 1rem;
+      color: #2a2a2a;
+      font-size: 1.05rem;
+    }
+    .returns-section ul, .returns-section ol {
+      margin: 1rem 0 1.5rem 1.5rem;
+    }
+    .returns-section li {
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+    .returns-section li strong { color: #d4af37; }
+
+    /* Warning box */
+    .warning-box {
+      background: #fcfaf7;
+      border: 2px solid #000;
+      border-radius: 30px;
+      padding: 1.8rem;
+      margin: 2rem 0;
+      position: relative;
+      box-shadow: inset 0 0 0 2px #fff, 0 6px 0 #d4af37;
+    }
+    .warning-box::before {
+      content: "⚠️";
+      position: absolute;
+      top: -15px;
+      left: 30px;
+      background: #d4af37;
+      color: #000;
+      font-size: 1.5rem;
+      padding: 0.2rem 1rem;
+      border-radius: 60px;
+      border: 2px solid #000;
+    }
+
+    /* Grid for eligibility */
+    .eligibility-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 600px) {
+      .eligibility-grid { grid-template-columns: 1fr; }
+    }
+    .eligible-card, .ineligible-card {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 5px 5px 0 #d4af37;
+    }
+    .eligible-card h4, .ineligible-card h4 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .eligible-card h4 i { color: #2e7d32; }
+    .ineligible-card h4 i { color: #d32f2f; }
+    .eligible-card ul, .ineligible-card ul {
+      margin: 0 0 0 1.2rem;
+    }
+
+    /* Steps */
+    .steps-container {
+      margin: 2rem 0;
+    }
+    .step-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      align-items: flex-start;
+    }
+    .step-number {
+      background: #000;
+      color: #d4af37;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border: 2px solid #d4af37;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content strong {
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    /* Evidence box */
+    .evidence-box {
+      background: #fcfaf7;
+      border: 2px solid #000;
+      border-radius: 30px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-left: 8px solid #d4af37;
+    }
+    .evidence-box i {
+      color: #d4af37;
+      margin-right: 8px;
+    }
+
+    .signature-block {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 3px double #000;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge-policy {
+      background: #000; color: #d4af37; padding: 0.4rem 1.5rem;
+      border-radius: 60px; border: 1px solid #d4af37;
+    }
+
+    /* ===== SCROLL TOP ===== */
+    .scroll-top {
+      position: fixed; bottom: 20px; right: 20px; 
+      background: #000; color: #d4af37; width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; 
+      border: 2px solid #d4af37; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(15px); transition: 0.2s; z-index: 100;
+      font-size: 1.4rem; cursor: pointer;
+      text-decoration: none;
+    }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { background: #d4af37; color: #000; border-color: #000; }
+
+    @media (max-width: 500px) {
+      .returns-hero-title { font-size: 2.2rem; }
+      .returns-section h2 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header"></div>
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+
+  <main>
+    <!-- RETURNS HERO -->
+    <section class="returns-hero">
+      <div class="returns-hero-bg"></div>
+      <div class="container">
+        <div class="returns-hero-content">
+          <div class="returns-hero-sub">7-day policy · damage only</div>
+          <h1 class="returns-hero-title"><span>return</span> policy</h1>
+          <p class="returns-hero-desc">We stand behind our quality — returns accepted only for damaged/defective items.</p>
+          <span class="policy-badge"><i class="fa-regular fa-calendar"></i> effective: 7 day window</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT CARD -->
+    <div class="container">
+      <div class="returns-card">
+        
+        <!-- SUMMARY -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-clock"></i> 7-day window</h2>
+          <p>We accept return requests within <strong>7 calendar days</strong> from delivery. This policy is strict — please inspect your order immediately upon arrival.</p>
+          <div class="warning-box">
+            <p style="margin-bottom:0;"><strong>⚠️ Important:</strong> Returns are accepted ONLY for damaged or defective products. No change of mind, no "didn't like it," and no returns for minor scratches on the outer box.</p>
+          </div>
+        </div>
+
+        <!-- ELIGIBILITY -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-circle-check"></i> eligibility criteria</h2>
+          <div class="eligibility-grid">
+            <div class="eligible-card">
+              <h4><i class="fa-regular fa-check-circle"></i> eligible</h4>
+              <ul>
+                <li>Product physically damaged</li>
+                <li>Defective / non-functional</li>
+                <li>Wrong item shipped</li>
+                <li>Within 7 days of delivery</li>
+                <li>Original sealed condition</li>
+              </ul>
+            </div>
+            <div class="ineligible-card">
+              <h4><i class="fa-regular fa-circle-xmark"></i> not eligible</h4>
+              <ul>
+                <li>Change of mind /不喜欢</li>
+                <li>Minor box scratches</li>
+                <li>After 7 days</li>
+                <li>Normal wear and tear</li>
+                <li>Missing unboxing video</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- MANDATORY EVIDENCE -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-video"></i> mandatory evidence</h2>
+          <div class="evidence-box">
+            <p><i class="fa-regular fa-circle-check"></i> <strong>Continuous unboxing video</strong> — from sealed package to product reveal, no cuts.</p>
+            <p><i class="fa-regular fa-circle-check"></i> <strong>Clear photos</strong> of the damage on the product itself (not just the box).</p>
+            <p><i class="fa-regular fa-circle-check"></i> Order number visible in video/photos.</p>
+          </div>
+          <p>Claims without video evidence <strong>cannot be processed</strong>. This protects both you and us from fraud.</p>
+        </div>
+
+        <!-- RETURN PROCESS -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-arrow-right-arrow-left"></i> return process</h2>
+          <div class="steps-container">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <strong>Document the damage</strong>
+                <p>Record unboxing video + take photos immediately after delivery.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <strong>Email us</strong>
+                <p>Send evidence + order number to <strong>returns@myessantia.com</strong></p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <strong>Get approval</strong>
+                <p>We review within 24-48 hours and respond with next steps.</p>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <strong>Ship back (if approved)</strong>
+                <p>We provide a prepaid return label. Ship item in original packaging.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REFUNDS & REPLACEMENTS -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-credit-card"></i> refunds & replacements</h2>
+          <ul>
+            <li><strong>Replacement:</strong> We ship a new item immediately upon receiving the damaged return (if in stock).</li>
+            <li><strong>Refund:</strong> Full refund to original payment method within 5-7 business days after we receive the return.</li>
+            <li><strong>Shipping:</strong> Return shipping is covered by us for approved damage claims.</li>
+          </ul>
+        </div>
+
+        <!-- EXCEPTIONS -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-note-sticky"></i> important notes</h2>
+          <ul>
+            <li>Outer box damage without product damage is <strong>not eligible</strong> for return.</li>
+            <li>Items must be returned in original condition with all tags and packaging.</li>
+            <li>If you send a non-returnable item, return shipping cost will be deducted from refund.</li>
+            <li>We reserve the right to reject returns that don't meet these strict criteria.</li>
+          </ul>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="returns-section">
+          <h2><i class="fa-regular fa-message"></i> need help?</h2>
+          <p>For return inquiries, email us at:</p>
+          <ul style="list-style: none; margin-left:0;">
+            <li><i class="fa-regular fa-envelope" style="color:#d4af37;"></i> <strong>returns@myessantia.com</strong></li>
+          </ul>
+          <p style="margin-top:1rem;">Please include your order number and evidence — we're here to help.</p>
+        </div>
+
+        <!-- REMINDER -->
+        <div class="signature-block">
+          <span class="signature"><i class="fa-regular fa-box"></i> always record your unboxing — MyEssantia</span>
+          <span class="badge-policy"><i class="fa-regular fa-star"></i> vetted quality</span>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+  <div id="common-modals"></div>
+
+  <script src="common.js"></script>
+  <script>
+    function setReturnsActive() {
+      setTimeout(() => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const returnsLink = document.querySelector('a[href="returns.html"]');
+        if (returnsLink) returnsLink.classList.add('active');
+      }, 300);
+    }
+
+    function handleScroll() {
+      const btn = document.getElementById('scrollTop');
+      if (btn) btn.classList.toggle('visible', window.scrollY > 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof window.loadComponents === 'function') {
+        await window.loadComponents();
+      }
+      setReturnsActive();
+      window.addEventListener('scroll', handleScroll);
+    });
+  </script>
+</body>
+</html>
