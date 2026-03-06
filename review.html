@@ -1,5 +1,5 @@
-
-
+<!-- Complete Review Page -->
+<div class="container">
   <!-- Review Form (Add/Edit) - Exactly like original -->
   <div class="review-form" id="reviewForm">
     <div class="form-header">
@@ -111,10 +111,43 @@
     </div>
   </div>
 
+  <!-- Stats Cards -->
+  <div class="stats-grid" style="margin-top: 24px;">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="stat-info">
+        <h3 id="total-reviews">0</h3>
+        <p>total reviews</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+      <div class="stat-info">
+        <h3 id="verified-reviews">0</h3>
+        <p>verified</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-image"></i></div>
+      <div class="stat-info">
+        <h3 id="reviews-with-images">0</h3>
+        <p>with images</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+      <div class="stat-info">
+        <h3 id="reviewed-products">0</h3>
+        <p>products</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Loading State -->
   <div id="reviews-loading" style="display: flex; justify-content: center; padding: 40px;">
     <div class="spinner" style="width:40px;height:40px;border:4px solid #eee;border-top-color:#d4af37;border-radius:50%;animation:spin 1s infinite;"></div>
   </div>
+  
   <style> @keyframes spin { to { transform: rotate(360deg); } } </style>
 
   <!-- Reviews Table Container -->
@@ -684,6 +717,24 @@
   const reviewVerified = document.getElementById('review-verified');
   const formTitle = document.getElementById('review-form-title');
   
+  // Show notification function
+  function showNotification(message, type = 'success') {
+    // Try to use parent notification first
+    if (typeof window.parent.showNotification === 'function') {
+      window.parent.showNotification(message, type);
+      return;
+    }
+    
+    // Fallback notification
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      notification.remove();
+    }, 2000);
+  }
+  
   // Load products for dropdown
   window.loadReviewProducts = async function() {
     try {
@@ -701,6 +752,7 @@
       if (selectProduct) selectProduct.innerHTML = options;
     } catch (e) { 
       console.error('Error loading products:', e); 
+      showNotification('Error loading products', 'error');
     }
   };
   
@@ -919,6 +971,7 @@
     if (previewImg) previewImg.src = url;
     if (preview) preview.style.display = 'block';
     document.getElementById('review-image-url').value = '';
+    showNotification('image added');
   };
   
   window.handleReviewImageUpload = function(files) {
@@ -929,6 +982,7 @@
     const previewImg = document.getElementById('review-image-preview-img');
     if (previewImg) previewImg.src = url;
     document.getElementById('review-image-preview').style.display = 'block';
+    showNotification('image uploaded');
   };
   
   window.removeReviewImage = function() {
@@ -936,6 +990,7 @@
     document.getElementById('review-image-preview').style.display = 'none';
     const fileInput = document.getElementById('review-image-file');
     if (fileInput) fileInput.value = '';
+    showNotification('image removed');
   };
   
   window.resetReviewForm = function() {
@@ -1048,8 +1103,19 @@
       return;
     }
     
-    const csv = data.map(row => Object.values(row).map(v => `"${v}"`).join(',')).join('\n');
-    const blob = new Blob([['product,reviewer,city,rating,comment,verified,image,date', csv].join('\n')], {type:'text/csv'});
+    const headers = ['product','reviewer','city','rating','comment','verified','image','date'];
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+    
+    for (const row of data) {
+      const values = headers.map(header => {
+        const value = row[header]?.toString() || '';
+        return `"${value.replace(/"/g, '""')}"`;
+      });
+      csvRows.push(values.join(','));
+    }
+    
+    const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
     const a = document.createElement('a'); 
     a.href = URL.createObjectURL(blob); 
     a.download = 'reviews.csv'; 
@@ -1074,15 +1140,6 @@
       window.currentReviewPage = 1;
       window.renderReviews();
     });
-  }
-  
-  // Notification helper
-  function showNotification(msg, type='success') {
-    const n = document.createElement('div'); 
-    n.className = 'notification'; 
-    n.textContent = msg;
-    document.body.appendChild(n); 
-    setTimeout(() => n.remove(), 2000);
   }
   
   // Initialize
