@@ -1,3 +1,4 @@
+<!-- Filters Bar -->
 <div class="filters-bar">
   <div class="search-box">
     <i class="fa-solid fa-search"></i>
@@ -9,9 +10,6 @@
     <span class="filter-tab" data-filter="verified">verified</span>
     <span class="filter-tab" data-filter="unverified">unverified</span>
     <span class="filter-tab" data-filter="with-image">with images</span>
-    <span class="filter-tab" data-filter="accepted">accepted ✓</span>
-    <span class="filter-tab" data-filter="rejected">rejected ✗</span>
-    <span class="filter-tab" data-filter="pending">pending ⏳</span>
   </div>
   
   <div class="action-group">
@@ -56,93 +54,6 @@
   </div>
 </div>
 
-<!-- Rating Override Panel (NEW) -->
-<div class="rating-override-panel" id="ratingOverridePanel" style="display: none;">
-  <div class="panel-header">
-    <h3><i class="fa-solid fa-chart-bar"></i> rating chart override</h3>
-    <span class="close-panel" onclick="toggleRatingOverridePanel()">✕</span>
-  </div>
-  <div class="panel-body">
-    <div class="form-group">
-      <label><i class="fa-solid fa-box"></i> product</label>
-      <select id="override-product-id" onchange="loadProductForOverride()">
-        <option value="">select product...</option>
-      </select>
-    </div>
-    
-    <div id="override-current-stats" style="display: none;">
-      <div class="current-stats">
-        <h4>current stats</h4>
-        <div class="stat-row">
-          <span>total reviews:</span>
-          <span id="current-total-reviews">0</span>
-        </div>
-        <div class="stat-row">
-          <span>average rating:</span>
-          <span id="current-avg-rating">0.0</span>
-        </div>
-      </div>
-      
-      <div class="override-form">
-        <h4>override settings</h4>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label><i class="fa-solid fa-hashtag"></i> total reviews count</label>
-            <input type="number" id="override-total-reviews" min="0" step="1" placeholder="leave empty to use actual">
-          </div>
-          
-          <div class="form-group">
-            <label><i class="fa-solid fa-star"></i> average rating</label>
-            <input type="number" id="override-avg-rating" min="1" max="5" step="0.1" placeholder="leave empty to use actual">
-          </div>
-        </div>
-        
-        <div class="distribution-override">
-          <h5>rating distribution (%)</h5>
-          <div class="distribution-grid">
-            <div class="dist-item">
-              <label>5 ★</label>
-              <input type="number" id="override-dist-5" min="0" max="100" step="1" placeholder="0">
-            </div>
-            <div class="dist-item">
-              <label>4 ★</label>
-              <input type="number" id="override-dist-4" min="0" max="100" step="1" placeholder="0">
-            </div>
-            <div class="dist-item">
-              <label>3 ★</label>
-              <input type="number" id="override-dist-3" min="0" max="100" step="1" placeholder="0">
-            </div>
-            <div class="dist-item">
-              <label>2 ★</label>
-              <input type="number" id="override-dist-2" min="0" max="100" step="1" placeholder="0">
-            </div>
-            <div class="dist-item">
-              <label>1 ★</label>
-              <input type="number" id="override-dist-1" min="0" max="100" step="1" placeholder="0">
-            </div>
-          </div>
-          <div class="distribution-total" id="distribution-total">total: 0%</div>
-        </div>
-        
-        <div class="form-actions">
-          <button class="btn btn-primary" onclick="saveRatingOverrides()">
-            <i class="fa-solid fa-save"></i> save overrides
-          </button>
-          <button class="btn btn-outline" onclick="clearRatingOverrides()">
-            <i class="fa-solid fa-undo"></i> clear overrides
-          </button>
-        </div>
-        
-        <div class="info-note">
-          <i class="fa-solid fa-info-circle"></i>
-          <span>Overrides will be applied to the product page. Leave fields empty to use actual review data.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Loading State -->
 <div id="reviews-loading" class="loading-state" style="display: none;">
   <div class="spinner"></div>
@@ -154,11 +65,6 @@
     <div class="form-title">
       <i class="fa-solid fa-plus-circle"></i> 
       <span id="review-form-title">add new review</span>
-    </div>
-    <div style="display: flex; gap: 8px;">
-      <button class="template-btn" onclick="toggleRatingOverridePanel()">
-        <i class="fa-solid fa-chart-bar"></i> rating overrides
-      </button>
     </div>
   </div>
   <div class="form-body">
@@ -216,7 +122,6 @@
             </button>
           </div>
         </div>
-        
         <div class="form-group">
           <label><i class="fa-solid fa-check-circle"></i> verified purchase</label>
           <div class="toggle-container">
@@ -226,17 +131,6 @@
             </label>
             <span class="toggle-label">verified</span>
           </div>
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label><i class="fa-solid fa-flag"></i> status</label>
-          <select id="review-status">
-            <option value="accepted">accepted ✓ (show on product)</option>
-            <option value="pending">pending ⏳</option>
-            <option value="rejected">rejected ✗</option>
-          </select>
         </div>
       </div>
       
@@ -281,7 +175,6 @@
           <th>comment</th>
           <th>image</th>
           <th>verified</th>
-          <th>status</th>
           <th>date</th>
           <th>actions</th>
         </tr>
@@ -483,162 +376,6 @@
     white-space: nowrap;
   }
   
-  /* Rating Override Panel */
-  .rating-override-panel {
-    background: #fff;
-    border-radius: 30px;
-    border: 3px solid #d4af37;
-    box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
-    margin-bottom: 24px;
-    overflow: hidden;
-  }
-  
-  .panel-header {
-    background: #000;
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 3px solid #d4af37;
-  }
-  
-  .panel-header h3 {
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-  }
-  
-  .panel-header h3 i {
-    color: #d4af37;
-  }
-  
-  .close-panel {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  
-  .panel-body {
-    padding: 24px;
-  }
-  
-  .current-stats {
-    background: #fcfaf7;
-    border: 2px solid #000;
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  
-  .current-stats h4 {
-    font-size: 1rem;
-    margin-bottom: 12px;
-    color: #000;
-    text-transform: uppercase;
-    border-bottom: 2px solid #d4af37;
-    padding-bottom: 6px;
-  }
-  
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 0.9rem;
-  }
-  
-  .stat-row span:first-child {
-    font-weight: 600;
-    color: #666;
-  }
-  
-  .stat-row span:last-child {
-    font-weight: 800;
-    color: #000;
-  }
-  
-  .override-form {
-    background: #fff;
-    border: 2px solid #d4af37;
-    border-radius: 20px;
-    padding: 20px;
-  }
-  
-  .override-form h4 {
-    font-size: 1rem;
-    margin-bottom: 16px;
-    color: #000;
-  }
-  
-  .distribution-override {
-    margin: 20px 0;
-    padding: 16px;
-    background: #fcfaf7;
-    border-radius: 16px;
-  }
-  
-  .distribution-override h5 {
-    font-size: 0.9rem;
-    margin-bottom: 12px;
-  }
-  
-  .distribution-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .dist-item {
-    text-align: center;
-  }
-  
-  .dist-item label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  
-  .dist-item input {
-    width: 100%;
-    padding: 8px 4px;
-    text-align: center;
-    border: 2px solid #000;
-    border-radius: 12px;
-  }
-  
-  .distribution-total {
-    text-align: right;
-    font-weight: 700;
-    padding: 4px 0;
-  }
-  
-  .info-note {
-    margin-top: 16px;
-    padding: 12px;
-    background: #f0f0f0;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-  }
-  
-  .info-note i {
-    color: #d4af37;
-  }
-  
   /* Loading State */
   .loading-state {
     display: flex;
@@ -673,11 +410,6 @@
     background: #000;
     padding: 16px 24px;
     border-bottom: 4px solid #d4af37;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
   }
   
   .form-header .form-title {
@@ -698,21 +430,6 @@
     border-radius: 50%;
     border: 2px solid #d4af37;
     font-size: 1rem;
-  }
-  
-  .template-btn {
-    background: #d4af37;
-    color: #000;
-    border: 2px solid #fff;
-    border-radius: 40px;
-    padding: 8px 18px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    white-space: nowrap;
   }
   
   .form-body {
@@ -976,7 +693,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 1100px;
+    min-width: 1000px;
   }
   
   th {
@@ -1030,32 +747,6 @@
     align-items: center;
     gap: 4px;
     white-space: nowrap;
-  }
-  
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 30px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    border: 2px solid #000;
-  }
-  
-  .status-badge.accepted {
-    background: #4CAF50;
-    color: #fff;
-  }
-  
-  .status-badge.pending {
-    background: #ffbb33;
-    color: #000;
-  }
-  
-  .status-badge.rejected {
-    background: #f44336;
-    color: #fff;
   }
   
   .action-btns {
@@ -1332,16 +1023,6 @@
     .form-row {
       grid-template-columns: 1fr;
     }
-    
-    .distribution-grid {
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-    }
-    
-    .dist-item input {
-      padding: 4px 2px;
-      font-size: 0.8rem;
-    }
   }
   
   @media (max-width: 480px) {
@@ -1370,9 +1051,4 @@
     .stat-info h3 {
       font-size: 1.3rem;
     }
-    
-    .distribution-grid {
-      grid-template-columns: 1fr;
-    }
   }
-</style>
