@@ -97,6 +97,70 @@
       box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
     }
 
+    /* Updated review card styles for image-on-top layout */
+.review-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0 rgba(212, 175, 55, 0.25);
+}
+
+.review-image-top {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #000;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-bottom: 8px;
+}
+
+.review-image-top:hover {
+  transform: scale(1.02);
+}
+
+.review-image-top img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.review-avatar-large {
+  width: 60px;
+  height: 60px;
+  background: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #d4af37;
+  border: 2px solid #d4af37;
+  margin-bottom: 8px;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 640px) {
+  .review-card {
+    padding: 14px;
+  }
+  
+  .review-avatar-large {
+    width: 50px;
+    height: 50px;
+    font-size: 1rem;
+  }
+}
+
     .rating-chart-header {
       display: flex;
       align-items: center;
@@ -1863,8 +1927,7 @@ async function loadProductReviews(productId) {
           </div>
         </div>
       `;
-        
-      // Generate reviews HTML
+    // Generate reviews HTML with image on top layout
 let reviewsHTML = '';
 
 if (productReviews && productReviews.length > 0) {
@@ -1873,7 +1936,7 @@ if (productReviews && productReviews.length > 0) {
     const daysAgo = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
     const timeDisplay = daysAgo > 0 ? `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago` : 'Today';
     
-    // Generate avatar from name
+    // Generate avatar from name (if no image)
     const nameParts = (review.reviewerName || 'A').split(' ');
     const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
     
@@ -1892,33 +1955,45 @@ if (productReviews && productReviews.length > 0) {
     const imageUrl = review.imageUrl || null;
     
     return `
-      <div class="review-card">
-        <div style="display: flex; gap: 10px; margin-bottom: 6px;">
-          <div class="reviewer-avatar">${initials}</div>
+      <div class="review-card" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Image on top -->
+        ${imageUrl ? `
+        <div class="review-image-top" style="width: 100%; border-radius: 12px; overflow: hidden; border: 2px solid #000; cursor: pointer;" onclick="window.open('${imageUrl}', '_blank')">
+          <img src="${imageUrl}" alt="Review image" style="width: 100%; height: auto; display: block;" onerror="this.style.display='none'">
+        </div>
+        ` : `
+        <div class="review-avatar-large" style="width: 60px; height: 60px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; color: #d4af37; border: 2px solid #d4af37; margin-bottom: 4px;">
+          ${initials}
+        </div>
+        `}
+        
+        <!-- User info and rating below image -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
           <div>
-            <div style="font-weight: 700; font-size: 0.85rem;">${review.reviewerName}</div>
-            <div style="font-size: 0.7rem;">${review.city || 'India'} • ${timeDisplay} ${review.verified ? '✓ Verified' : ''}</div>
+            <div style="font-weight: 800; font-size: 0.95rem; color: #000;">${review.reviewerName}</div>
+            <div style="font-size: 0.7rem; color: #666;">${review.city || 'India'} • ${timeDisplay}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="stars" style="font-size: 0.8rem; color: #d4af37; margin-bottom: 2px;">${stars}</div>
+            <div style="font-size: 0.65rem; font-weight: 600;">${review.verified ? '✓ Verified' : ''}</div>
           </div>
         </div>
-        <div class="stars" style="margin-bottom: 6px; font-size: 0.75rem; color: #d4af37;">${stars}</div>
-        <p style="font-size: 0.75rem; line-height: 1.4;">${review.comment}</p>
-        ${imageUrl ? `
-        <div class="review-image" onclick="window.open('${imageUrl}', '_blank')">
-          <img src="${imageUrl}" alt="Review image" style="width: 100%; height: auto; border-radius: 8px; border: 1px solid #000;" onerror="this.style.display='none'">
-        </div>
-        ` : ''}
+        
+        <!-- Review description at bottom -->
+        <p style="font-size: 0.8rem; line-height: 1.5; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">${review.comment}</p>
       </div>
     `;
   }).join('');
 } else {
   reviewsHTML = `
-    <div style="text-align: center; padding: 30px 20px; color: #666;">
-      <i class="fa-regular fa-star" style="font-size: 2.5rem; color: #d4af37; margin-bottom: 15px; display: block;"></i>
-      <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: #000;">No reviews yet</h3>
-      <p style="font-size: 0.85rem;">Be the first to review this product!</p>
+    <div style="text-align: center; padding: 40px 20px; color: #666;">
+      <i class="fa-regular fa-star" style="font-size: 3rem; color: #d4af37; margin-bottom: 15px; display: block;"></i>
+      <h3 style="font-size: 1.2rem; margin-bottom: 8px; color: #000;">No reviews yet</h3>
+      <p style="font-size: 0.9rem;">Be the first to review this product!</p>
     </div>
   `;
 }
+      
       const container = document.getElementById('product-container');
       container.innerHTML = `
         <div class="product-grid">
