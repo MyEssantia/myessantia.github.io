@@ -1863,19 +1863,23 @@ async function loadProductReviews(productId) {
           </div>
         </div>
       `;
-    // Generate reviews HTML with image on top layout
-// Compact reviews HTML with smaller images
+
+      // Generate reviews HTML with compact images and 2 per line
 let reviewsHTML = '';
 
 if (productReviews && productReviews.length > 0) {
-  reviewsHTML = productReviews.map(review => {
+  reviewsHTML = `<div class="reviews-grid">`;
+  
+  reviewsHTML += productReviews.map(review => {
     const date = review.timestamp || new Date();
     const daysAgo = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
-    const timeDisplay = daysAgo > 0 ? `${daysAgo}d ago` : 'Today';
+    const timeDisplay = daysAgo > 0 ? `${daysAgo}d` : 'Today';
     
+    // Generate avatar from name
     const nameParts = (review.reviewerName || 'A').split(' ');
     const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
     
+    // Generate star rating
     const rating = review.rating || 5;
     const fullStars = Math.floor(rating);
     const hasHalf = rating % 1 >= 0.5;
@@ -1889,26 +1893,31 @@ if (productReviews && productReviews.length > 0) {
     const imageUrl = review.imageUrl || null;
     
     return `
-      <div class="review-card-compact">
-        <!-- Small image at top -->
+      <div class="review-card">
+        <!-- Compact square image or avatar -->
         ${imageUrl ? `
-        <div class="review-image-container">
-          <img src="${imageUrl}" alt="Review" class="review-image-small" onclick="window.open('${imageUrl}', '_blank')" onerror="this.style.display='none'">
+        <div class="review-image-compact" onclick="window.open('${imageUrl}', '_blank')">
+          <img src="${imageUrl}" alt="Review" onerror="this.style.display='none'">
         </div>
-        ` : ''}
+        ` : `
+        <div class="review-avatar-compact">
+          ${initials}
+        </div>
+        `}
         
         <!-- User info and rating row -->
-        <div class="review-header-row">
-          <div class="reviewer-info">
-            ${!imageUrl ? `<div class="review-avatar-small">${initials}</div>` : ''}
-            <div>
-              <div class="reviewer-name">${review.reviewerName}</div>
-              <div class="reviewer-meta">${review.city || 'India'} • ${timeDisplay}</div>
+        <div class="review-user-info">
+          <div class="review-user-details">
+            <div class="review-user-name">${review.reviewerName}</div>
+            <div class="review-user-meta">
+              <span>${review.city || 'India'}</span>
+              <span>•</span>
+              <span>${timeDisplay}</span>
             </div>
           </div>
-          <div class="rating-compact">
-            <div class="stars-small">${stars}</div>
-            ${review.verified ? '<span class="verified-badge-small">✓ Verified</span>' : ''}
+          <div class="review-rating-compact">
+            <div class="review-stars">${stars}</div>
+            ${review.verified ? '<span class="review-verified-badge">✓ Verified</span>' : ''}
           </div>
         </div>
         
@@ -1917,12 +1926,14 @@ if (productReviews && productReviews.length > 0) {
       </div>
     `;
   }).join('');
+  
+  reviewsHTML += `</div>`;
 } else {
   reviewsHTML = `
     <div style="text-align: center; padding: 40px 20px; color: #666;">
-      <i class="fa-regular fa-star" style="font-size: 2.5rem; color: #d4af37; margin-bottom: 15px; display: block;"></i>
-      <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: #000;">No reviews yet</h3>
-      <p style="font-size: 0.8rem;">Be the first to review this product!</p>
+      <i class="fa-regular fa-star" style="font-size: 3rem; color: #d4af37; margin-bottom: 15px; display: block;"></i>
+      <h3 style="font-size: 1.2rem; margin-bottom: 8px; color: #000;">No reviews yet</h3>
+      <p style="font-size: 0.9rem;">Be the first to review this product!</p>
     </div>
   `;
 }
