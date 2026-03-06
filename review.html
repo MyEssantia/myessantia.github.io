@@ -213,7 +213,17 @@
 </div>
 
 <style>
-  /* Additional styles for reviews page */
+
+  /* Add at the top of your reviews page styles */
+.review-form {
+  display: block !important;  /* Force form to be visible */
+  margin-bottom: 24px;
+}
+
+/* If you want the form to be collapsible, add this class */
+.review-form.hidden {
+  display: none;
+}
   .review-form {
     background: #ffffff;
     border-radius: 40px;
@@ -978,14 +988,26 @@
     if (fileInput) fileInput.value = '';
   };
   
-  window.resetReviewForm = function() {
-    document.getElementById('review-form').reset();
-    if (reviewId) reviewId.value = '';
-    if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new review';
-    if (reviewVerified) reviewVerified.checked = true;
-    window.removeReviewImage();
-    document.getElementById('reviewForm').scrollIntoView({ behavior: 'smooth' });
-  };
+window.resetReviewForm = function() {
+  // Reset form fields
+  document.getElementById('review-form').reset();
+  if (reviewId) reviewId.value = '';
+  if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new review';
+  if (reviewVerified) reviewVerified.checked = true;
+  
+  // Remove any image preview
+  window.removeReviewImage();
+  
+  // Make sure form is visible (remove any hidden class)
+  const reviewForm = document.getElementById('reviewForm');
+  if (reviewForm) {
+    reviewForm.classList.remove('hidden');
+    reviewForm.style.display = 'block';
+  }
+  
+  // Scroll to form
+  reviewForm.scrollIntoView({ behavior: 'smooth' });
+};
   
   window.handleReviewSubmit = async function(e) {
     e.preventDefault();
