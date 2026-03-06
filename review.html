@@ -1,44 +1,4 @@
-<!-- review.html - Complete working version with full form and image upload -->
-<div>
-  <!-- Stats Cards -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fa-solid fa-star"></i>
-      </div>
-      <div class="stat-info">
-        <h3 id="total-reviews">0</h3>
-        <p>total reviews</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fa-solid fa-check-circle"></i>
-      </div>
-      <div class="stat-info">
-        <h3 id="verified-reviews">0</h3>
-        <p>verified</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fa-solid fa-camera"></i>
-      </div>
-      <div class="stat-info">
-        <h3 id="reviews-with-images">0</h3>
-        <p>with images</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fa-solid fa-cubes"></i>
-      </div>
-      <div class="stat-info">
-        <h3 id="reviewed-products">0</h3>
-        <p>products reviewed</p>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Review Form (Add/Edit) - Exactly like original -->
   <div class="review-form" id="reviewForm">
@@ -213,17 +173,7 @@
 </div>
 
 <style>
-
-  /* Add at the top of your reviews page styles */
-.review-form {
-  display: block !important;  /* Force form to be visible */
-  margin-bottom: 24px;
-}
-
-/* If you want the form to be collapsible, add this class */
-.review-form.hidden {
-  display: none;
-}
+  /* Additional styles for reviews page */
   .review-form {
     background: #ffffff;
     border-radius: 40px;
@@ -804,10 +754,6 @@
     window.applyReviewFilter(filter);
     window.renderReviews();
   };
-
-  // Check if form exists and is visible
-console.log(document.getElementById('reviewForm')); 
-console.log(getComputedStyle(document.getElementById('reviewForm')).display);
   
   // Update statistics
   window.updateReviewStats = function() {
@@ -992,26 +938,14 @@ console.log(getComputedStyle(document.getElementById('reviewForm')).display);
     if (fileInput) fileInput.value = '';
   };
   
-window.resetReviewForm = function() {
-  // Reset form fields
-  document.getElementById('review-form').reset();
-  if (reviewId) reviewId.value = '';
-  if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new review';
-  if (reviewVerified) reviewVerified.checked = true;
-  
-  // Remove any image preview
-  window.removeReviewImage();
-  
-  // Make sure form is visible (remove any hidden class)
-  const reviewForm = document.getElementById('reviewForm');
-  if (reviewForm) {
-    reviewForm.classList.remove('hidden');
-    reviewForm.style.display = 'block';
-  }
-  
-  // Scroll to form
-  reviewForm.scrollIntoView({ behavior: 'smooth' });
-};
+  window.resetReviewForm = function() {
+    document.getElementById('review-form').reset();
+    if (reviewId) reviewId.value = '';
+    if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new review';
+    if (reviewVerified) reviewVerified.checked = true;
+    window.removeReviewImage();
+    document.getElementById('reviewForm').scrollIntoView({ behavior: 'smooth' });
+  };
   
   window.handleReviewSubmit = async function(e) {
     e.preventDefault();
