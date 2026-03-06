@@ -3133,24 +3133,36 @@ function initializeReviewsPage() {
 }
 
 function setupReviewEventListeners() {
-  // Filter tabs
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.removeEventListener('click', handleFilterClick);
-    tab.addEventListener('click', handleFilterClick);
+  // Remove existing listeners first
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  filterTabs.forEach(tab => {
+    const newTab = tab.cloneNode(true);
+    tab.parentNode.replaceChild(newTab, tab);
+    newTab.addEventListener('click', function() {
+      const filter = this.dataset.filter;
+      filterReviews(filter);
+    });
   });
   
   // Search input
   const searchInput = document.getElementById('search-reviews');
   if (searchInput) {
-    searchInput.removeEventListener('input', handleSearchInput);
-    searchInput.addEventListener('input', handleSearchInput);
+    const newSearch = searchInput.cloneNode(true);
+    searchInput.parentNode.replaceChild(newSearch, searchInput);
+    newSearch.addEventListener('input', function(e) {
+      performSearch(e.target.value);
+    });
   }
   
-  // Form submit
+  // Form submit - IMPORTANT: Remove any existing listeners
   const reviewForm = document.getElementById('review-form');
   if (reviewForm) {
-    reviewForm.removeEventListener('submit', handleReviewSubmit);
-    reviewForm.addEventListener('submit', handleReviewSubmit);
+    // Remove all existing listeners by cloning
+    const newForm = reviewForm.cloneNode(true);
+    reviewForm.parentNode.replaceChild(newForm, reviewForm);
+    
+    // Add single listener
+    newForm.addEventListener('submit', handleReviewSubmit);
   }
 }
 
@@ -3472,12 +3484,24 @@ function resetReviewForm() {
   document.getElementById('reviewForm').scrollIntoView({ behavior: 'smooth' });
 }
 
+// Add a flag to prevent double submission
+let isSubmitting = false;
+
 async function handleReviewSubmit(e) {
   e.preventDefault();
+  
+  // Prevent double submission
+  if (isSubmitting) {
+    console.log('Already submitting...');
+    return false;
+  }
+  
+  isSubmitting = true;
   
   const productId = document.getElementById('review-product-id').value;
   if (!productId) { 
     showReviewNotification('Select product', 'error'); 
+    isSubmitting = false;
     return false; 
   }
   
@@ -3509,6 +3533,9 @@ async function handleReviewSubmit(e) {
   } catch (err) { 
     console.error(err);
     showReviewNotification('Error saving review', 'error'); 
+  } finally {
+    // Reset the flag
+    isSubmitting = false;
   }
   return false;
 }
