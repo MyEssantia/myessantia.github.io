@@ -60,10 +60,16 @@
 
     /* ========== MAIN PRODUCT GRID ========== */
     .product-grid {
-      display: grid; grid-template-columns: 1fr; gap: 24px; padding-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding-bottom: 40px;
     }
     @media (min-width: 1024px) {
-      .product-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
     }
 
     /* ========== GALLERY ========== */
@@ -91,10 +97,11 @@
     .rating-chart-card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 12px;
-      margin: 12px 0;
+      padding: 16px;
+      margin: 16px 0 24px;
       border: 2px solid #000000;
       box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+      width: 100%;
     }
 
     .rating-chart-header {
@@ -102,7 +109,7 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       padding-bottom: 8px;
       border-bottom: 2px solid #000;
     }
@@ -467,233 +474,222 @@
       100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
     }
 
-/* ===== CUSTOMER REVIEW SECTION - NO FRAME ===== */
-:root {
-  --regular-font-size: 16px;
-  --error-color: red;
-}
+    /* ===== CUSTOMER REVIEW SECTION - INCREASED SIZES, FULL WIDTH AT BOTTOM ===== */
+    :root {
+      --regular-font-size: 16px;
+      --error-color: red;
+    }
 
-.review-card {
-  background-color: #fff;
-  margin: 10px auto;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  max-width: 500px;
-  width: 100%;
-  border: 0;
-}
+    .review-card {
+      background-color: #fff;
+      margin: 0 auto;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      max-width: 100%;
+      width: 100%;
+      border: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-.review-media {
-  width: 100%;
-  background: rgb(255, 255, 255);
-}
+    .review-media {
+      width: 100%;
+      background: rgb(255, 255, 255);
+      aspect-ratio: 1/1;
+      overflow: hidden;
+    }
 
-.review-media img {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  display: block;
-  background: rgb(255, 255, 255);
-}
+    .review-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: rgb(255, 255, 255);
+    }
 
-.review-details {
-  padding: 20px;
-}
+    .review-details {
+      padding: 16px;
+      flex: 1;
+    }
 
-.review-header {
-  margin-bottom: 10px;
-}
+    .review-header {
+      margin-bottom: 8px;
+    }
 
-.author-name-w-details {
-  margin-bottom: 6px;
-}
+    .author-name-w-details {
+      margin-bottom: 4px;
+    }
 
-.author-name {
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 1.3;
-}
+    .author-name {
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.tydal-star-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin-bottom: 10px;
-}
+    .tydal-star-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
 
-.star {
-  height: 18px;
-  width: 18px;
-  fill: #F1C645;
-}
+    .star {
+      height: 16px;
+      width: 16px;
+      fill: #F1C645;
+      flex-shrink: 0;
+    }
 
-.review-text {
-  font-size: var(--regular-font-size);
-  line-height: 1.5;
-  color: #000;
-}
+    .review-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #000;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-/* Reviews header */
-.reviews-header {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #000;
-  border-bottom: 3px solid #d4af37;
-  padding-bottom: 18px;
-  margin-bottom: 30px;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  letter-spacing: 1px;
-}
+    /* Reviews container - FULL WIDTH AT BOTTOM */
+    .reviews-section {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 3px solid #000;
+    }
 
-.reviews-header span:last-child {
-  background: #000;
-  color: #d4af37;
-  padding: 10px 24px;
-  border-radius: 40px;
-  font-size: 1.2rem;
-  border: 2px solid #d4af37;
-}
+    .reviews-header {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #000;
+      border-bottom: 3px solid #d4af37;
+      padding-bottom: 18px;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 1px;
+      width: 100%;
+    }
 
-/* Main container for all reviews - NO FRAME */
-.reviews-common-frame {
-  width: 100%;
-  margin: 20px 0 30px;
-}
+    .reviews-header span:last-child {
+      background: #000;
+      color: #d4af37;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 1.2rem;
+      border: 2px solid #d4af37;
+    }
 
-/* Grid layout for reviews */
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 40px;
-  margin: 0;
-  width: 100%;
-}
+    /* Grid layout for reviews - FULL WIDTH */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 24px;
+      margin: 0;
+      width: 100%;
+    }
 
-.review-item {
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  border: none;
-  padding: 0;
-  transition: transform 0.2s ease;
-  min-width: 0;
-}
+    .review-item {
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      padding: 0;
+      transition: transform 0.2s ease;
+      min-width: 0;
+      height: 100%;
+    }
 
-.review-item:hover {
-  transform: translateY(-5px);
-}
+    .review-item:hover {
+      transform: translateY(-5px);
+    }
 
-.review-item .review-card {
-  margin: 0;
-  max-width: 100%;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
-}
+    /* Empty state styling */
+    .empty-state {
+      text-align: center;
+      padding: 80px 30px;
+      color: #666;
+      background: #f9f9f9;
+      border: 2px dashed #000;
+      width: 100%;
+      grid-column: 1 / -1;
+    }
 
-/* Desktop reviews */
-.desktop-reviews {
-  display: none;
-  margin-top: 16px;
-}
+    .empty-state i {
+      font-size: 5rem;
+      color: #d4af37;
+      margin-bottom: 24px;
+    }
 
-@media (min-width: 1024px) { 
-  .desktop-reviews { 
-    display: block; 
-    grid-column: 1 / -1;
-    margin-top: 40px;
-  }
-  
-  .desktop-reviews .reviews-common-frame {
-    width: 100%;
-    margin-bottom: 0;
-  }
-  
-  .desktop-reviews .reviews-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 45px;
-  }
-  
-  .desktop-reviews .review-card {
-    max-width: 550px;
-  }
-}
+    .empty-state h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #000;
+    }
 
-/* Tablet and below - responsive grid */
-@media (max-width: 1023px) and (min-width: 800px) {
-  .reviews-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-  }
-  
-  .review-card {
-    max-width: 450px;
-  }
-}
+    .empty-state p {
+      font-size: 1.1rem;
+      color: #666;
+    }
 
-@media (max-width: 799px) and (min-width: 500px) {
-  .reviews-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-  }
-  
-  .review-card {
-    max-width: 400px;
-  }
-}
+    /* Responsive grid */
+    @media (max-width: 1200px) {
+      .reviews-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
 
-@media (max-width: 499px) {
-  .reviews-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  
-  .review-card {
-    max-width: 350px;
-  }
-  
-  .author-name {
-    font-size: 16px;
-  }
-  
-  .star {
-    height: 16px;
-    width: 16px;
-  }
-  
-  .review-text {
-    font-size: 14px;
-  }
-}
+    @media (max-width: 1000px) {
+      .reviews-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
 
-/* Empty state styling */
-.reviews-common-frame .empty-state {
-  text-align: center;
-  padding: 100px 30px;
-  color: #666;
-  background: #f9f9f9;
-  border: 2px dashed #000;
-  width: 100%;
-}
+    @media (max-width: 800px) {
+      .reviews-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
 
-.reviews-common-frame .empty-state i {
-  font-size: 6rem;
-  color: #d4af37;
-  margin-bottom: 30px;
-}
+    @media (max-width: 600px) {
+      .reviews-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      
+      .reviews-header {
+        font-size: 1.5rem;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+      
+      .reviews-header span:last-child {
+        padding: 6px 16px;
+        font-size: 1rem;
+      }
+    }
 
-.reviews-common-frame .empty-state h3 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 20px;
-  color: #000;
-}
+    @media (max-width: 400px) {
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .review-card {
+        max-width: 350px;
+        margin: 0 auto;
+      }
+    }
 
-.reviews-common-frame .empty-state p {
-  font-size: 1.2rem;
-  color: #666;
-}
     /* ========== PRODUCT INFO ========== */
     .social-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .sold-badge {
@@ -1299,48 +1295,6 @@
       display: flex; align-items: center; justify-content: center; color: #000; border: 2px solid #000; font-size: 0.8rem;
     }
 
-    /* mobile reviews */
-    .mobile-reviews {
-      background: #ffffff; border-radius: 20px; padding: 16px; border: 2px solid #000;
-      margin-top: 24px;
-    }
-    @media (min-width: 1024px) { .mobile-reviews { display: none; } }
-    .reviews-header {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-weight: 800;
-      font-size: 0.9rem;
-    }
-    .review-card {
-      padding: 0; background: #fff; border-radius: 0; border: none; margin-bottom: 0;
-      font-size: 0.8rem;
-      transition: all 0.3s;
-    }
-    .review-card:hover {
-      transform: translateX(4px);
-      box-shadow: -4px 4px 0 rgba(212, 175, 55, 0.2);
-    }
-    .reviewer-avatar {
-      width: 36px; height: 36px; background: #000; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-weight: 700; color: #d4af37; border: 2px solid #d4af37; font-size: 0.8rem;
-    }
-
-    /* related products */
-    .related { margin-top: 32px; padding-top: 24px; }
-    .related-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 16px; color: #000; text-transform: uppercase; }
-    .related-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-    }
-    @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(4, 1fr); } }
-    .related-card {
-      text-decoration: none; color: inherit; background: #ffffff; border-radius: 18px;
-      padding: 12px; border: 2px solid #000; box-shadow: 3px 3px 0 rgba(0,0,0,0.1); display: block;
-      transition: all 0.3s;
-    }
-    .related-card:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 rgba(212,175,55,0.25); }
-    .related-image { aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; margin-bottom: 8px; border: 1px solid #000; }
-    .related-name { font-weight: 800; color: #000; margin-bottom: 2px; text-transform: uppercase; font-size:0.8rem; }
-    .related-price { font-weight: 800; color: #d4af37; font-size: 1rem; }
-    .related-add { padding: 8px; background: #000; border-radius: 60px; text-align: center; font-size: 0.7rem; font-weight: 700; color: #d4af37; border: 2px solid #d4af37; margin-top: 6px; }
-
     /* notification */
     .notification {
       position: fixed; top: 20px; left: 20px; right: 20px; max-width: 320px; margin: 0 auto;
@@ -1423,7 +1377,7 @@
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
     let selectedPaymentMethod = 'prepaid';
-    let currentAction = null; // 'buy' or 'cart' for high demand popup
+    let currentAction = null;
     let productReviews = [];
     
     const STORAGE_KEY = 'myessantia_product_data';
@@ -1447,13 +1401,11 @@
       }));
     }
 
-    // Check if user has already requested notification for this product
     function hasRequestedNotification(productId) {
       const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
       return !!notifications[productId];
     }
 
-    // Mark that user has requested notification for this product
     function markNotificationRequested(productId, email) {
       const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
       notifications[productId] = {
@@ -1464,7 +1416,6 @@
       localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications));
     }
 
-    // Submit notification to Firestore
     async function submitNotificationToFirebase(productId, email, actionType) {
       try {
         if (typeof db !== 'undefined' && db) {
@@ -1472,13 +1423,12 @@
             productId: productId,
             productTitle: currentProduct?.title || 'Unknown Product',
             email: email,
-            actionType: actionType, // 'buy' or 'cart'
+            actionType: actionType,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             status: 'pending'
           });
           console.log('Notification saved to Firebase');
         } else {
-          // Fallback to localStorage if Firebase not available
           console.log('Firebase not available, saving to localStorage only');
         }
       } catch (error) {
@@ -1489,7 +1439,6 @@
     function getRandomSold() { return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; }
     function getRandomViewers() { return Math.floor(Math.random() * (35 - 8 + 1)) + 8; }
 
-    // Load reviews for this product from Firestore
     async function loadProductReviews(productId) {
       try {
         console.log('Loading reviews for product:', productId);
@@ -1504,10 +1453,9 @@
           return [];
         }
         
-        // TEMPORARY FIX: Remove orderBy while index is building
         const snapshot = await db.collection('reviews')
           .where('productId', '==', productId)
-          .get(); // Removed .orderBy('timestamp', 'desc')
+          .get();
         
         console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
         
@@ -1519,7 +1467,6 @@
         const reviews = snapshot.docs.map(doc => {
           const data = doc.data();
           
-          // Handle timestamp properly
           let reviewDate = new Date();
           if (data.timestamp) {
             if (data.timestamp.toDate) {
@@ -1543,7 +1490,6 @@
           };
         });
         
-        // Sort manually (descending order)
         reviews.sort((a, b) => b.timestamp - a.timestamp);
         
         console.log('Processed reviews:', reviews);
@@ -1558,11 +1504,9 @@
     function getProductId() { return new URLSearchParams(window.location.search).get('id'); }
 
     function generateRatingDistribution(reviews) {
-      // Default distribution
       let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
       
       if (reviews.length === 0) {
-        // Default distribution based on product rating if no reviews
         const baseRating = currentProduct?.rating || 4.5;
         if (baseRating >= 4.5) {
           distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
@@ -1574,7 +1518,6 @@
           distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
         }
       } else {
-        // Calculate distribution from actual reviews
         reviews.forEach(review => {
           const rating = Math.round(review.rating);
           if (rating >= 1 && rating <= 5) {
@@ -1582,7 +1525,6 @@
           }
         });
         
-        // Convert counts to percentages
         const total = reviews.length;
         if (total > 0) {
           distribution = {
@@ -1595,7 +1537,6 @@
         }
       }
       
-      // Ensure percentages add to 100
       const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
       if (sum !== 100 && sum > 0) {
         distribution[5] += (100 - sum);
@@ -1650,38 +1591,22 @@
       }, 300);
     }
 
-    // Toggle Razorpay popup
     window.toggleRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.toggle('show');
     };
 
-    // Close Razorpay popup (now only called from "Yes, got it" button)
     window.closeRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.remove('show');
     };
 
-    function toggleReviews() {
-      const container = document.getElementById('reviews-container');
-      const btn = document.getElementById('view-more-btn');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
-      } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
-      }
-    }
-
-    // High Demand Popup Functions
     window.showHighDemandPopup = function(action) {
       currentAction = action;
       const popup = document.getElementById('highDemandPopup');
       const emailForm = document.getElementById('emailNotificationForm');
       const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
       
-      // Check if already requested
       if (hasRequestedNotification(currentProduct.id)) {
         emailForm.style.display = 'none';
         alreadyMessage.style.display = 'block';
@@ -1708,19 +1633,13 @@
         return;
       }
       
-      // Mark as requested in localStorage
       markNotificationRequested(currentProduct.id, email);
-      
-      // Submit to Firebase
       await submitNotificationToFirebase(currentProduct.id, email, actionType);
       
-      // Update UI
       document.getElementById('emailNotificationForm').style.display = 'none';
       document.getElementById('alreadyNotifiedMessage').style.display = 'block';
       
       showNotification('We\'ll notify you when this product is ready to dispatch!');
-      
-      // Update button states if needed
       updateButtonStates();
     };
 
@@ -1743,21 +1662,17 @@
       }, 3000);
     }
 
-    // USE THE GLOBAL addToCart FUNCTION FROM common.js
     window.addToCart = function() {
       if (!currentProduct) return;
       
-      // Check if product is in high demand
       if (currentProduct.highDemand) {
         showHighDemandPopup('cart');
         return;
       }
       
-      // Call the global addToCart function from common.js
       if (typeof window.addToCartGlobal === 'function') {
         window.addToCartGlobal(currentProduct.id);
       } else {
-        // Fallback if global function isn't available
         const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
         
         if (currentProduct.stock <= 0) {
@@ -1803,21 +1718,17 @@
       }
     };
 
-    // USE THE GLOBAL buyNow FUNCTION FROM common.js
     window.buyNow = function() {
       if (!currentProduct) return;
       
-      // Check if product is in high demand
       if (currentProduct.highDemand) {
         showHighDemandPopup('buy');
         return;
       }
       
-      // Call the global buyNow function from common.js
       if (typeof window.buyNowGlobal === 'function') {
         window.buyNowGlobal(currentProduct.id);
       } else {
-        // Fallback
         window.addToCart();
         setTimeout(() => {
           window.location.href = 'checkout.html';
@@ -1832,7 +1743,6 @@
       if (!addToCartBtn || !buyNowBtn || !currentProduct) return;
       
       if (currentProduct.highDemand) {
-        // Check if already requested
         if (hasRequestedNotification(currentProduct.id)) {
           addToCartBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
           buyNowBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
@@ -1841,7 +1751,6 @@
           addToCartBtn.disabled = true;
           buyNowBtn.disabled = true;
         } else {
-          // Keep buttons active but they'll trigger popup
           addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
           buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
           addToCartBtn.classList.remove('high-demand-disabled');
@@ -1850,7 +1759,6 @@
           buyNowBtn.disabled = false;
         }
       } else {
-        // Normal mode
         addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
         buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
         addToCartBtn.classList.remove('high-demand-disabled');
@@ -1882,7 +1790,6 @@
           };
           document.getElementById('breadcrumb-product').textContent = currentProduct.title;
           
-          // Try to load reviews even in demo mode
           try {
             productReviews = await loadProductReviews(productId);
           } catch (e) {
@@ -1901,11 +1808,9 @@
         
         console.log('Product loaded:', currentProduct.title);
         
-        // Load reviews for this product
         productReviews = await loadProductReviews(productId);
         console.log('Reviews loaded:', productReviews.length);
         
-        // Now render with reviews
         renderProduct(currentProduct);
         
       } catch (error) { 
@@ -1923,7 +1828,6 @@
         };
         document.getElementById('breadcrumb-product').textContent = currentProduct.title;
         
-        // Try to load reviews even after error
         try {
           productReviews = await loadProductReviews(productId);
         } catch (e) {
@@ -1962,11 +1866,9 @@
       const soldCount = getRandomSold();
       const liveViewers = getRandomViewers();
       
-      // Calculate rating distribution from actual reviews
       const ratingDist = generateRatingDistribution(productReviews);
       const reviewCount = productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45;
 
-      // Create rating chart HTML
       const ratingChartHTML = `
         <div class="rating-chart-card">
           <div class="rating-chart-header">
@@ -1990,22 +1892,20 @@
         </div>
       `;
 
-      // Generate reviews HTML with new card design
+      // Generate reviews HTML
       let reviewsHTML = '';
 
       if (productReviews && productReviews.length > 0) {
-        // Add reviews header
-        reviewsHTML = `<div class="reviews-header">
-          <span>Customer Reviews</span>
-          <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
-        </div>`;
-        
-        // Create a common frame container
-        reviewsHTML += `<div class="reviews-common-frame">`;
-        reviewsHTML += `<div class="reviews-grid">`;
+        reviewsHTML = `
+          <div class="reviews-section">
+            <div class="reviews-header">
+              <span>Customer Reviews</span>
+              <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+            </div>
+            <div class="reviews-grid">
+        `;
         
         reviewsHTML += productReviews.map(review => {
-          // Generate star rating as SVGs
           const rating = review.rating || 5;
           const fullStars = Math.floor(rating);
           const hasHalf = rating % 1 >= 0.5;
@@ -2013,7 +1913,6 @@
           let starsHTML = '';
           for (let i = 1; i <= 5; i++) {
             if (i <= fullStars) {
-              // Full star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
                   <path d="m0 0h24v24h-24z" fill="none"></path>
@@ -2022,7 +1921,6 @@
                 </svg>
               `;
             } else if (i === fullStars + 1 && hasHalf) {
-              // Half star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
                   <path d="m0 0h24v24h-24z" fill="none"></path>
@@ -2030,7 +1928,6 @@
                 </svg>
               `;
             } else {
-              // Empty star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
                   <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
@@ -2066,15 +1963,14 @@
           `;
         }).join('');
         
-        reviewsHTML += `</div>`; // Close reviews-grid
-        reviewsHTML += `</div>`; // Close reviews-common-frame
+        reviewsHTML += `</div></div>`;
       } else {
         reviewsHTML = `
-          <div class="reviews-header">
-            <span>Customer Reviews</span>
-            <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
-          </div>
-          <div class="reviews-common-frame">
+          <div class="reviews-section">
+            <div class="reviews-header">
+              <span>Customer Reviews</span>
+              <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+            </div>
             <div class="empty-state">
               <i class="fa-regular fa-star"></i>
               <h3>No reviews yet</h3>
@@ -2083,21 +1979,6 @@
           </div>
         `;
       }
-
-      // DESKTOP REVIEWS SECTION
-      const desktopReviewsHTML = `
-        <div class="desktop-reviews">
-          ${reviewsHTML}
-        </div>
-      `;
-      
-      // MOBILE REVIEWS SECTION (hidden on desktop)
-      const mobileReviewsHTML = `
-        <div class="mobile-reviews">
-          ${ratingChartHTML}
-          ${reviewsHTML}
-        </div>
-      `;
 
       const container = document.getElementById('product-container');
       container.innerHTML = `
@@ -2108,7 +1989,7 @@
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
-            <!-- Rating Chart moved below thumbnails -->
+            <!-- Rating Chart below thumbnails -->
             ${ratingChartHTML}
           </div>
           
@@ -2196,7 +2077,7 @@
             </div>
 
             <div class="feature-razor-card">
-              <!-- Razorpay popup card (no close button) -->
+              <!-- Razorpay popup card -->
               <div id="razorpayPopup" class="razorpay-popup">
                 <div class="popup-title">
                   <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
@@ -2302,22 +2183,16 @@
                 </div>
               </div>
             </div>
-            
-            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
-            ${mobileReviewsHTML}
           </div>
           
-          <!-- DESKTOP REVIEWS SECTION - FULL WIDTH AT BOTTOM (spans both columns) -->
-          ${desktopReviewsHTML}
+          <!-- REVIEWS SECTION - FULL WIDTH AT BOTTOM -->
+          ${reviewsHTML}
         </div>
       `;
 
       updateDeliveryBar(product.price);
-      
-      // Update button states based on high demand
       updateButtonStates();
       
-      // Update delivery dates
       const dates = getDeliveryDates();
       document.getElementById('deliveryDates').textContent = dates.display;
     }
@@ -2361,7 +2236,6 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => { 
-      // Ensure header and footer are loaded
       if (typeof window.loadComponents === 'function') {
         window.loadComponents();
       }
@@ -2407,20 +2281,16 @@
     function getDeliveryDates() {
       const today = new Date();
       
-      // Calculate min delivery date (5 days from now)
       const minDate = new Date(today);
       minDate.setDate(today.getDate() + 5);
       
-      // Calculate max delivery date (7 days from now)
       const maxDate = new Date(today);
       maxDate.setDate(today.getDate() + 7);
       
-      // Format dates
       const options = { day: 'numeric', month: 'short' };
       const minDateStr = minDate.toLocaleDateString('en-IN', options);
       const maxDateStr = maxDate.toLocaleDateString('en-IN', options);
       
-      // Add year if month is December/January (to avoid confusion)
       const minYear = minDate.getFullYear();
       const maxYear = maxDate.getFullYear();
       const currentYear = today.getFullYear();
@@ -2445,7 +2315,6 @@
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 200); 
     });
 
-    // Make sure cart icon works by ensuring common.js functions are available
     window.ensureCartFunctionality = function() {
       console.log('Product page ready, cart functions should be available from common.js');
     };
