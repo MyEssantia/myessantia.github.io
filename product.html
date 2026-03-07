@@ -2122,36 +2122,39 @@
       const codPrice = Math.round(product.price * 1.04);
       const soldCount = getRandomSold();
       const liveViewers = getRandomViewers();
-      
-      // Calculate rating distribution from actual reviews
-      const ratingDist = generateRatingDistribution(productReviews);
-      const reviewCount = productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45;
 
-      // Create rating chart HTML
-      const ratingChartHTML = `
-        <div class="rating-chart-card">
-          <div class="rating-chart-header">
-            <div>
-              <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
-              <span class="rating-outof">/5</span>
-            </div>
-            <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
-            <span class="rating-count">${reviewCount} reviews</span>
-          </div>
-          <div class="rating-bars">
-            ${[5,4,3,2,1].map(star => `
-            <div class="rating-bar-row">
-              <span class="bar-label">${star} ★</span>
-              <div class="bar-container">
-                <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
-              </div>
-              <span class="bar-percent">${ratingDist[star]}%</span>
-            </div>`).join('')}
-          </div>
+      // In the renderProduct function, replace the entire reviews generation section
+// Find this part in your code and replace it completely:
+
+// Calculate rating distribution from actual reviews
+const ratingDist = generateRatingDistribution(productReviews);
+const reviewCount = productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45;
+
+// Create rating chart HTML
+const ratingChartHTML = `
+  <div class="rating-chart-card">
+    <div class="rating-chart-header">
+      <div>
+        <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
+        <span class="rating-outof">/5</span>
+      </div>
+      <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
+      <span class="rating-count">${reviewCount} reviews</span>
+    </div>
+    <div class="rating-bars">
+      ${[5,4,3,2,1].map(star => `
+      <div class="rating-bar-row">
+        <span class="bar-label">${star} ★</span>
+        <div class="bar-container">
+          <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
         </div>
-      `;
+        <span class="bar-percent">${ratingDist[star]}%</span>
+      </div>`).join('')}
+    </div>
+  </div>
+`;
 
-  // Generate reviews HTML with common frame - 1080×1920 PORTRAIT FRAMES
+// Generate reviews HTML with common frame - 1080×1920 PORTRAIT FRAMES (NO STROKE)
 let reviewsHTML = '';
 
 if (productReviews && productReviews.length > 0) {
@@ -2186,13 +2189,13 @@ if (productReviews && productReviews.length > 0) {
     
     return `
       <div class="review-item">
-        <!-- 1080×1920 PORTRAIT IMAGE FRAME -->
+        <!-- 1080×1920 PORTRAIT IMAGE FRAME - NO BLACK STROKE -->
         ${imageUrl ? `
         <div class="review-image-portrait" onclick="window.open('${imageUrl}', '_blank')">
           <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
         </div>
         ` : `
-        <!-- Portrait avatar for no-image reviews -->
+        <!-- Portrait avatar for no-image reviews - NO BLACK STROKE -->
         <div class="review-avatar-portrait">
           ${initials}
         </div>
@@ -2229,233 +2232,244 @@ if (productReviews && productReviews.length > 0) {
     </div>
   `;
 }
-      
-      const container = document.getElementById('product-container');
-      container.innerHTML = `
-        <div class="product-grid">
-          <!-- GALLERY -->
-          <div class="gallery-section">
-            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-            <div class="thumbnail-grid">
-              ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-            </div>
-            
-            <!-- DESKTOP REVIEWS (hidden on mobile) -->
-            <div class="desktop-reviews">
-              ${ratingChartHTML}
-              ${reviewsHTML}
-            </div>
-          </div>
-          
-          <!-- INFO -->
-          <div class="product-info">
-            <div class="social-strip">
-              <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-              <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-            </div>
-            <div class="product-category">${product.category || 'Accessories'}</div>
-            <h1 class="product-title">${product.title}</h1>
-            <div class="rating-row">
-              <div class="stars">${getStars(product.rating)}</div>
-              <span>${(product.rating || 4.5).toFixed(1)}</span>
-              <span>(${reviewCount} reviews)</span>
-              <div class="share-wrapper">
-                <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
-                <div class="share-menu" id="shareMenu">
-                  <div class="share-grid">
-                    <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
-                    <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
-                    <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
-                  </div>
-                  <div class="copy-link">
-                    <input id="shareLink" value="${window.location.href}" readonly>
-                    <button class="copy-btn" onclick="copyLink()">Copy</button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <!-- PRICE CARD with quantity -->
-            <div class="price-card">
-              <div class="price-header">
-                <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
-                <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-                <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> SALE</span>
-              </div>
-              <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
-              <div class="price-options">
-                <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-                  <div class="option-label">Prepaid</div>
-                  <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
-                </div>
-                <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
-                  <div class="option-label">Cash on Delivery</div>
-                  <div class="option-price">₹${codPrice.toFixed(2)}</div>
-                </div>
-              </div>
-              
-              <div class="quantity-stock-row">
-                <div class="quantity-controls">
-                  <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
-                  <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
-                  <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
-                </div>
-                <div class="stock-badge">
-                  <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-                  ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
-                </div>
-              </div>
-            </div>
+// DESKTOP REVIEWS SECTION - placed at the bottom of the product grid (full width)
+const desktopReviewsHTML = `
+  <div class="desktop-reviews">
+    ${ratingChartHTML}
+    ${reviewsHTML}
+  </div>
+`;
 
-            <div class="delivery-card">
-              <div class="delivery-header">
-                <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-                <span class="delivery-min">Min. ₹1,299</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
-              </div>
-              <div class="delivery-message" id="deliveryMessage">
-                <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-                <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
-              </div>
-              <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
-                <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
-                  <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
-                </div>
-                <div>
-                  <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
-                  <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
-                </div>
-              </div>
-            </div>
+// MOBILE REVIEWS SECTION (hidden on desktop)
+const mobileReviewsHTML = `
+  <div class="mobile-reviews">
+    ${ratingChartHTML}
+    ${reviewsHTML}
+  </div>
+`;
 
-            <div class="feature-razor-card">
-              <!-- Razorpay popup card (no close button) -->
-              <div id="razorpayPopup" class="razorpay-popup">
-                <div class="popup-title">
-                  <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-                </div>
-                <div class="popup-desc">
-                  Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-                </div>
-                
-                <div class="popup-bullets">
-                  <div class="popup-bullets-item" style="display: flex; gap: 12px; margin-bottom: 16px;">
-                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                    <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
-                  </div>
-                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                    <span><strong>100% free</strong> with no hidden costs</span>
-                  </div>
-                </div>
-                
-                <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
-                  Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-                </p>
-                
-                <div class="popup-footer">
-                  <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
-                    Yes, got it
-                  </button>
-                  <a href="shipping.html" class="popup-terms-link">
-                    Read detailed terms and conditions
-                  </a>
-                </div>
-              </div>
-              
-              <!-- Razorpay Promise clickable -->
-              <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
-                <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
-                <div class="promise-content">
-                  <h4>Razorpay Money Back Promise</h4>
-                  <p>Click to view full guarantee</p>
-                </div>
-              </div>
-              
-              <div class="features-grid">
-                <div class="feature-item">
-                  <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-                  <div class="feature-text">
-                    <h4>Free Shipping</h4>
-                    <p>Above ₹1,299</p>
-                  </div>
-                </div>
-                <div class="feature-item">
-                  <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
-                  <div class="feature-text">
-                    <h4>Easy Returns</h4>
-                    <p>7-Days</p>
-                  </div>
-                </div>
-              </div>
+// Now update the main container HTML to include both mobile and desktop reviews
+const container = document.getElementById('product-container');
+container.innerHTML = `
+  <div class="product-grid">
+    <!-- GALLERY COLUMN -->
+    <div class="gallery-section">
+      <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+      <div class="thumbnail-grid">
+        ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
+      </div>
+    </div>
+    
+    <!-- INFO COLUMN -->
+    <div class="product-info">
+      <div class="social-strip">
+        <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
+        <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
+      </div>
+      <div class="product-category">${product.category || 'Accessories'}</div>
+      <h1 class="product-title">${product.title}</h1>
+      <div class="rating-row">
+        <div class="stars">${getStars(product.rating)}</div>
+        <span>${(product.rating || 4.5).toFixed(1)}</span>
+        <span>(${reviewCount} reviews)</span>
+        <div class="share-wrapper">
+          <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
+          <div class="share-menu" id="shareMenu">
+            <div class="share-grid">
+              <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
+              <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
+              <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
             </div>
-
-            <!-- ACTION BUTTONS -->
-            <div class="action-buttons">
-              <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-              </button>
-              <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-                <i class="fa-solid fa-bolt"></i> Buy Now
-              </button>
-            </div>
-
-            <!-- TABS (description appears first on mobile) -->
-            <div class="tabs">
-              <div class="tab-headers">
-                <div class="tab-header active" onclick="switchTab('desc')">Description</div>
-                <div class="tab-header" onclick="switchTab('specs')">Specs</div>
-                <div class="tab-header" onclick="switchTab('videos')">Videos</div>
-              </div>
-              <div class="tab-content active" id="tab-desc">
-                <p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>
-              </div>
-              <div class="tab-content" id="tab-specs">
-                <div class="specs-grid">
-                  <div class="spec-item">
-                    <div class="spec-label">Material</div>
-                    <div class="spec-value">Premium Quality</div>
-                  </div>
-                  <div class="spec-item">
-                    <div class="spec-label">Brand</div>
-                    <div class="spec-value">${product.brand || 'MyEssantia'}</div>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-content" id="tab-videos">
-                <div class="video-grid">
-                  <div class="video-item">
-                    <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                  <div class="video-item">
-                    <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-                    <i class="fa-solid fa-play"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- MOBILE REVIEWS SECTION (includes rating chart) -->
-            <div class="mobile-reviews">
-              ${ratingChartHTML}
-              ${reviewsHTML}
+            <div class="copy-link">
+              <input id="shareLink" value="${window.location.href}" readonly>
+              <button class="copy-btn" onclick="copyLink()">Copy</button>
             </div>
           </div>
         </div>
-      `;
+      </div>
 
-      updateDeliveryBar(product.price);
+      <!-- PRICE CARD with quantity -->
+      <div class="price-card">
+        <div class="price-header">
+          <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
+          <span class="original-price">₹${originalPrice.toFixed(2)}</span>
+          <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> SALE</span>
+        </div>
+        <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
+        <div class="price-options">
+          <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
+            <div class="option-label">Prepaid</div>
+            <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
+          </div>
+          <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
+            <div class="option-label">Cash on Delivery</div>
+            <div class="option-price">₹${codPrice.toFixed(2)}</div>
+          </div>
+        </div>
+        
+        <div class="quantity-stock-row">
+          <div class="quantity-controls">
+            <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
+            <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
+            <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
+          </div>
+          <div class="stock-badge">
+            <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
+            ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
+          </div>
+        </div>
+      </div>
+
+      <div class="delivery-card">
+        <div class="delivery-header">
+          <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
+          <span class="delivery-min">Min. ₹1,299</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
+        </div>
+        <div class="delivery-message" id="deliveryMessage">
+          <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+          <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
+        </div>
+        <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
+          <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+            <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
+            <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-razor-card">
+        <!-- Razorpay popup card -->
+        <div id="razorpayPopup" class="razorpay-popup">
+          <div class="popup-title">
+            <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
+          </div>
+          <div class="popup-desc">
+            Your purchase from MyEssantia is protected by Razorpay Money Back Promise
+          </div>
+          
+          <div class="popup-bullets">
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+              <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+              <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
+            </div>
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+              <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+              <span><strong>100% free</strong> with no hidden costs</span>
+            </div>
+          </div>
+          
+          <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
+            Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
+          </p>
+          
+          <div class="popup-footer">
+            <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
+              Yes, got it
+            </button>
+            <a href="shipping.html" class="popup-terms-link">
+              Read detailed terms and conditions
+            </a>
+          </div>
+        </div>
+        
+        <!-- Razorpay Promise clickable -->
+        <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
+          <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
+          <div class="promise-content">
+            <h4>Razorpay Money Back Promise</h4>
+            <p>Click to view full guarantee</p>
+          </div>
+        </div>
+        
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="feature-text">
+              <h4>Free Shipping</h4>
+              <p>Above ₹1,299</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+            <div class="feature-text">
+              <h4>Easy Returns</h4>
+              <p>7-Days</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
+          <i class="fa-solid fa-bolt"></i> Buy Now
+        </button>
+      </div>
+
+      <!-- TABS (description, specs, videos) -->
+      <div class="tabs">
+        <div class="tab-headers">
+          <div class="tab-header active" onclick="switchTab('desc')">Description</div>
+          <div class="tab-header" onclick="switchTab('specs')">Specs</div>
+          <div class="tab-header" onclick="switchTab('videos')">Videos</div>
+        </div>
+        <div class="tab-content active" id="tab-desc">
+          <p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>
+        </div>
+        <div class="tab-content" id="tab-specs">
+          <div class="specs-grid">
+            <div class="spec-item">
+              <div class="spec-label">Material</div>
+              <div class="spec-value">Premium Quality</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-label">Brand</div>
+              <div class="spec-value">${product.brand || 'MyEssantia'}</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-videos">
+          <div class="video-grid">
+            <div class="video-item">
+              <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
+              <i class="fa-solid fa-play"></i>
+            </div>
+            <div class="video-item">
+              <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
+              <i class="fa-solid fa-play"></i>
+            </div>
+          </div>
+        </div>
+      </div>
       
-      // Update button states based on high demand
-      updateButtonStates();
-      
-      // Update delivery dates
-      const dates = getDeliveryDates();
-      document.getElementById('deliveryDates').textContent = dates.display;
-    }
+      <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
+      ${mobileReviewsHTML}
+    </div>
+    
+    <!-- DESKTOP REVIEWS SECTION - FULL WIDTH AT BOTTOM (spans both columns) -->
+    ${desktopReviewsHTML}
+  </div>
+`;
+
+// Update delivery bar and button states
+updateDeliveryBar(product.price);
+updateButtonStates();
+
+// Update delivery dates
+const dates = getDeliveryDates();
+document.getElementById('deliveryDates').textContent = dates.display;
+
+
 
     // Separate toggle functions for desktop and mobile
     window.toggleReviewsDesktop = function() {
