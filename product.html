@@ -84,21 +84,25 @@
   margin: 0;
 }
 
-/* Individual review item - no individual frame */
+/* Individual review item - WITH LIGHT GREY FRAME AROUND ENTIRE REVIEW */
 .review-item {
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  background: transparent;
-  border-radius: 0;
-  transition: transform 0.2s ease;
+  padding: 16px;
+  background: #ffffff;
+  border: 2px solid #e0e0e0; /* Light grey frame */
+  border-radius: 0; /* NO curved edges - completely square */
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.05);
 }
 
 .review-item:hover {
   transform: translateY(-2px);
+  border-color: #d4af37; /* Turns gold on hover */
+  box-shadow: 4px 4px 0 rgba(212, 175, 55, 0.15);
 }
 
-/* Square image frame - NO CURVED EDGES */
+/* Square image frame - WITHIN the review frame */
 .review-image-square {
   width: 100%;
   aspect-ratio: 1/1; /* Square ratio */
@@ -126,7 +130,7 @@
   display: none;
 }
 
-/* Square avatar for no-image reviews - NO CURVED EDGES */
+/* Square avatar for no-image reviews */
 .review-avatar-square {
   width: 100%;
   aspect-ratio: 1/1; /* Square ratio */
@@ -146,36 +150,40 @@
 .review-content {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 /* User name */
 .review-user-name {
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #000;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e0e0e0; /* Light separator */
 }
 
 /* Rating stars */
 .review-stars {
   color: #d4af37;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   letter-spacing: 2px;
+  padding: 2px 0;
 }
 
 /* Review description - fixed height with scroll if needed */
 .review-description {
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1.5;
   color: #333;
-  max-height: 80px;
+  max-height: 100px;
   overflow-y: auto;
   padding-right: 4px;
+  margin-top: 4px;
   scrollbar-width: thin;
   scrollbar-color: #d4af37 #f0f0f0;
 }
@@ -186,12 +194,12 @@
 
 .review-description::-webkit-scrollbar-track {
   background: #f0f0f0;
-  border-radius: 4px;
+  border-radius: 0; /* Square scrollbar track */
 }
 
 .review-description::-webkit-scrollbar-thumb {
   background: #d4af37;
-  border-radius: 4px;
+  border-radius: 0; /* Square scrollbar thumb */
 }
 
 /* Responsive grid - adjust columns based on screen size */
@@ -216,11 +224,17 @@
 @media (max-width: 599px) {
   .reviews-grid {
     grid-template-columns: repeat(2, 1fr); /* 2 per line on mobile */
+    gap: 15px;
+  }
+  
+  .review-item {
+    padding: 12px;
   }
   
   .review-image-square,
   .review-avatar-square {
     aspect-ratio: 1/1; /* Keep square ratio even on mobile */
+    margin-bottom: 8px;
   }
   
   .review-user-name {
@@ -233,7 +247,7 @@
   
   .review-description {
     font-size: 0.75rem;
-    max-height: 70px;
+    max-height: 80px;
   }
 }
 
@@ -2081,8 +2095,6 @@ async function loadProductReviews(productId) {
         </div>
       `;
 
-// Replace the reviewsHTML generation section in renderProduct() function
-
 // Generate reviews HTML with common frame
 let reviewsHTML = '';
 
@@ -2112,7 +2124,7 @@ if (productReviews && productReviews.length > 0) {
     
     return `
       <div class="review-item">
-        <!-- Square image frame - NO CURVED EDGES -->
+        <!-- Square image frame -->
         ${imageUrl ? `
         <div class="review-image-square" onclick="window.open('${imageUrl}', '_blank')">
           <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
