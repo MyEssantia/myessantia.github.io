@@ -2289,14 +2289,12 @@
         `;
       }
 
-      // DESKTOP REVIEWS SECTION - placed at the bottom of the product grid (full width)
-      const desktopReviewsHTML = `
-        <div class="desktop-reviews">
-          ${ratingChartHTML}
-          ${reviewsHTML}
-        </div>
-      `;
-
+     // DESKTOP REVIEWS SECTION - now only has reviews (rating chart moved)
+const desktopReviewsHTML = `
+  <div class="desktop-reviews">
+    ${reviewsHTML}
+  </div>
+`;
       // MOBILE REVIEWS SECTION (hidden on desktop)
       const mobileReviewsHTML = `
         <div class="mobile-reviews">
@@ -2308,13 +2306,15 @@
       const container = document.getElementById('product-container');
       container.innerHTML = `
         <div class="product-grid">
-          <!-- GALLERY COLUMN -->
-          <div class="gallery-section">
-            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-            <div class="thumbnail-grid">
-              ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-            </div>
-          </div>
+         <!-- GALLERY COLUMN -->
+<div class="gallery-section">
+  <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+  <div class="thumbnail-grid">
+    ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
+  </div>
+  <!-- Rating Chart moved below thumbnails -->
+  ${ratingChartHTML}
+</div>
           
           <!-- INFO COLUMN -->
           <div class="product-info">
