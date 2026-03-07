@@ -733,24 +733,24 @@
       .mobile-reviews { display: none; }
     }
 
- /* ===== FAQ SECTION - REDUCED SIZE ===== */
+/* ===== FAQ SECTION - REDUCED SIZE ===== */
 .faq-section {
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 15px; /* Reduced from 30px */
+  margin-bottom: 0; /* Changed from 30px */
   width: 100%;
   max-width: 100%;
 }
 
 .faq-header {
-  margin-bottom: 20px;
+  margin-bottom: 12px; /* Reduced from 20px */
 }
 
 .faq-title {
-  font-size: 1.2rem; /* Reduced from 2rem */
+  font-size: 1.1rem; /* Slightly reduced */
   font-weight: 700;
   color: #000;
-  border-bottom: 2px solid #d4af37; /* Thinner border */
-  padding-bottom: 6px; /* Reduced from 10px */
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -758,45 +758,45 @@
 .faq-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 10px; /* Reduced from 20px */
+  gap: 8px; /* Further reduced */
 }
 
 @media (min-width: 768px) {
   .faq-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px; /* Reduced from 30px */
+    gap: 10px; /* Further reduced */
   }
 }
 
 .faq-item {
   background: #f9f9f9;
-  border: 1px solid #000; /* Thinner border */
-  border-radius: 8px; /* Reduced from 16px */
+  border: 1px solid #000;
+  border-radius: 6px; /* Slightly smaller */
   padding: 0;
   transition: all 0.2s;
   overflow: hidden;
 }
 
 .faq-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 0 rgba(212, 175, 55, 0.2); /* Smaller shadow */
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 0 rgba(212, 175, 55, 0.2);
 }
 
 .faq-question {
-  padding: 10px 12px; /* Reduced from 18px 20px */
+  padding: 8px 10px; /* Further reduced */
   background: #000;
   color: #d4af37;
-  font-weight: 600; /* Reduced from 800 */
-  font-size: 0.85rem; /* Reduced from 1.1rem */
+  font-weight: 600;
+  font-size: 0.8rem; /* Further reduced */
   display: flex;
   align-items: center;
-  gap: 8px; /* Reduced from 12px */
+  gap: 6px;
   cursor: pointer;
-  border-bottom: 1px solid #d4af37; /* Thinner border */
+  border-bottom: 1px solid #d4af37;
 }
 
 .faq-question i {
-  font-size: 0.9rem; /* Reduced from 1.2rem */
+  font-size: 0.8rem;
   color: #d4af37;
   transition: transform 0.3s;
 }
@@ -806,32 +806,23 @@
 }
 
 .faq-answer {
-  padding: 0 12px;
+  padding: 0 10px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease, padding 0.3s ease;
   background: #fff;
   color: #333;
-  font-size: 0.8rem; /* Reduced from 0.95rem */
-  line-height: 1.5; /* Reduced from 1.6 */
+  font-size: 0.75rem; /* Further reduced */
+  line-height: 1.4;
 }
 
 .faq-answer.show {
-  padding: 12px; /* Reduced from 20px */
-  max-height: 150px; /* Reduced from 200px */
+  padding: 10px; /* Further reduced */
+  max-height: 120px;
 }
 
 .faq-answer p {
-  margin-bottom: 6px; /* Reduced from 10px */
-}
-
-.faq-answer ul {
-  padding-left: 16px; /* Reduced from 20px */
-  margin-bottom: 6px; /* Reduced from 10px */
-}
-
-.faq-answer li {
-  margin-bottom: 3px; /* Reduced from 5px */
+  margin-bottom: 4px;
 }
 
     /* ========== PRODUCT INFO ========== */
@@ -2246,8 +2237,9 @@
       }
 
             // FAQ Section HTML - reduced size to match rating chart
+         // FAQ Section HTML - reduced size to match rating chart
       const faqHTML = `
-        <div class="faq-section">
+        <div class="faq-section" style="margin-top: 15px; margin-bottom: 0;">
           <div class="faq-header">
             <span class="faq-title">Frequently Asked Questions</span>
           </div>
@@ -2327,7 +2319,7 @@
         </div>
       `;
 
-      const container = document.getElementById('product-container');
+           const container = document.getElementById('product-container');
       container.innerHTML = `
         <div class="product-grid">
           <!-- GALLERY COLUMN -->
@@ -2338,6 +2330,9 @@
             </div>
             <!-- Rating Chart below thumbnails -->
             ${ratingChartHTML}
+            
+            <!-- FAQ SECTION - BELOW RATING CHART IN LEFT COLUMN -->
+            ${faqHTML}
           </div>
           
           <!-- INFO COLUMN -->
@@ -2539,9 +2534,6 @@
         <!-- DESKTOP REVIEWS SECTION - BELOW THE GRID -->
         ${desktopReviewsHTML}
         
-        <!-- FAQ SECTION - BELOW REVIEWS -->
-        ${faqHTML}
-      `;
 
       updateDeliveryBar(product.price);
       
