@@ -466,373 +466,432 @@
       50% { box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.8); }
       100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
     }
-/* ===== CUSTOMER REVIEW SECTION ONLY - DESKTOP OPTIMIZED ===== */
 
-/* Reviews header */
-.reviews-header {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #000;
-  border-bottom: 3px solid #d4af37;
-  padding-bottom: 15px;
-  margin-bottom: 25px;
-  text-transform: uppercase;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  letter-spacing: 1px;
-}
+    /* ===== CUSTOMER REVIEW SECTION ONLY - DESKTOP OPTIMIZED ===== */
 
-.reviews-header span:last-child {
-  background: #000;
-  color: #d4af37;
-  padding: 8px 20px;
-  border-radius: 40px;
-  font-size: 1.1rem;
-  border: 2px solid #d4af37;
-}
+    /* Reviews header */
+    .reviews-header {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #000;
+      border-bottom: 3px solid #d4af37;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 1px;
+    }
 
-/* Main container for all reviews - FULL WIDTH */
-.reviews-common-frame {
-  background: #ffffff;
-  border: 2px solid #000;
-  border-radius: 0;
-  padding: 35px;
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
-  margin: 20px 0 30px;
-  width: 100%;
-}
+    .reviews-header span:last-child {
+      background: #000;
+      color: #d4af37;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 1.1rem;
+      border: 2px solid #d4af37;
+    }
 
-/* Grid layout - NO COMPRESSION on desktop */
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr); /* Fixed 6 columns on desktop */
-  gap: 30px;
-  margin: 0;
-  width: 100%;
-}
+    /* Main container for all reviews - FULL WIDTH */
+    .reviews-common-frame {
+      background: #ffffff;
+      border: 2px solid #000;
+      border-radius: 0;
+      padding: 35px;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
+      margin: 20px 0 30px;
+      width: 100%;
+    }
 
-/* Individual review card */
-.review-item {
-  display: flex;
-  flex-direction: column;
-  background: transparent;
-  border: none;
-  padding: 0;
-  transition: transform 0.2s ease;
-  min-width: 0; /* Prevents overflow */
-}
+    /* Grid layout - NO COMPRESSION on desktop */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr); /* Fixed 6 columns on desktop */
+      gap: 30px;
+      margin: 0;
+      width: 100%;
+    }
 
-.review-item:hover {
-  transform: translateY(-5px);
-}
+    /* Individual review card */
+    .review-item {
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      padding: 0;
+      transition: transform 0.2s ease;
+      min-width: 0; /* Prevents overflow */
+    }
 
-/* 1080×1920 PORTRAIT IMAGE FRAME - NO STROKE */
-.review-image-portrait {
-  width: 100%;
-  aspect-ratio: 9/16; /* 1080/1920 = 9/16 - perfect portrait ratio */
-  overflow: hidden;
-  border: none; /* NO BLACK STROKE */
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 15px;
-  background-color: #f5f5f5;
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.08); /* Shadow only, no border */
-}
+    .review-item:hover {
+      transform: translateY(-5px);
+    }
 
-.review-image-portrait:hover {
-  transform: scale(1.02);
-  box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15); /* Gold shadow on hover */
-}
+    /* 1080×1920 PORTRAIT IMAGE FRAME - NO STROKE */
+    .review-image-portrait {
+      width: 100%;
+      aspect-ratio: 9/16; /* 1080/1920 = 9/16 - perfect portrait ratio */
+      overflow: hidden;
+      border: none; /* NO BLACK STROKE */
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+      background-color: #f5f5f5;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.08); /* Shadow only, no border */
+    }
 
-.review-image-portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+    .review-image-portrait:hover {
+      transform: scale(1.02);
+      box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15); /* Gold shadow on hover */
+    }
 
-/* Portrait avatar for no-image reviews - same 9:16 ratio, NO STROKE */
-.review-avatar-portrait {
-  width: 100%;
-  aspect-ratio: 9/16; /* Same portrait ratio as images */
-  background: linear-gradient(135deg, #1a1a1a, #333);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 3rem;
-  color: #d4af37;
-  margin-bottom: 15px;
-  border: none; /* NO STROKE */
-  box-shadow: 8px 8px 0 rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-  text-align: center;
-  word-break: break-word;
-  padding: 15px;
-}
+    .review-image-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
-.review-avatar-portrait:hover {
-  transform: scale(1.02);
-  box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15);
-}
+    /* Portrait avatar for no-image reviews - same 9:16 ratio, NO STROKE */
+    .review-avatar-portrait {
+      width: 100%;
+      aspect-ratio: 9/16; /* Same portrait ratio as images */
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 3rem;
+      color: #d4af37;
+      margin-bottom: 15px;
+      border: none; /* NO STROKE */
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      text-align: center;
+      word-break: break-word;
+      padding: 15px;
+    }
 
-/* Review content - smaller text */
-.review-content {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 5px 0;
-}
+    .review-avatar-portrait:hover {
+      transform: scale(1.02);
+      box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15);
+    }
 
-/* SMALL user name */
-.review-user-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #333;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  word-wrap: break-word;
-  line-height: 1.3;
-}
+    /* Review content - smaller text */
+    .review-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 5px 0;
+    }
 
-/* SMALL rating stars */
-.review-stars {
-  color: #d4af37;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  margin: 2px 0;
-}
+    /* SMALL user name */
+    .review-user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      word-wrap: break-word;
+      line-height: 1.3;
+    }
 
-/* SMALL review description */
-.review-description {
-  font-size: 0.8rem;
-  line-height: 1.4;
-  color: #666;
-  margin-top: 2px;
-  word-wrap: break-word;
-  max-height: 70px;
-  overflow-y: auto;
-  padding-right: 5px;
-  scrollbar-width: thin;
-  scrollbar-color: #d4af37 #f0f0f0;
-}
+    /* SMALL rating stars */
+    .review-stars {
+      color: #d4af37;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      margin: 2px 0;
+    }
 
-.review-description::-webkit-scrollbar {
-  width: 4px;
-}
+    /* SMALL review description */
+    .review-description {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #666;
+      margin-top: 2px;
+      word-wrap: break-word;
+      max-height: 70px;
+      overflow-y: auto;
+      padding-right: 5px;
+      scrollbar-width: thin;
+      scrollbar-color: #d4af37 #f0f0f0;
+    }
 
-.review-description::-webkit-scrollbar-track {
-  background: #f0f0f0;
-}
+    .review-description::-webkit-scrollbar {
+      width: 4px;
+    }
 
-.review-description::-webkit-scrollbar-thumb {
-  background: #d4af37;
-}
+    .review-description::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
 
-/* DESKTOP OPTIMIZATION - NO COMPRESSION, FULL WIDTH */
-@media (min-width: 1024px) {
-  .desktop-reviews {
-    width: 100%;
-    margin-top: 30px;
-  }
-  
-  .desktop-reviews .reviews-common-frame {
-    width: 100%;
-    padding: 40px;
-    margin-bottom: 0;
-  }
-  
-  .desktop-reviews .reviews-grid {
-    grid-template-columns: repeat(6, 1fr); /* FIXED 6 columns - no compression */
-    gap: 35px;
-  }
-  
-  /* Ensure images maintain their size */
-  .desktop-reviews .review-image-portrait,
-  .desktop-reviews .review-avatar-portrait {
-    width: 100%;
-    box-shadow: 10px 10px 0 rgba(0,0,0,0.08);
-  }
-  
-  .desktop-reviews .review-user-name {
-    font-size: 0.95rem;
-  }
-  
-  .desktop-reviews .review-stars {
-    font-size: 0.85rem;
-  }
-  
-  .desktop-reviews .review-description {
-    font-size: 0.85rem;
-    max-height: 80px;
-  }
-}
+    .review-description::-webkit-scrollbar-thumb {
+      background: #d4af37;
+    }
 
-/* Large desktop screens */
-@media (min-width: 1400px) {
-  .desktop-reviews .reviews-grid {
-    grid-template-columns: repeat(6, 1fr); /* STILL 6 columns - consistent */
-    gap: 40px;
-  }
-  
-  .desktop-reviews .reviews-common-frame {
-    padding: 45px;
-  }
-}
+    /* DESKTOP OPTIMIZATION - NO COMPRESSION, FULL WIDTH */
+    @media (min-width: 1024px) {
+      .desktop-reviews {
+        width: 100%;
+        margin-top: 30px;
+        grid-column: 1 / -1;
+      }
+      
+      .desktop-reviews .reviews-common-frame {
+        width: 100%;
+        padding: 40px;
+        margin-bottom: 0;
+      }
+      
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* FIXED 6 columns - no compression */
+        gap: 35px;
+      }
+      
+      /* Ensure images maintain their size */
+      .desktop-reviews .review-image-portrait,
+      .desktop-reviews .review-avatar-portrait {
+        width: 100%;
+        box-shadow: 10px 10px 0 rgba(0,0,0,0.08);
+      }
+      
+      .desktop-reviews .review-user-name {
+        font-size: 0.95rem;
+      }
+      
+      .desktop-reviews .review-stars {
+        font-size: 0.85rem;
+      }
+      
+      .desktop-reviews .review-description {
+        font-size: 0.85rem;
+        max-height: 80px;
+      }
+    }
 
-/* Extra large screens - maintain 6 columns but increase spacing */
-@media (min-width: 1800px) {
-  .desktop-reviews .reviews-grid {
-    grid-template-columns: repeat(6, 1fr); /* STILL 6 columns */
-    gap: 50px;
-  }
-}
+    /* Large desktop screens */
+    @media (min-width: 1400px) {
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* STILL 6 columns - consistent */
+        gap: 40px;
+      }
+      
+      .desktop-reviews .reviews-common-frame {
+        padding: 45px;
+      }
+    }
 
-/* Tablet and below - responsive */
-@media (max-width: 1023px) and (min-width: 800px) {
-  .reviews-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-  }
-}
+    /* Extra large screens - maintain 6 columns but increase spacing */
+    @media (min-width: 1800px) {
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* STILL 6 columns */
+        gap: 50px;
+      }
+    }
 
-@media (max-width: 799px) and (min-width: 500px) {
-  .reviews-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-}
+    /* Tablet and below - responsive */
+    @media (max-width: 1023px) and (min-width: 800px) {
+      .reviews-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+      }
+    }
 
-@media (max-width: 499px) {
-  .reviews-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-  
-  .review-image-portrait,
-  .review-avatar-portrait {
-    box-shadow: 6px 6px 0 rgba(0,0,0,0.08);
-  }
-  
-  .review-user-name {
-    font-size: 0.8rem;
-  }
-  
-  .review-stars {
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-  }
-  
-  .review-description {
-    font-size: 0.75rem;
-    max-height: 60px;
-  }
-  
-  .review-avatar-portrait {
-    font-size: 2.2rem;
-  }
-}
+    @media (max-width: 799px) and (min-width: 500px) {
+      .reviews-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
 
-/* For very small screens */
-@media (max-width: 350px) {
-  .reviews-grid {
-    grid-template-columns: 1fr;
-  }
-}
+    @media (max-width: 499px) {
+      .reviews-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      
+      .review-image-portrait,
+      .review-avatar-portrait {
+        box-shadow: 6px 6px 0 rgba(0,0,0,0.08);
+      }
+      
+      .review-user-name {
+        font-size: 0.8rem;
+      }
+      
+      .review-stars {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+      }
+      
+      .review-description {
+        font-size: 0.75rem;
+        max-height: 60px;
+      }
+      
+      .review-avatar-portrait {
+        font-size: 2.2rem;
+      }
+    }
 
-/* Position reviews at the bottom - FULL WIDTH */
-.mobile-reviews {
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
-  width: 100%;
-}
+    /* For very small screens */
+    @media (max-width: 350px) {
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-.mobile-reviews .rating-chart-card {
-  order: 1;
-  margin-bottom: 20px;
-  width: 100%;
-}
+    /* Position reviews at the bottom - FULL WIDTH */
+    .mobile-reviews {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      width: 100%;
+    }
 
-.mobile-reviews .reviews-header {
-  order: 2;
-  margin-bottom: 0;
-  width: 100%;
-}
+    .mobile-reviews .rating-chart-card {
+      order: 1;
+      margin-bottom: 20px;
+      width: 100%;
+    }
 
-.mobile-reviews .reviews-common-frame {
-  order: 3;
-  width: 100%;
-}
+    .mobile-reviews .reviews-header {
+      order: 2;
+      margin-bottom: 0;
+      width: 100%;
+    }
 
-/* For desktop section - FULL WIDTH AT BOTTOM */
-.desktop-reviews {
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
-  width: 100%;
-  grid-column: 1 / -1; /* Span full width in grid */
-}
+    .mobile-reviews .reviews-common-frame {
+      order: 3;
+      width: 100%;
+    }
 
-.desktop-reviews .rating-chart-card {
-  order: 1;
-  margin-bottom: 25px;
-  width: 100%;
-}
+    /* For desktop section - FULL WIDTH AT BOTTOM */
+    .desktop-reviews {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      width: 100%;
+      grid-column: 1 / -1; /* Span full width in grid */
+    }
 
-.desktop-reviews .reviews-header {
-  order: 2;
-  margin-bottom: 0;
-  width: 100%;
-}
+    .desktop-reviews .rating-chart-card {
+      order: 1;
+      margin-bottom: 25px;
+      width: 100%;
+    }
 
-.desktop-reviews .reviews-common-frame {
-  order: 3;
-  width: 100%;
-  box-sizing: border-box;
-}
+    .desktop-reviews .reviews-header {
+      order: 2;
+      margin-bottom: 0;
+      width: 100%;
+    }
 
-/* Ensure the product grid allows full width for reviews */
-@media (min-width: 1024px) {
-  .product-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  /* Make reviews span both columns */
-  .desktop-reviews {
-    grid-column: 1 / -1;
-    margin-top: 40px;
-  }
-}
+    .desktop-reviews .reviews-common-frame {
+      order: 3;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
-/* Empty state styling */
-.reviews-common-frame .empty-state {
-  text-align: center;
-  padding: 80px 20px;
-  color: #666;
-  background: #f9f9f9;
-  border: 2px dashed #000;
-  width: 100%;
-}
+    /* Ensure the product grid allows full width for reviews */
+    @media (min-width: 1024px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      /* Make reviews span both columns */
+      .desktop-reviews {
+        grid-column: 1 / -1;
+        margin-top: 40px;
+      }
+    }
 
-.reviews-common-frame .empty-state i {
-  font-size: 5rem;
-  color: #d4af37;
-  margin-bottom: 25px;
-}
+    /* Empty state styling */
+    .reviews-common-frame .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #666;
+      background: #f9f9f9;
+      border: 2px dashed #000;
+      width: 100%;
+    }
 
-.reviews-common-frame .empty-state h3 {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 15px;
-  color: #000;
-}
+    .reviews-common-frame .empty-state i {
+      font-size: 5rem;
+      color: #d4af37;
+      margin-bottom: 25px;
+    }
 
-.reviews-common-frame .empty-state p {
-  font-size: 1.1rem;
-  color: #666;
-}
+    .reviews-common-frame .empty-state h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    .reviews-common-frame .empty-state p {
+      font-size: 1.1rem;
+      color: #666;
+    }
+
+    .reviews-container {
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: max-height 0.5s ease;
+      scrollbar-width: thin;
+      scrollbar-color: #d4af37 #f0f0f0;
+    }
+    
+    .reviews-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 10px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 10px;
+    }
+    
+    .reviews-container::-webkit-scrollbar-thumb:hover {
+      background: #b3962e;
+    }
+    
+    .reviews-container.expanded {
+      max-height: 800px;
+    }
+    
+    .view-more-btn {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 12px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .view-more-btn:hover {
+      background: #000;
+      color: #d4af37;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .view-more-btn:active {
+      transform: scale(0.95);
+    }
+
     /* desktop reviews */
     .desktop-reviews { display: none; margin-top: 16px; }
     @media (min-width: 1024px) { .desktop-reviews { display: block; } }
@@ -2122,379 +2181,350 @@
       const codPrice = Math.round(product.price * 1.04);
       const soldCount = getRandomSold();
       const liveViewers = getRandomViewers();
-
-      // In the renderProduct function, replace the entire reviews generation section
-// Find this part in your code and replace it completely:
-
-// Calculate rating distribution from actual reviews
-const ratingDist = generateRatingDistribution(productReviews);
-const reviewCount = productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45;
-
-// Create rating chart HTML
-const ratingChartHTML = `
-  <div class="rating-chart-card">
-    <div class="rating-chart-header">
-      <div>
-        <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
-        <span class="rating-outof">/5</span>
-      </div>
-      <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
-      <span class="rating-count">${reviewCount} reviews</span>
-    </div>
-    <div class="rating-bars">
-      ${[5,4,3,2,1].map(star => `
-      <div class="rating-bar-row">
-        <span class="bar-label">${star} ★</span>
-        <div class="bar-container">
-          <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
-        </div>
-        <span class="bar-percent">${ratingDist[star]}%</span>
-      </div>`).join('')}
-    </div>
-  </div>
-`;
-
-// Generate reviews HTML with common frame - 1080×1920 PORTRAIT FRAMES (NO STROKE)
-let reviewsHTML = '';
-
-if (productReviews && productReviews.length > 0) {
-  // Add reviews header
-  reviewsHTML = `<div class="reviews-header">
-    <span>Customer Reviews</span>
-    <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
-  </div>`;
-  
-  // Create a common frame container
-  reviewsHTML += `<div class="reviews-common-frame">`;
-  reviewsHTML += `<div class="reviews-grid">`;
-  
-  reviewsHTML += productReviews.map(review => {
-    // Generate star rating
-    const rating = review.rating || 5;
-    const fullStars = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.5;
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) stars += '★';
-      else if (i === fullStars + 1 && hasHalf) stars += '½';
-      else stars += '☆';
-    }
-    
-    // Check for imageUrl properly
-    const imageUrl = review.imageUrl || null;
-    
-    // Generate initials for avatar fallback
-    const nameParts = (review.reviewerName || 'A').split(' ');
-    const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
-    
-    return `
-      <div class="review-item">
-        <!-- 1080×1920 PORTRAIT IMAGE FRAME - NO BLACK STROKE -->
-        ${imageUrl ? `
-        <div class="review-image-portrait" onclick="window.open('${imageUrl}', '_blank')">
-          <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
-        </div>
-        ` : `
-        <!-- Portrait avatar for no-image reviews - NO BLACK STROKE -->
-        <div class="review-avatar-portrait">
-          ${initials}
-        </div>
-        `}
-        
-        <div class="review-content">
-          <!-- SMALL user name -->
-          <div class="review-user-name">${review.reviewerName}</div>
-          
-          <!-- SMALL rating stars -->
-          <div class="review-stars">${stars}</div>
-          
-          <!-- SMALL review description -->
-          <div class="review-description">${review.comment}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-  
-  reviewsHTML += `</div>`; // Close reviews-grid
-  reviewsHTML += `</div>`; // Close reviews-common-frame
-} else {
-  reviewsHTML = `
-    <div class="reviews-header">
-      <span>Customer Reviews</span>
-      <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
-    </div>
-    <div class="reviews-common-frame">
-      <div class="empty-state">
-        <i class="fa-regular fa-star"></i>
-        <h3>No reviews yet</h3>
-        <p>Be the first to review this product!</p>
-      </div>
-    </div>
-  `;
-}
-
-// DESKTOP REVIEWS SECTION - placed at the bottom of the product grid (full width)
-const desktopReviewsHTML = `
-  <div class="desktop-reviews">
-    ${ratingChartHTML}
-    ${reviewsHTML}
-  </div>
-`;
-
-// MOBILE REVIEWS SECTION (hidden on desktop)
-const mobileReviewsHTML = `
-  <div class="mobile-reviews">
-    ${ratingChartHTML}
-    ${reviewsHTML}
-  </div>
-`;
-
-// Now update the main container HTML to include both mobile and desktop reviews
-const container = document.getElementById('product-container');
-container.innerHTML = `
-  <div class="product-grid">
-    <!-- GALLERY COLUMN -->
-    <div class="gallery-section">
-      <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-      <div class="thumbnail-grid">
-        ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-      </div>
-    </div>
-    
-    <!-- INFO COLUMN -->
-    <div class="product-info">
-      <div class="social-strip">
-        <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-        <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-      </div>
-      <div class="product-category">${product.category || 'Accessories'}</div>
-      <h1 class="product-title">${product.title}</h1>
-      <div class="rating-row">
-        <div class="stars">${getStars(product.rating)}</div>
-        <span>${(product.rating || 4.5).toFixed(1)}</span>
-        <span>(${reviewCount} reviews)</span>
-        <div class="share-wrapper">
-          <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
-          <div class="share-menu" id="shareMenu">
-            <div class="share-grid">
-              <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
-              <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
-              <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
-            </div>
-            <div class="copy-link">
-              <input id="shareLink" value="${window.location.href}" readonly>
-              <button class="copy-btn" onclick="copyLink()">Copy</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PRICE CARD with quantity -->
-      <div class="price-card">
-        <div class="price-header">
-          <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
-          <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-          <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> SALE</span>
-        </div>
-        <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
-        <div class="price-options">
-          <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-            <div class="option-label">Prepaid</div>
-            <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
-          </div>
-          <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
-            <div class="option-label">Cash on Delivery</div>
-            <div class="option-price">₹${codPrice.toFixed(2)}</div>
-          </div>
-        </div>
-        
-        <div class="quantity-stock-row">
-          <div class="quantity-controls">
-            <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
-            <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
-            <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
-          </div>
-          <div class="stock-badge">
-            <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-            ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
-          </div>
-        </div>
-      </div>
-
-      <div class="delivery-card">
-        <div class="delivery-header">
-          <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-          <span class="delivery-min">Min. ₹1,299</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
-        </div>
-        <div class="delivery-message" id="deliveryMessage">
-          <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-          <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
-        </div>
-        <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
-          <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
-            <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
-          </div>
-          <div>
-            <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
-            <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="feature-razor-card">
-        <!-- Razorpay popup card -->
-        <div id="razorpayPopup" class="razorpay-popup">
-          <div class="popup-title">
-            <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-          </div>
-          <div class="popup-desc">
-            Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-          </div>
-          
-          <div class="popup-bullets">
-            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-              <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-              <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
-            </div>
-            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-              <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-              <span><strong>100% free</strong> with no hidden costs</span>
-            </div>
-          </div>
-          
-          <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
-            Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-          </p>
-          
-          <div class="popup-footer">
-            <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
-              Yes, got it
-            </button>
-            <a href="shipping.html" class="popup-terms-link">
-              Read detailed terms and conditions
-            </a>
-          </div>
-        </div>
-        
-        <!-- Razorpay Promise clickable -->
-        <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
-          <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
-          <div class="promise-content">
-            <h4>Razorpay Money Back Promise</h4>
-            <p>Click to view full guarantee</p>
-          </div>
-        </div>
-        
-        <div class="features-grid">
-          <div class="feature-item">
-            <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-            <div class="feature-text">
-              <h4>Free Shipping</h4>
-              <p>Above ₹1,299</p>
-            </div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
-            <div class="feature-text">
-              <h4>Easy Returns</h4>
-              <p>7-Days</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="action-buttons">
-        <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-          <i class="fa-solid fa-cart-plus"></i> Add to Cart
-        </button>
-        <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-          <i class="fa-solid fa-bolt"></i> Buy Now
-        </button>
-      </div>
-
-      <!-- TABS (description, specs, videos) -->
-      <div class="tabs">
-        <div class="tab-headers">
-          <div class="tab-header active" onclick="switchTab('desc')">Description</div>
-          <div class="tab-header" onclick="switchTab('specs')">Specs</div>
-          <div class="tab-header" onclick="switchTab('videos')">Videos</div>
-        </div>
-        <div class="tab-content active" id="tab-desc">
-          <p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>
-        </div>
-        <div class="tab-content" id="tab-specs">
-          <div class="specs-grid">
-            <div class="spec-item">
-              <div class="spec-label">Material</div>
-              <div class="spec-value">Premium Quality</div>
-            </div>
-            <div class="spec-item">
-              <div class="spec-label">Brand</div>
-              <div class="spec-value">${product.brand || 'MyEssantia'}</div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-content" id="tab-videos">
-          <div class="video-grid">
-            <div class="video-item">
-              <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-              <i class="fa-solid fa-play"></i>
-            </div>
-            <div class="video-item">
-              <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-              <i class="fa-solid fa-play"></i>
-            </div>
-          </div>
-        </div>
-      </div>
       
-      <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
-      ${mobileReviewsHTML}
-    </div>
-    
-    <!-- DESKTOP REVIEWS SECTION - FULL WIDTH AT BOTTOM (spans both columns) -->
-    ${desktopReviewsHTML}
-  </div>
-`;
+      // Calculate rating distribution from actual reviews
+      const ratingDist = generateRatingDistribution(productReviews);
+      const reviewCount = productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45;
 
-// Update delivery bar and button states
-updateDeliveryBar(product.price);
-updateButtonStates();
+      // Create rating chart HTML
+      const ratingChartHTML = `
+        <div class="rating-chart-card">
+          <div class="rating-chart-header">
+            <div>
+              <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
+              <span class="rating-outof">/5</span>
+            </div>
+            <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
+            <span class="rating-count">${reviewCount} reviews</span>
+          </div>
+          <div class="rating-bars">
+            ${[5,4,3,2,1].map(star => `
+            <div class="rating-bar-row">
+              <span class="bar-label">${star} ★</span>
+              <div class="bar-container">
+                <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
+              </div>
+              <span class="bar-percent">${ratingDist[star]}%</span>
+            </div>`).join('')}
+          </div>
+        </div>
+      `;
 
-// Update delivery dates
-const dates = getDeliveryDates();
-document.getElementById('deliveryDates').textContent = dates.display;
+      // Generate reviews HTML with common frame - 1080×1920 PORTRAIT FRAMES (NO STROKE)
+      let reviewsHTML = '';
 
-
-
-    // Separate toggle functions for desktop and mobile
-    window.toggleReviewsDesktop = function() {
-      const container = document.getElementById('reviews-container-desktop');
-      const btn = document.getElementById('view-more-btn-desktop');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
+      if (productReviews && productReviews.length > 0) {
+        // Add reviews header
+        reviewsHTML = `<div class="reviews-header">
+          <span>Customer Reviews</span>
+          <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+        </div>`;
+        
+        // Create a common frame container
+        reviewsHTML += `<div class="reviews-common-frame">`;
+        reviewsHTML += `<div class="reviews-grid">`;
+        
+        reviewsHTML += productReviews.map(review => {
+          // Generate star rating
+          const rating = review.rating || 5;
+          const fullStars = Math.floor(rating);
+          const hasHalf = rating % 1 >= 0.5;
+          let stars = '';
+          for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) stars += '★';
+            else if (i === fullStars + 1 && hasHalf) stars += '½';
+            else stars += '☆';
+          }
+          
+          // Check for imageUrl properly
+          const imageUrl = review.imageUrl || null;
+          
+          // Generate initials for avatar fallback
+          const nameParts = (review.reviewerName || 'A').split(' ');
+          const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          
+          return `
+            <div class="review-item">
+              <!-- 1080×1920 PORTRAIT IMAGE FRAME - NO BLACK STROKE -->
+              ${imageUrl ? `
+              <div class="review-image-portrait" onclick="window.open('${imageUrl}', '_blank')">
+                <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
+              </div>
+              ` : `
+              <!-- Portrait avatar for no-image reviews - NO BLACK STROKE -->
+              <div class="review-avatar-portrait">
+                ${initials}
+              </div>
+              `}
+              
+              <div class="review-content">
+                <!-- SMALL user name -->
+                <div class="review-user-name">${review.reviewerName}</div>
+                
+                <!-- SMALL rating stars -->
+                <div class="review-stars">${stars}</div>
+                
+                <!-- SMALL review description -->
+                <div class="review-description">${review.comment}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        reviewsHTML += `</div>`; // Close reviews-grid
+        reviewsHTML += `</div>`; // Close reviews-common-frame
       } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
+        reviewsHTML = `
+          <div class="reviews-header">
+            <span>Customer Reviews</span>
+            <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+          </div>
+          <div class="reviews-common-frame">
+            <div class="empty-state">
+              <i class="fa-regular fa-star"></i>
+              <h3>No reviews yet</h3>
+              <p>Be the first to review this product!</p>
+            </div>
+          </div>
+        `;
       }
-    };
 
-    window.toggleReviewsMobile = function() {
-      const container = document.getElementById('reviews-container-mobile');
-      const btn = document.getElementById('view-more-btn-mobile');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
-      } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
-      }
-    };
+      // DESKTOP REVIEWS SECTION - placed at the bottom of the product grid (full width)
+      const desktopReviewsHTML = `
+        <div class="desktop-reviews">
+          ${ratingChartHTML}
+          ${reviewsHTML}
+        </div>
+      `;
+
+      // MOBILE REVIEWS SECTION (hidden on desktop)
+      const mobileReviewsHTML = `
+        <div class="mobile-reviews">
+          ${ratingChartHTML}
+          ${reviewsHTML}
+        </div>
+      `;
+
+      const container = document.getElementById('product-container');
+      container.innerHTML = `
+        <div class="product-grid">
+          <!-- GALLERY COLUMN -->
+          <div class="gallery-section">
+            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+            <div class="thumbnail-grid">
+              ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
+            </div>
+          </div>
+          
+          <!-- INFO COLUMN -->
+          <div class="product-info">
+            <div class="social-strip">
+              <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
+              <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
+            </div>
+            <div class="product-category">${product.category || 'Accessories'}</div>
+            <h1 class="product-title">${product.title}</h1>
+            <div class="rating-row">
+              <div class="stars">${getStars(product.rating)}</div>
+              <span>${(product.rating || 4.5).toFixed(1)}</span>
+              <span>(${reviewCount} reviews)</span>
+              <div class="share-wrapper">
+                <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
+                <div class="share-menu" id="shareMenu">
+                  <div class="share-grid">
+                    <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
+                    <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
+                    <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
+                  </div>
+                  <div class="copy-link">
+                    <input id="shareLink" value="${window.location.href}" readonly>
+                    <button class="copy-btn" onclick="copyLink()">Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRICE CARD with quantity -->
+            <div class="price-card">
+              <div class="price-header">
+                <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
+                <span class="original-price">₹${originalPrice.toFixed(2)}</span>
+                <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> SALE</span>
+              </div>
+              <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
+              <div class="price-options">
+                <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
+                  <div class="option-label">Prepaid</div>
+                  <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
+                </div>
+                <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
+                  <div class="option-label">Cash on Delivery</div>
+                  <div class="option-price">₹${codPrice.toFixed(2)}</div>
+                </div>
+              </div>
+              
+              <div class="quantity-stock-row">
+                <div class="quantity-controls">
+                  <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
+                  <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
+                  <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
+                </div>
+                <div class="stock-badge">
+                  <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
+                  ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
+                </div>
+              </div>
+            </div>
+
+            <div class="delivery-card">
+              <div class="delivery-header">
+                <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
+                <span class="delivery-min">Min. ₹1,299</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
+              </div>
+              <div class="delivery-message" id="deliveryMessage">
+                <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+                <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
+              </div>
+              <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
+                <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+                  <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
+                  <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-razor-card">
+              <!-- Razorpay popup card (no close button) -->
+              <div id="razorpayPopup" class="razorpay-popup">
+                <div class="popup-title">
+                  <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
+                </div>
+                <div class="popup-desc">
+                  Your purchase from MyEssantia is protected by Razorpay Money Back Promise
+                </div>
+                
+                <div class="popup-bullets">
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
+                  </div>
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% free</strong> with no hidden costs</span>
+                  </div>
+                </div>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
+                  Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
+                </p>
+                
+                <div class="popup-footer">
+                  <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
+                    Yes, got it
+                  </button>
+                  <a href="shipping.html" class="popup-terms-link">
+                    Read detailed terms and conditions
+                  </a>
+                </div>
+              </div>
+              
+              <!-- Razorpay Promise clickable -->
+              <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
+                <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
+                <div class="promise-content">
+                  <h4>Razorpay Money Back Promise</h4>
+                  <p>Click to view full guarantee</p>
+                </div>
+              </div>
+              
+              <div class="features-grid">
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                  <div class="feature-text">
+                    <h4>Free Shipping</h4>
+                    <p>Above ₹1,299</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                  <div class="feature-text">
+                    <h4>Easy Returns</h4>
+                    <p>7-Days</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="action-buttons">
+              <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-bolt"></i> Buy Now
+              </button>
+            </div>
+
+            <!-- TABS (description, specs, videos) -->
+            <div class="tabs">
+              <div class="tab-headers">
+                <div class="tab-header active" onclick="switchTab('desc')">Description</div>
+                <div class="tab-header" onclick="switchTab('specs')">Specs</div>
+                <div class="tab-header" onclick="switchTab('videos')">Videos</div>
+              </div>
+              <div class="tab-content active" id="tab-desc">
+                <p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>
+              </div>
+              <div class="tab-content" id="tab-specs">
+                <div class="specs-grid">
+                  <div class="spec-item">
+                    <div class="spec-label">Material</div>
+                    <div class="spec-value">Premium Quality</div>
+                  </div>
+                  <div class="spec-item">
+                    <div class="spec-label">Brand</div>
+                    <div class="spec-value">${product.brand || 'MyEssantia'}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" id="tab-videos">
+                <div class="video-grid">
+                  <div class="video-item">
+                    <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                  <div class="video-item">
+                    <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
+                    <i class="fa-solid fa-play"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
+            ${mobileReviewsHTML}
+          </div>
+          
+          <!-- DESKTOP REVIEWS SECTION - FULL WIDTH AT BOTTOM (spans both columns) -->
+          ${desktopReviewsHTML}
+        </div>
+      `;
+
+      updateDeliveryBar(product.price);
+      
+      // Update button states based on high demand
+      updateButtonStates();
+      
+      // Update delivery dates
+      const dates = getDeliveryDates();
+      document.getElementById('deliveryDates').textContent = dates.display;
+    }
 
     window.changeImage = function(src, el) { 
       document.getElementById('mainImage').src = src; 
@@ -2615,17 +2645,11 @@ document.getElementById('deliveryDates').textContent = dates.display;
       };
     }
 
-    document.addEventListener('DOMContentLoaded', () => { 
-      // Don't load components here - common.js will handle it
-      loadProduct(); 
-    });
-
     window.addEventListener('scroll', () => { 
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 200); 
     });
 
     // Make sure cart icon works by ensuring common.js functions are available
-    // This is just a safety check
     window.ensureCartFunctionality = function() {
       console.log('Product page ready, cart functions should be available from common.js');
     };
