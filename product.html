@@ -2084,84 +2084,84 @@
         </div>
       `;
 
-      // Generate reviews HTML with common frame
-      let reviewsHTML = '';
+      // Generate reviews HTML with common frame - UPDATED with larger images
+let reviewsHTML = '';
 
-      if (productReviews && productReviews.length > 0) {
-        // Add reviews header
-        reviewsHTML = `<div class="reviews-header">
-          <span>Customer Reviews (${productReviews.length})</span>
-          <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
-        </div>`;
+if (productReviews && productReviews.length > 0) {
+  // Add reviews header
+  reviewsHTML = `<div class="reviews-header">
+    <span>Customer Reviews</span>
+    <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+  </div>`;
+  
+  // Create a common frame container
+  reviewsHTML += `<div class="reviews-common-frame">`;
+  reviewsHTML += `<div class="reviews-grid">`;
+  
+  reviewsHTML += productReviews.map(review => {
+    // Generate star rating
+    const rating = review.rating || 5;
+    const fullStars = Math.floor(rating);
+    const hasHalf = rating % 1 >= 0.5;
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) stars += '★';
+      else if (i === fullStars + 1 && hasHalf) stars += '½';
+      else stars += '☆';
+    }
+    
+    // Check for imageUrl properly
+    const imageUrl = review.imageUrl || null;
+    
+    // Generate initials for avatar fallback
+    const nameParts = (review.reviewerName || 'A').split(' ');
+    const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    
+    return `
+      <div class="review-item">
+        <!-- LARGE IMAGE - main focus -->
+        ${imageUrl ? `
+        <div class="review-image-large" onclick="window.open('${imageUrl}', '_blank')">
+          <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
+        </div>
+        ` : `
+        <!-- Large avatar for no-image reviews -->
+        <div class="review-avatar-large">
+          ${initials}
+        </div>
+        `}
         
-        // Create a common frame container
-        reviewsHTML += `<div class="reviews-common-frame">`;
-        reviewsHTML += `<div class="reviews-grid">`;
-        
-        reviewsHTML += productReviews.map(review => {
-          // Generate star rating
-          const rating = review.rating || 5;
-          const fullStars = Math.floor(rating);
-          const hasHalf = rating % 1 >= 0.5;
-          let stars = '';
-          for (let i = 1; i <= 5; i++) {
-            if (i <= fullStars) stars += '★';
-            else if (i === fullStars + 1 && hasHalf) stars += '½';
-            else stars += '☆';
-          }
+        <div class="review-content">
+          <!-- SMALL user name -->
+          <div class="review-user-name">${review.reviewerName}</div>
           
-          // Check for imageUrl properly
-          const imageUrl = review.imageUrl || null;
+          <!-- SMALL rating stars -->
+          <div class="review-stars">${stars}</div>
           
-          // Generate initials for avatar fallback
-          const nameParts = (review.reviewerName || 'A').split(' ');
-          const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
-          
-          return `
-            <div class="review-item">
-              <!-- Square image - NO BLACK FRAME -->
-              ${imageUrl ? `
-              <div class="review-image-square" onclick="window.open('${imageUrl}', '_blank')">
-                <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
-              </div>
-              ` : `
-              <!-- No image - avatar fills the space naturally -->
-              <div class="review-avatar-square">
-                ${initials}
-              </div>
-              `}
-              
-              <div class="review-content">
-                <!-- User name -->
-                <div class="review-user-name">${review.reviewerName}</div>
-                
-                <!-- Rating stars -->
-                <div class="review-stars">${stars}</div>
-                
-                <!-- Review description -->
-                <div class="review-description">${review.comment}</div>
-              </div>
-            </div>
-          `;
-        }).join('');
-        
-        reviewsHTML += `</div>`; // Close reviews-grid
-        reviewsHTML += `</div>`; // Close reviews-common-frame
-      } else {
-        reviewsHTML = `
-          <div class="reviews-header">
-            <span>Customer Reviews</span>
-            <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
-          </div>
-          <div class="reviews-common-frame">
-            <div style="text-align: center; padding: 60px 20px; color: #666;">
-              <i class="fa-regular fa-star" style="font-size: 4rem; color: #d4af37; margin-bottom: 20px; display: block;"></i>
-              <h3 style="font-size: 1.5rem; margin-bottom: 10px; color: #000;">No reviews yet</h3>
-              <p style="font-size: 1rem;">Be the first to review this product!</p>
-            </div>
-          </div>
-        `;
-      }
+          <!-- SMALL review description -->
+          <div class="review-description">${review.comment}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  reviewsHTML += `</div>`; // Close reviews-grid
+  reviewsHTML += `</div>`; // Close reviews-common-frame
+} else {
+  reviewsHTML = `
+    <div class="reviews-header">
+      <span>Customer Reviews</span>
+      <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+    </div>
+    <div class="reviews-common-frame">
+      <div class="empty-state">
+        <i class="fa-regular fa-star"></i>
+        <h3>No reviews yet</h3>
+        <p>Be the first to review this product!</p>
+      </div>
+    </div>
+  `;
+}
       
       const container = document.getElementById('product-container');
       container.innerHTML = `
