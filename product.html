@@ -467,7 +467,375 @@
       100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.5); }
     }
 
-    /* ========== REVIEW SECTION ========== */
+    /* ===== CUSTOMER REVIEW SECTION ONLY - DESKTOP OPTIMIZED ===== */
+
+    /* Reviews header */
+    .reviews-header {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #000;
+      border-bottom: 3px solid #d4af37;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 1px;
+    }
+
+    .reviews-header span:last-child {
+      background: #000;
+      color: #d4af37;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 1.1rem;
+      border: 2px solid #d4af37;
+    }
+
+    /* Main container for all reviews - FULL WIDTH */
+    .reviews-common-frame {
+      background: #ffffff;
+      border: 2px solid #000;
+      border-radius: 0;
+      padding: 35px;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
+      margin: 20px 0 30px;
+      width: 100%;
+    }
+
+    /* Grid layout - NO COMPRESSION on desktop */
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr); /* Fixed 6 columns on desktop */
+      gap: 30px;
+      margin: 0;
+      width: 100%;
+    }
+
+    /* Individual review card */
+    .review-item {
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      padding: 0;
+      transition: transform 0.2s ease;
+      min-width: 0; /* Prevents overflow */
+    }
+
+    .review-item:hover {
+      transform: translateY(-5px);
+    }
+
+    /* 1080×1920 PORTRAIT IMAGE FRAME - NO STROKE */
+    .review-image-portrait {
+      width: 100%;
+      aspect-ratio: 9/16; /* 1080/1920 = 9/16 - perfect portrait ratio */
+      overflow: hidden;
+      border: none; /* NO BLACK STROKE */
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+      background-color: #f5f5f5;
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.08); /* Shadow only, no border */
+    }
+
+    .review-image-portrait:hover {
+      transform: scale(1.02);
+      box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15); /* Gold shadow on hover */
+    }
+
+    .review-image-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Portrait avatar for no-image reviews - same 9:16 ratio, NO STROKE */
+    .review-avatar-portrait {
+      width: 100%;
+      aspect-ratio: 9/16; /* Same portrait ratio as images */
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 3rem;
+      color: #d4af37;
+      margin-bottom: 15px;
+      border: none; /* NO STROKE */
+      box-shadow: 8px 8px 0 rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      text-align: center;
+      word-break: break-word;
+      padding: 15px;
+    }
+
+    .review-avatar-portrait:hover {
+      transform: scale(1.02);
+      box-shadow: 10px 10px 0 rgba(212, 175, 55, 0.15);
+    }
+
+    /* Review content - smaller text */
+    .review-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 5px 0;
+    }
+
+    /* SMALL user name */
+    .review-user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      word-wrap: break-word;
+      line-height: 1.3;
+    }
+
+    /* SMALL rating stars */
+    .review-stars {
+      color: #d4af37;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      margin: 2px 0;
+    }
+
+    /* SMALL review description */
+    .review-description {
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #666;
+      margin-top: 2px;
+      word-wrap: break-word;
+      max-height: 70px;
+      overflow-y: auto;
+      padding-right: 5px;
+      scrollbar-width: thin;
+      scrollbar-color: #d4af37 #f0f0f0;
+    }
+
+    .review-description::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .review-description::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+
+    .review-description::-webkit-scrollbar-thumb {
+      background: #d4af37;
+    }
+
+    /* DESKTOP OPTIMIZATION - NO COMPRESSION, FULL WIDTH */
+    @media (min-width: 1024px) {
+      .desktop-reviews {
+        width: 100%;
+        margin-top: 30px;
+        grid-column: 1 / -1;
+      }
+      
+      .desktop-reviews .reviews-common-frame {
+        width: 100%;
+        padding: 40px;
+        margin-bottom: 0;
+      }
+      
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* FIXED 6 columns - no compression */
+        gap: 35px;
+      }
+      
+      /* Ensure images maintain their size */
+      .desktop-reviews .review-image-portrait,
+      .desktop-reviews .review-avatar-portrait {
+        width: 100%;
+        box-shadow: 10px 10px 0 rgba(0,0,0,0.08);
+      }
+      
+      .desktop-reviews .review-user-name {
+        font-size: 0.95rem;
+      }
+      
+      .desktop-reviews .review-stars {
+        font-size: 0.85rem;
+      }
+      
+      .desktop-reviews .review-description {
+        font-size: 0.85rem;
+        max-height: 80px;
+      }
+    }
+
+    /* Large desktop screens */
+    @media (min-width: 1400px) {
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* STILL 6 columns - consistent */
+        gap: 40px;
+      }
+      
+      .desktop-reviews .reviews-common-frame {
+        padding: 45px;
+      }
+    }
+
+    /* Extra large screens - maintain 6 columns but increase spacing */
+    @media (min-width: 1800px) {
+      .desktop-reviews .reviews-grid {
+        grid-template-columns: repeat(6, 1fr); /* STILL 6 columns */
+        gap: 50px;
+      }
+    }
+
+    /* Tablet and below - responsive */
+    @media (max-width: 1023px) and (min-width: 800px) {
+      .reviews-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 799px) and (min-width: 500px) {
+      .reviews-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 499px) {
+      .reviews-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      
+      .review-image-portrait,
+      .review-avatar-portrait {
+        box-shadow: 6px 6px 0 rgba(0,0,0,0.08);
+      }
+      
+      .review-user-name {
+        font-size: 0.8rem;
+      }
+      
+      .review-stars {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+      }
+      
+      .review-description {
+        font-size: 0.75rem;
+        max-height: 60px;
+      }
+      
+      .review-avatar-portrait {
+        font-size: 2.2rem;
+      }
+    }
+
+    /* For very small screens */
+    @media (max-width: 350px) {
+      .reviews-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Position reviews at the bottom - FULL WIDTH */
+    .mobile-reviews {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      width: 100%;
+    }
+
+    .mobile-reviews .rating-chart-card {
+      order: 1;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .mobile-reviews .reviews-header {
+      order: 2;
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    .mobile-reviews .reviews-common-frame {
+      order: 3;
+      width: 100%;
+    }
+
+    /* For desktop section - FULL WIDTH AT BOTTOM */
+    .desktop-reviews {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
+      width: 100%;
+      grid-column: 1 / -1; /* Span full width in grid */
+    }
+
+    .desktop-reviews .rating-chart-card {
+      order: 1;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    .desktop-reviews .reviews-header {
+      order: 2;
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    .desktop-reviews .reviews-common-frame {
+      order: 3;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Ensure the product grid allows full width for reviews */
+    @media (min-width: 1024px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      /* Make reviews span both columns */
+      .desktop-reviews {
+        grid-column: 1 / -1;
+        margin-top: 40px;
+      }
+    }
+
+    /* Empty state styling */
+    .reviews-common-frame .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #666;
+      background: #f9f9f9;
+      border: 2px dashed #000;
+      width: 100%;
+    }
+
+    .reviews-common-frame .empty-state i {
+      font-size: 5rem;
+      color: #d4af37;
+      margin-bottom: 25px;
+    }
+
+    .reviews-common-frame .empty-state h3 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    .reviews-common-frame .empty-state p {
+      font-size: 1.1rem;
+      color: #666;
+    }
+
     .reviews-container {
       max-height: 400px;
       overflow-y: auto;
@@ -1175,28 +1543,6 @@
       display: flex; align-items: center; justify-content: center; font-weight: 700; color: #d4af37; border: 2px solid #d4af37; font-size: 0.8rem;
     }
 
-    /* Review image styles */
-    .review-image {
-      margin-top: 10px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 2px solid #000;
-      width: 100%;
-      max-width: 200px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    
-    .review-image:hover {
-      transform: scale(1.02);
-    }
-    
-    .review-image img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
     /* related products */
     .related { margin-top: 32px; padding-top: 24px; }
     .related-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 16px; color: #000; text-transform: uppercase; }
@@ -1363,71 +1709,71 @@
     function getRandomSold() { return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; }
     function getRandomViewers() { return Math.floor(Math.random() * (35 - 8 + 1)) + 8; }
 
-// Load reviews for this product from Firestore
-async function loadProductReviews(productId) {
-  try {
-    console.log('Loading reviews for product:', productId);
-    
-    if (typeof db === 'undefined' || !db) {
-      console.log('Firebase db not available');
-      return [];
-    }
-    
-    if (!productId) {
-      console.log('No product ID provided');
-      return [];
-    }
-    
-    // TEMPORARY FIX: Remove orderBy while index is building
-    const snapshot = await db.collection('reviews')
-      .where('productId', '==', productId)
-      .get(); // Removed .orderBy('timestamp', 'desc')
-    
-    console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
-    
-    if (snapshot.empty) {
-      console.log('No reviews found for this product');
-      return [];
-    }
-    
-    const reviews = snapshot.docs.map(doc => {
-      const data = doc.data();
-      
-      // Handle timestamp properly
-      let reviewDate = new Date();
-      if (data.timestamp) {
-        if (data.timestamp.toDate) {
-          reviewDate = data.timestamp.toDate();
-        } else if (data.timestamp.seconds) {
-          reviewDate = new Date(data.timestamp.seconds * 1000);
-        } else {
-          reviewDate = new Date(data.timestamp);
+    // Load reviews for this product from Firestore
+    async function loadProductReviews(productId) {
+      try {
+        console.log('Loading reviews for product:', productId);
+        
+        if (typeof db === 'undefined' || !db) {
+          console.log('Firebase db not available');
+          return [];
         }
+        
+        if (!productId) {
+          console.log('No product ID provided');
+          return [];
+        }
+        
+        // TEMPORARY FIX: Remove orderBy while index is building
+        const snapshot = await db.collection('reviews')
+          .where('productId', '==', productId)
+          .get(); // Removed .orderBy('timestamp', 'desc')
+        
+        console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
+        
+        if (snapshot.empty) {
+          console.log('No reviews found for this product');
+          return [];
+        }
+        
+        const reviews = snapshot.docs.map(doc => {
+          const data = doc.data();
+          
+          // Handle timestamp properly
+          let reviewDate = new Date();
+          if (data.timestamp) {
+            if (data.timestamp.toDate) {
+              reviewDate = data.timestamp.toDate();
+            } else if (data.timestamp.seconds) {
+              reviewDate = new Date(data.timestamp.seconds * 1000);
+            } else {
+              reviewDate = new Date(data.timestamp);
+            }
+          }
+          
+          return {
+            id: doc.id,
+            reviewerName: data.reviewerName || data.name || 'Anonymous',
+            city: data.city || 'India',
+            rating: data.rating || 5,
+            comment: data.comment || data.review || '',
+            verified: data.verified || false,
+            imageUrl: data.imageUrl || data.image || null,
+            timestamp: reviewDate
+          };
+        });
+        
+        // Sort manually (descending order)
+        reviews.sort((a, b) => b.timestamp - a.timestamp);
+        
+        console.log('Processed reviews:', reviews);
+        return reviews;
+        
+      } catch (error) {
+        console.error('Error loading reviews:', error);
+        return [];
       }
-      
-      return {
-        id: doc.id,
-        reviewerName: data.reviewerName || data.name || 'Anonymous',
-        city: data.city || 'India',
-        rating: data.rating || 5,
-        comment: data.comment || data.review || '',
-        verified: data.verified || false,
-        imageUrl: data.imageUrl || data.image || null,
-        timestamp: reviewDate
-      };
-    });
-    
-    // Sort manually (descending order)
-    reviews.sort((a, b) => b.timestamp - a.timestamp);
-    
-    console.log('Processed reviews:', reviews);
-    return reviews;
-    
-  } catch (error) {
-    console.error('Error loading reviews:', error);
-    return [];
-  }
-}
+    }
 
     function getProductId() { return new URLSearchParams(window.location.search).get('id'); }
 
@@ -1734,79 +2080,79 @@ async function loadProductReviews(productId) {
       }
     }
 
-   async function loadProduct() {
-  const productId = getProductId();
-  if (!productId) return showNotFound();
-  
-  try {
-    console.log('Loading product with ID:', productId);
-    
-    if (typeof db === 'undefined' || !db) {
-      console.log('Firebase not available, using demo product');
-      currentProduct = {
-        id: productId,
-        title: 'Minimalist Leather Backpack',
-        category: 'Bags',
-        price: 2499,
-        rating: 4.7,
-        stock: 15,
-        description: 'Handcrafted genuine leather backpack with premium metal hardware.',
-        primaryImg: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600',
-        highDemand: false
-      };
-      document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+    async function loadProduct() {
+      const productId = getProductId();
+      if (!productId) return showNotFound();
       
-      // Try to load reviews even in demo mode
       try {
+        console.log('Loading product with ID:', productId);
+        
+        if (typeof db === 'undefined' || !db) {
+          console.log('Firebase not available, using demo product');
+          currentProduct = {
+            id: productId,
+            title: 'Minimalist Leather Backpack',
+            category: 'Bags',
+            price: 2499,
+            rating: 4.7,
+            stock: 15,
+            description: 'Handcrafted genuine leather backpack with premium metal hardware.',
+            primaryImg: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600',
+            highDemand: false
+          };
+          document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+          
+          // Try to load reviews even in demo mode
+          try {
+            productReviews = await loadProductReviews(productId);
+          } catch (e) {
+            productReviews = [];
+          }
+          
+          renderProduct(currentProduct);
+          return;
+        }
+        
+        const doc = await db.collection('products').doc(productId).get();
+        if (!doc.exists) return showNotFound();
+        
+        currentProduct = { id: doc.id, ...doc.data() };
+        document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+        
+        console.log('Product loaded:', currentProduct.title);
+        
+        // Load reviews for this product
         productReviews = await loadProductReviews(productId);
-      } catch (e) {
-        productReviews = [];
+        console.log('Reviews loaded:', productReviews.length);
+        
+        // Now render with reviews
+        renderProduct(currentProduct);
+        
+      } catch (error) { 
+        console.error('Error loading product:', error); 
+        currentProduct = {
+          id: productId,
+          title: 'Urban Canvas Sneakers',
+          category: 'Footwear',
+          price: 1899,
+          rating: 4.3,
+          stock: 8,
+          description: 'Comfortable and stylish sneakers for daily wear.',
+          primaryImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600',
+          highDemand: false
+        };
+        document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+        
+        // Try to load reviews even after error
+        try {
+          productReviews = await loadProductReviews(productId);
+        } catch (e) {
+          productReviews = [];
+        }
+        
+        renderProduct(currentProduct);
       }
-      
-      renderProduct(currentProduct);
-      return;
     }
-    
-    const doc = await db.collection('products').doc(productId).get();
-    if (!doc.exists) return showNotFound();
-    
-    currentProduct = { id: doc.id, ...doc.data() };
-    document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-    
-    console.log('Product loaded:', currentProduct.title);
-    
-    // Load reviews for this product
-    productReviews = await loadProductReviews(productId);
-    console.log('Reviews loaded:', productReviews.length);
-    
-    // Now render with reviews
-    renderProduct(currentProduct);
-    
-  } catch (error) { 
-    console.error('Error loading product:', error); 
-    currentProduct = {
-      id: productId,
-      title: 'Urban Canvas Sneakers',
-      category: 'Footwear',
-      price: 1899,
-      rating: 4.3,
-      stock: 8,
-      description: 'Comfortable and stylish sneakers for daily wear.',
-      primaryImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600',
-      highDemand: false
-    };
-    document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-    
-    // Try to load reviews even after error
-    try {
-      productReviews = await loadProductReviews(productId);
-    } catch (e) {
-      productReviews = [];
-    }
-    
-    renderProduct(currentProduct);
-  }
-}
 
     function showNotFound() {
       document.getElementById('product-container').innerHTML = `
@@ -1864,109 +2210,113 @@ async function loadProductReviews(productId) {
         </div>
       `;
 
-      // Generate reviews HTML with compact images and 2 per line
-let reviewsHTML = '';
+      // Generate reviews HTML with common frame - 1080×1920 PORTRAIT FRAMES (NO STROKE)
+      let reviewsHTML = '';
 
-if (productReviews && productReviews.length > 0) {
-  reviewsHTML = `<div class="reviews-grid">`;
-  
-  reviewsHTML += productReviews.map(review => {
-    const date = review.timestamp || new Date();
-    const daysAgo = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
-    const timeDisplay = daysAgo > 0 ? `${daysAgo}d` : 'Today';
-    
-    // Generate avatar from name
-    const nameParts = (review.reviewerName || 'A').split(' ');
-    const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
-    
-    // Generate star rating
-    const rating = review.rating || 5;
-    const fullStars = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.5;
-    let stars = '';
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) stars += '★';
-      else if (i === fullStars + 1 && hasHalf) stars += '½';
-      else stars += '☆';
-    }
-    
-    const imageUrl = review.imageUrl || null;
-    
-    return `
-      <div class="review-card">
-        <!-- Compact square image or avatar -->
-        ${imageUrl ? `
-        <div class="review-image-compact" onclick="window.open('${imageUrl}', '_blank')">
-          <img src="${imageUrl}" alt="Review" onerror="this.style.display='none'">
-        </div>
-        ` : `
-        <div class="review-avatar-compact">
-          ${initials}
-        </div>
-        `}
+      if (productReviews && productReviews.length > 0) {
+        // Add reviews header
+        reviewsHTML = `<div class="reviews-header">
+          <span>Customer Reviews</span>
+          <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+        </div>`;
         
-        <!-- User info and rating row -->
-        <div class="review-user-info">
-          <div class="review-user-details">
-            <div class="review-user-name">${review.reviewerName}</div>
-            <div class="review-user-meta">
-              <span>${review.city || 'India'}</span>
-              <span>•</span>
-              <span>${timeDisplay}</span>
+        // Create a common frame container
+        reviewsHTML += `<div class="reviews-common-frame">`;
+        reviewsHTML += `<div class="reviews-grid">`;
+        
+        reviewsHTML += productReviews.map(review => {
+          // Generate star rating
+          const rating = review.rating || 5;
+          const fullStars = Math.floor(rating);
+          const hasHalf = rating % 1 >= 0.5;
+          let stars = '';
+          for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) stars += '★';
+            else if (i === fullStars + 1 && hasHalf) stars += '½';
+            else stars += '☆';
+          }
+          
+          // Check for imageUrl properly
+          const imageUrl = review.imageUrl || null;
+          
+          // Generate initials for avatar fallback
+          const nameParts = (review.reviewerName || 'A').split(' ');
+          const initials = nameParts.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+          
+          return `
+            <div class="review-item">
+              <!-- 1080×1920 PORTRAIT IMAGE FRAME - NO BLACK STROKE -->
+              ${imageUrl ? `
+              <div class="review-image-portrait" onclick="window.open('${imageUrl}', '_blank')">
+                <img src="${imageUrl}" alt="Review image" onerror="this.style.display='none'; this.parentElement.classList.add('image-error');">
+              </div>
+              ` : `
+              <!-- Portrait avatar for no-image reviews - NO BLACK STROKE -->
+              <div class="review-avatar-portrait">
+                ${initials}
+              </div>
+              `}
+              
+              <div class="review-content">
+                <!-- SMALL user name -->
+                <div class="review-user-name">${review.reviewerName}</div>
+                
+                <!-- SMALL rating stars -->
+                <div class="review-stars">${stars}</div>
+                
+                <!-- SMALL review description -->
+                <div class="review-description">${review.comment}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        reviewsHTML += `</div>`; // Close reviews-grid
+        reviewsHTML += `</div>`; // Close reviews-common-frame
+      } else {
+        reviewsHTML = `
+          <div class="reviews-header">
+            <span>Customer Reviews</span>
+            <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+          </div>
+          <div class="reviews-common-frame">
+            <div class="empty-state">
+              <i class="fa-regular fa-star"></i>
+              <h3>No reviews yet</h3>
+              <p>Be the first to review this product!</p>
             </div>
           </div>
-          <div class="review-rating-compact">
-            <div class="review-stars">${stars}</div>
-            ${review.verified ? '<span class="review-verified-badge">✓ Verified</span>' : ''}
-          </div>
+        `;
+      }
+
+      // DESKTOP REVIEWS SECTION - placed at the bottom of the product grid (full width)
+      const desktopReviewsHTML = `
+        <div class="desktop-reviews">
+          ${ratingChartHTML}
+          ${reviewsHTML}
         </div>
-        
-        <!-- Review comment -->
-        <div class="review-comment">${review.comment}</div>
-      </div>
-    `;
-  }).join('');
-  
-  reviewsHTML += `</div>`;
-} else {
-  reviewsHTML = `
-    <div style="text-align: center; padding: 40px 20px; color: #666;">
-      <i class="fa-regular fa-star" style="font-size: 3rem; color: #d4af37; margin-bottom: 15px; display: block;"></i>
-      <h3 style="font-size: 1.2rem; margin-bottom: 8px; color: #000;">No reviews yet</h3>
-      <p style="font-size: 0.9rem;">Be the first to review this product!</p>
-    </div>
-  `;
-}
-      
+      `;
+
+      // MOBILE REVIEWS SECTION (hidden on desktop)
+      const mobileReviewsHTML = `
+        <div class="mobile-reviews">
+          ${ratingChartHTML}
+          ${reviewsHTML}
+        </div>
+      `;
+
       const container = document.getElementById('product-container');
       container.innerHTML = `
         <div class="product-grid">
-          <!-- GALLERY -->
+          <!-- GALLERY COLUMN -->
           <div class="gallery-section">
             <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
-            
-            <!-- DESKTOP REVIEWS (hidden on mobile) -->
-            <div class="desktop-reviews">
-              ${ratingChartHTML}
-              <div class="reviews-header">
-                <span>Customer Reviews (${reviewCount})</span>
-                <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
-              </div>
-              <div id="reviews-container-desktop" class="reviews-container">
-                ${reviewsHTML}
-              </div>
-              ${productReviews.length > 3 ? `
-              <div id="view-more-btn-desktop" class="view-more-btn" onclick="toggleReviewsDesktop()">
-                <i class="fa-solid fa-chevron-down"></i> View More Reviews
-              </div>
-              ` : ''}
-            </div>
           </div>
           
-          <!-- INFO -->
+          <!-- INFO COLUMN -->
           <div class="product-info">
             <div class="social-strip">
               <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
@@ -2060,7 +2410,7 @@ if (productReviews && productReviews.length > 0) {
                 </div>
                 
                 <div class="popup-bullets">
-                  <div class="popup-bullets-item" style="display: flex; gap: 12px; margin-bottom: 16px;">
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
                     <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
                     <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
                   </div>
@@ -2121,7 +2471,7 @@ if (productReviews && productReviews.length > 0) {
               </button>
             </div>
 
-            <!-- TABS (description appears first on mobile) -->
+            <!-- TABS (description, specs, videos) -->
             <div class="tabs">
               <div class="tab-headers">
                 <div class="tab-header active" onclick="switchTab('desc')">Description</div>
@@ -2157,23 +2507,12 @@ if (productReviews && productReviews.length > 0) {
               </div>
             </div>
             
-            <!-- MOBILE REVIEWS SECTION (includes rating chart) -->
-            <div class="mobile-reviews">
-              ${ratingChartHTML}
-              <div class="reviews-header">
-                <span>Customer Reviews (${reviewCount})</span>
-                <span>★ ${(product.rating || 4.5).toFixed(1)}</span>
-              </div>
-              <div id="reviews-container-mobile" class="reviews-container">
-                ${reviewsHTML}
-              </div>
-              ${productReviews.length > 3 ? `
-              <div id="view-more-btn-mobile" class="view-more-btn" onclick="toggleReviewsMobile()">
-                <i class="fa-solid fa-chevron-down"></i> View More Reviews
-              </div>
-              ` : ''}
-            </div>
+            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
+            ${mobileReviewsHTML}
           </div>
+          
+          <!-- DESKTOP REVIEWS SECTION - FULL WIDTH AT BOTTOM (spans both columns) -->
+          ${desktopReviewsHTML}
         </div>
       `;
 
@@ -2186,31 +2525,6 @@ if (productReviews && productReviews.length > 0) {
       const dates = getDeliveryDates();
       document.getElementById('deliveryDates').textContent = dates.display;
     }
-
-    // Separate toggle functions for desktop and mobile
-    window.toggleReviewsDesktop = function() {
-      const container = document.getElementById('reviews-container-desktop');
-      const btn = document.getElementById('view-more-btn-desktop');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
-      } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
-      }
-    };
-
-    window.toggleReviewsMobile = function() {
-      const container = document.getElementById('reviews-container-mobile');
-      const btn = document.getElementById('view-more-btn-mobile');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
-      } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
-      }
-    };
 
     window.changeImage = function(src, el) { 
       document.getElementById('mainImage').src = src; 
@@ -2251,13 +2565,13 @@ if (productReviews && productReviews.length > 0) {
     };
 
     document.addEventListener('DOMContentLoaded', () => { 
-  // Ensure header and footer are loaded
-  if (typeof window.loadComponents === 'function') {
-    window.loadComponents();
-  }
-  
-  loadProduct(); 
-});
+      // Ensure header and footer are loaded
+      if (typeof window.loadComponents === 'function') {
+        window.loadComponents();
+      }
+      
+      loadProduct(); 
+    });
 
     window.copyLink = function() { 
       const i = document.getElementById('shareLink'); 
@@ -2331,17 +2645,11 @@ if (productReviews && productReviews.length > 0) {
       };
     }
 
-    document.addEventListener('DOMContentLoaded', () => { 
-      // Don't load components here - common.js will handle it
-      loadProduct(); 
-    });
-
     window.addEventListener('scroll', () => { 
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 200); 
     });
 
     // Make sure cart icon works by ensuring common.js functions are available
-    // This is just a safety check
     window.ensureCartFunctionality = function() {
       console.log('Product page ready, cart functions should be available from common.js');
     };
