@@ -1435,7 +1435,7 @@
   <div id="footer"></div>
   <div id="common-modals"></div>
 
-  <script>
+<script>
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
     let selectedPaymentMethod = 'prepaid';
@@ -1894,7 +1894,9 @@
             stock: 15,
             description: 'Handcrafted genuine leather backpack with premium metal hardware.',
             primaryImg: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600',
-            highDemand: false
+            highDemand: false,
+            reviewCount: 128,
+            originalPrice: 3299
           };
           document.getElementById('breadcrumb-product').textContent = currentProduct.title;
           
@@ -1935,7 +1937,9 @@
           stock: 8,
           description: 'Comfortable and stylish sneakers for daily wear.',
           primaryImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600',
-          highDemand: false
+          highDemand: false,
+          reviewCount: 56,
+          originalPrice: 2499
         };
         document.getElementById('breadcrumb-product').textContent = currentProduct.title;
         
@@ -1961,25 +1965,35 @@
       `;
     }
 
-function renderProduct(product) {
-  const images = [];
-  if (product.media && Array.isArray(product.media)) {
-    product.media.forEach(item => {
-      if (item.url) images.push(item.url);
-    });
-  }
-  if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
-  
-  const stock = product.stock || 10;
-  
-  // Use stored prices or calculate if not present
-  const originalPrice = product.originalPrice || Math.round(product.price * 1.25);
-  const discount = Math.round(((originalPrice - product.price) / originalPrice) * 100);
-  const prepaidPrice = product.prepaidPrice || Math.round(product.price * 0.92);
-  const codPrice = product.codPrice || Math.round(product.price * 1.04);
-  
-  // Use stored review count or calculate from reviews
-  const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
+    function renderProduct(product) {
+      const images = [];
+      if (product.media && Array.isArray(product.media)) {
+        product.media.forEach(item => {
+          if (item.url) images.push(item.url);
+        });
+      }
+      if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
+      
+      const stock = product.stock || 10;
+      const soldCount = getRandomSold();
+      const liveViewers = getRandomViewers();
+      
+      // Calculate prices with the admin rules
+      const sellingPrice = product.price || 0;
+      const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
+      const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+      
+      // Prepaid: 15% off, rounded to nearest integer
+      const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
+      
+      // COD: selling price + ₹100, rounded to nearest integer
+      const codPrice = product.codPrice || Math.round(sellingPrice + 100);
+      
+      // Use stored review count or calculate from reviews
+      const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
+
+      // Calculate rating distribution from actual reviews
+      const ratingDist = generateRatingDistribution(productReviews);
 
       // Create rating chart HTML
       const ratingChartHTML = `
@@ -2160,19 +2174,19 @@ function renderProduct(product) {
             <!-- PRICE CARD with quantity -->
             <div class="price-card">
               <div class="price-header">
-                <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
+                <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
                 <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-                <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> SALE</span>
+                <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> ${discount}% OFF</span>
               </div>
               <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
               <div class="price-options">
                 <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-                  <div class="option-label">Prepaid</div>
-                  <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
+                  <div class="option-label">Prepaid (15% off)</div>
+                  <div class="option-price">₹${prepaidPrice}</div>
                 </div>
                 <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
                   <div class="option-label">Cash on Delivery</div>
-                  <div class="option-price">₹${codPrice.toFixed(2)}</div>
+                  <div class="option-price">₹${codPrice}</div>
                 </div>
               </div>
               
@@ -2195,11 +2209,11 @@ function renderProduct(product) {
                 <span class="delivery-min">Min. ₹1,299</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
+                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (sellingPrice / 1299) * 100)}%"></div>
               </div>
               <div class="delivery-message" id="deliveryMessage">
-                <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-                <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
+                <i class="fa-solid ${sellingPrice >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+                <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
               </div>
               <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
                 <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
@@ -2329,7 +2343,7 @@ function renderProduct(product) {
         ${desktopReviewsHTML}
       `;
 
-      updateDeliveryBar(product.price);
+      updateDeliveryBar(sellingPrice);
       
       // Update button states based on high demand
       updateButtonStates();
@@ -2420,8 +2434,6 @@ function renderProduct(product) {
       document.querySelector(`.tab-header[onclick="switchTab('${t}')"]`).classList.add('active'); 
       document.getElementById(`tab-${t}`).classList.add('active'); 
     };
-    
-    
     
     function getDeliveryDates() {
       const today = new Date();
