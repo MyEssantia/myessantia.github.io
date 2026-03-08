@@ -77,11 +77,9 @@
   
   <style>
     :root {
-      --font-body-family: 'Archivo', sans-serif;
       --font-body-style: normal;
       --font-body-weight: 400;
       --font-body-weight-bold: 700;
-      --font-heading-family: 'Proza Libre', sans-serif;
       --font-heading-style: normal;
       --font-heading-weight: 400;
       --font-body-scale: 1.0;
@@ -2830,28 +2828,73 @@ function renderProduct(product) {
     `;
   }
 
-  // Use the rich HTML description from admin or create a default
-  const productDescriptionHTML = product.description || `
-    <div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">
-      <p><strong>Premium quality product.</strong> Crafted with attention to detail.</p>
-      <p>${product.shortDesc || 'Experience the perfect blend of style and functionality.'}</p>
-      
-      <h3 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;">✨ <strong>Key Features:</strong></h3>
-      
-      <p><strong>- Premium Material</strong> → High-quality build for lasting durability.</p>
-      <p><strong>- Versatile Design</strong> → Perfect for everyday use.</p>
-      
-      <h2 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;"><strong>Specifications</strong></h2>
-      
-      <p>- Material: Premium Quality</p>
-      <p>- Brand: ${product.brand || 'MyEssantia'}</p>
-      
-      <h2 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;"><strong>What's in the Box?</strong></h2>
-      
-      <p>✔️ 1 x ${product.title}</p>
-      <p>✔️ User Manual</p>
-    </div>
-  `;
+  // Generate product description HTML from blocks
+  let productDescriptionHTML = '<div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">';
+
+  if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks) && product.descriptionBlocks.length > 0) {
+    product.descriptionBlocks.forEach(block => {
+      if (block.type === 'text') {
+        productDescriptionHTML += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${block.content || ''}</p>`;
+      }
+      else if (block.type === 'heading') {
+        const level = block.level || 'h2';
+        productDescriptionHTML += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${block.content || ''}</${level}>`;
+      }
+      else if (block.type === 'image') {
+        if (block.url) {
+          productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
+        }
+      }
+      else if (block.type === 'video') {
+        const url = block.url || '';
+        const alignment = block.alignment || 'center';
+        const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
+        
+        if (url) {
+          if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            // Extract YouTube ID
+            let videoId = '';
+            if (url.includes('youtube.com/watch?v=')) {
+              videoId = url.split('v=')[1]?.split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+              videoId = url.split('youtu.be/')[1]?.split('?')[0];
+            }
+            
+            if (videoId) {
+              productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000;"></iframe></p>`;
+            }
+          } else {
+            productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
+          }
+        }
+      }
+      else if (block.type === 'bullets') {
+        if (block.items && block.items.length > 0) {
+          productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+          block.items.forEach(item => {
+            if (item) {
+              productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${item}</li>`;
+            }
+          });
+          productDescriptionHTML += `</ul>`;
+        }
+      }
+    });
+  } else {
+    // Fallback for older products or if no description blocks
+    productDescriptionHTML += `<p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>`;
+    
+    if (product.specs && product.specs.length > 0) {
+      productDescriptionHTML += `<h3 style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem;">✨ <strong>Key Features:</strong></h3>`;
+      productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+      product.specs.forEach(spec => {
+        productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${spec}</li>`;
+      });
+      productDescriptionHTML += `</ul>`;
+    }
+  }
+
+  productDescriptionHTML += '</div>';
 
   // MOBILE REVIEWS - with rating chart included (only for mobile)
   const mobileReviewsHTML = `
@@ -3109,7 +3152,7 @@ function renderProduct(product) {
           </button>
         </div>
 
-        <!-- PRODUCT DESCRIPTION - Rich HTML from admin -->
+        <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
         ${productDescriptionHTML}
         
         <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
