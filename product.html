@@ -212,6 +212,36 @@
       font-weight: var(--font-heading-weight);
     }
 
+    /* Hide scrollbar but keep scrolling functionality for review modal */
+.review-modal-content {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+.review-modal-content::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari/Opera */
+}
+
+/* Also apply to review text areas if needed */
+.review-text {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.review-text::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* For the desktop reviews section if it has scrollbars */
+.desktop-reviews-section .review-text {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.desktop-reviews-section .review-text::-webkit-scrollbar {
+  display: none !important;
+}
+
     /* ===== 2 REVIEWS PER LINE ON DESKTOP ONLY ===== */
 @media (min-width: 1024px) {
   /* Only target reviews inside desktop section */
