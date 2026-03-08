@@ -2949,7 +2949,7 @@ async function loadPage(page) {
     }
   } catch (error) {
     console.error('Error loading page:', error);
-    showNotification('Failed to load page', 'error');
+    showNotification('Failed to load page: ' + error.message, 'error');
   } finally {
     // Hide loading overlay
     loadingOverlay.classList.remove('show');
@@ -2959,16 +2959,12 @@ async function loadPage(page) {
 function initializeReviews() {
   console.log('Initializing reviews page...');
   
-  // The review page's script should have already run
-  // But we can call its initialization functions if needed
   if (typeof window.loadReviews === 'function') {
     window.loadReviews();
   }
   
-  // Setup any additional event listeners if needed
   const searchInput = document.getElementById('search-reviews');
   if (searchInput) {
-    // Remove any existing listeners and add new one
     searchInput.removeEventListener('input', window.handleReviewSearch);
     window.handleReviewSearch = function(e) {
       const term = e.target.value.toLowerCase();
@@ -2998,19 +2994,11 @@ async function loadDashboardPage() {
       throw new Error(`Failed to load dashhome.html: ${response.status}`);
     }
     const html = await response.text();
-    console.log('Dashboard HTML loaded successfully, length:', html.length);
+    console.log('Dashboard HTML loaded successfully');
     
     // Parse the HTML
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    
-    // Check if templates exist
-    const textTemplate = doc.getElementById('text-block-template');
-    if (!textTemplate) {
-      console.error('Templates not found in dashhome.html');
-      // Log first 500 chars of HTML to see what's loaded
-      console.log('HTML preview:', html.substring(0, 500));
-    }
     
     // Create a container for dashboard content
     const dashboardContent = document.createElement('div');
@@ -3033,12 +3021,20 @@ async function loadDashboardPage() {
       dashboardContent.appendChild(productsTable.cloneNode(true));
     }
     
+    // Add templates
+    const templates = doc.querySelectorAll('template');
+    templates.forEach(template => {
+      dashboardContent.appendChild(template.cloneNode(true));
+    });
+    
     // Clear and append
     pageContainer.innerHTML = '';
     pageContainer.appendChild(dashboardContent);
     
     // Reinitialize dashboard functionality
-    initializeDashboard();
+    setTimeout(() => {
+      initializeDashboard();
+    }, 100);
     
   } catch (error) {
     console.error('Error loading dashboard page:', error);
@@ -3056,63 +3052,54 @@ async function loadDashboardPage() {
 }
 
 async function loadNotifyPage() {
-  // Fetch notify HTML
-  const response = await fetch('notify.html');
-  const html = await response.text();
-  
-  // Parse the HTML
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  
-  // Create a container for notify content
-  const notifyContent = document.createElement('div');
-  
-  // Add stats grid
-  const statsGrid = doc.querySelector('.stats-grid');
-  if (statsGrid) notifyContent.appendChild(statsGrid.cloneNode(true));
-  
-  // Add email template panel
-  const templatePanel = doc.querySelector('.email-template-panel');
-  if (templatePanel) notifyContent.appendChild(templatePanel.cloneNode(true));
-  
-  // Add filters bar
-  const filtersBar = doc.querySelector('.filters-bar');
-  if (filtersBar) notifyContent.appendChild(filtersBar.cloneNode(true));
-  
-  // Add table container
-  const tableContainer = doc.querySelector('.table-container');
-  if (tableContainer) {
-    const clonedContainer = tableContainer.cloneNode(true);
-    const tbody = clonedContainer.querySelector('#table-body');
-    if (tbody) tbody.innerHTML = '';
-    const mobileCards = clonedContainer.querySelector('#mobile-cards');
-    if (mobileCards) mobileCards.innerHTML = '';
-    notifyContent.appendChild(clonedContainer);
-  }
-  
-  // Clear and append
-  pageContainer.innerHTML = '';
-  pageContainer.appendChild(notifyContent);
-  
-  // Initialize notify functionality
-  initializeNotify();
-}
-
-// Updated loadReviewsPage function with rating overrides
-async function loadReviewsPage() {
   try {
-    // Fetch reviews HTML
-    const response = await fetch('review.html');
+    const response = await fetch('notify.html');
     const html = await response.text();
     
-    // Parse the HTML
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     
-    // Create container
+    const notifyContent = document.createElement('div');
+    
+    const statsGrid = doc.querySelector('.stats-grid');
+    if (statsGrid) notifyContent.appendChild(statsGrid.cloneNode(true));
+    
+    const templatePanel = doc.querySelector('.email-template-panel');
+    if (templatePanel) notifyContent.appendChild(templatePanel.cloneNode(true));
+    
+    const filtersBar = doc.querySelector('.filters-bar');
+    if (filtersBar) notifyContent.appendChild(filtersBar.cloneNode(true));
+    
+    const tableContainer = doc.querySelector('.table-container');
+    if (tableContainer) {
+      const clonedContainer = tableContainer.cloneNode(true);
+      const tbody = clonedContainer.querySelector('#table-body');
+      if (tbody) tbody.innerHTML = '';
+      const mobileCards = clonedContainer.querySelector('#mobile-cards');
+      if (mobileCards) mobileCards.innerHTML = '';
+      notifyContent.appendChild(clonedContainer);
+    }
+    
+    pageContainer.innerHTML = '';
+    pageContainer.appendChild(notifyContent);
+    
+    initializeNotify();
+  } catch (error) {
+    console.error('Error loading notify page:', error);
+    showNotification('Failed to load notifications page', 'error');
+  }
+}
+
+async function loadReviewsPage() {
+  try {
+    const response = await fetch('review.html');
+    const html = await response.text();
+    
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
     const reviewsContent = document.createElement('div');
     
-    // Extract and clone each section properly
     const sections = [
       '.filters-bar',
       '.stats-grid',
@@ -3128,17 +3115,14 @@ async function loadReviewsPage() {
       }
     });
     
-    // Add loading state
     const loadingEl = doc.querySelector('#reviews-loading');
     if (loadingEl) {
       reviewsContent.appendChild(loadingEl.cloneNode(true));
     }
     
-    // Clear and append
     pageContainer.innerHTML = '';
     pageContainer.appendChild(reviewsContent);
     
-    // Initialize reviews functionality
     initializeReviewsPage();
     
   } catch (error) {
@@ -3150,10 +3134,8 @@ async function loadReviewsPage() {
 function initializeReviewsPage() {
   console.log('Initializing reviews page...');
   
-  // Use existing Firebase instance
   window.db = db;
   
-  // Initialize global variables
   window.allReviews = [];
   window.filteredReviews = [];
   window.currentReviewFilter = 'all';
@@ -3162,19 +3144,14 @@ function initializeReviewsPage() {
   window.reviewProducts = {};
   window.reviewImageUrl = '';
   
-  // Make sure image preview is hidden without notification
   const preview = document.getElementById('review-image-preview');
   if (preview) preview.style.display = 'none';
   
-  // Load data
   loadReviews();
-  
-  // Setup event listeners
   setupReviewEventListeners();
 }
 
 function setupReviewEventListeners() {
-  // Remove existing listeners first
   const filterTabs = document.querySelectorAll('.filter-tab');
   filterTabs.forEach(tab => {
     const newTab = tab.cloneNode(true);
@@ -3185,7 +3162,6 @@ function setupReviewEventListeners() {
     });
   });
   
-  // Search input
   const searchInput = document.getElementById('search-reviews');
   if (searchInput) {
     const newSearch = searchInput.cloneNode(true);
@@ -3195,7 +3171,6 @@ function setupReviewEventListeners() {
     });
   }
   
-  // Form submit
   const reviewForm = document.getElementById('review-form');
   if (reviewForm) {
     const newForm = reviewForm.cloneNode(true);
@@ -3204,7 +3179,6 @@ function setupReviewEventListeners() {
   }
 }
 
-// Load products for dropdown
 async function loadReviewProducts() {
   try {
     const loadingEl = document.getElementById('reviews-loading');
@@ -3235,7 +3209,6 @@ async function loadReviewProducts() {
   }
 }
 
-// Load reviews from Firestore
 async function loadReviews() {
   const loadingEl = document.getElementById('reviews-loading');
   if (loadingEl) loadingEl.style.display = 'flex';
@@ -3261,7 +3234,6 @@ async function loadReviews() {
   }
 }
 
-// Apply filter logic
 function applyReviewFilter(filter) {
   if (filter === 'all') {
     window.filteredReviews = [...window.allReviews];
@@ -3274,7 +3246,6 @@ function applyReviewFilter(filter) {
   }
 }
 
-// Filter reviews function
 function filterReviews(filter) {
   window.currentReviewFilter = filter;
   window.currentReviewPage = 1;
@@ -3287,7 +3258,6 @@ function filterReviews(filter) {
   renderReviews();
 }
 
-// Perform search
 function performSearch(term) {
   term = term.toLowerCase();
   if (!term) { 
@@ -3303,7 +3273,6 @@ function performSearch(term) {
   renderReviews();
 }
 
-// Update statistics
 function updateReviewStats() {
   const totalEl = document.getElementById('total-reviews');
   const verifiedEl = document.getElementById('verified-reviews');
@@ -3316,7 +3285,6 @@ function updateReviewStats() {
   if (productsReviewedEl) productsReviewedEl.textContent = new Set(window.allReviews.map(r => r.productId)).size;
 }
 
-// Render reviews
 function renderReviews() {
   if (!window.filteredReviews) return;
   
@@ -3339,7 +3307,6 @@ function renderReviews() {
   const end = start + window.reviewItemsPerPage;
   const pageReviews = window.filteredReviews.slice(start, end);
   
-  // Desktop rows
   if (tableBody) {
     tableBody.innerHTML = pageReviews.map(review => {
       const product = window.reviewProducts[review.productId] || { title: 'Unknown', primaryImg: 'https://via.placeholder.com/80' };
@@ -3384,7 +3351,6 @@ function renderReviews() {
     }).join('');
   }
   
-  // Mobile cards
   if (mobileCards) {
     mobileCards.innerHTML = pageReviews.map(review => {
       const product = window.reviewProducts[review.productId] || { title: 'Unknown', primaryImg: 'https://via.placeholder.com/80' };
@@ -3422,7 +3388,6 @@ function renderReviews() {
   updateReviewPagination();
 }
 
-// Pagination functions
 function updateReviewPagination() {
   const paginationDiv = document.getElementById('reviews-pagination');
   const prevBtn = document.getElementById('prev-review-page');
@@ -3632,7 +3597,6 @@ function viewReviewProduct(productId) {
   window.open(`product.html?id=${productId}`, '_blank'); 
 }
 
-// Export CSV
 function exportReviews() {
   const data = window.filteredReviews.map(review => {
     const product = window.reviewProducts[review.productId] || { title: '' };
@@ -3687,7 +3651,6 @@ function showReviewNotification(message, type = 'success') {
   }
 }
 
-// Make functions globally available
 window.filterReviews = filterReviews;
 window.changeReviewPage = changeReviewPage;
 window.goToReviewPage = goToReviewPage;
@@ -3705,7 +3668,6 @@ window.exportReviews = exportReviews;
 function initializeNotify() {
   console.log('Initializing notify page...');
   
-  // Reset global variables for notify page
   window.allNotifyRequests = [];
   window.filteredNotifyRequests = [];
   window.currentNotifyFilter = 'all';
@@ -3713,7 +3675,6 @@ function initializeNotify() {
   window.notifyItemsPerPage = 10;
   window.notifyProducts = {};
 
-  // Email Template
   let emailTemplate = {
     subject: 'Good news! {{product}} is now available at MyEssantia',
     body: `Hi there,
@@ -3733,7 +3694,6 @@ MyEssantia Team`,
     bcc: ''
   };
 
-  // Load template from localStorage
   function loadTemplate() {
     const saved = localStorage.getItem('myessantia_email_template');
     if (saved) {
@@ -3755,7 +3715,6 @@ MyEssantia Team`,
     updatePreview();
   }
 
-  // Save template
   window.saveTemplate = function() {
     emailTemplate = {
       subject: document.getElementById('email-subject').value,
@@ -3768,7 +3727,6 @@ MyEssantia Team`,
     toggleTemplatePanel();
   };
 
-  // Reset template to default
   window.resetTemplate = function() {
     const subjectEl = document.getElementById('email-subject');
     const bodyEl = document.getElementById('email-body');
@@ -3794,13 +3752,11 @@ MyEssantia Team`;
     updatePreview();
   };
 
-  // Toggle template panel
   window.toggleTemplatePanel = function() {
     const panel = document.getElementById('emailTemplatePanel');
     if (panel) panel.classList.toggle('show');
   };
 
-  // Update preview with sample data
   function updatePreview() {
     const subject = document.getElementById('email-subject')?.value || '';
     const body = document.getElementById('email-body')?.value || '';
@@ -3824,14 +3780,12 @@ MyEssantia Team`;
     if (previewBodyEl) previewBodyEl.textContent = previewBody;
   }
 
-  // Add input listeners for preview
   const subjectInput = document.getElementById('email-subject');
   const bodyInput = document.getElementById('email-body');
   
   if (subjectInput) subjectInput.addEventListener('input', updatePreview);
   if (bodyInput) bodyInput.addEventListener('input', updatePreview);
 
-  // Filter requests function
   window.filterRequests = function(filter) {
     window.currentNotifyFilter = filter;
     window.currentNotifyPage = 1;
@@ -3844,7 +3798,6 @@ MyEssantia Team`;
     renderNotifyRequests();
   };
 
-  // Apply filter logic
   function applyNotifyFilter(filter) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -3863,7 +3816,6 @@ MyEssantia Team`;
     });
   }
 
-  // Load products for reference
   async function loadNotifyProducts() {
     try {
       const snapshot = await db.collection('products').get();
@@ -3880,7 +3832,6 @@ MyEssantia Team`;
     }
   }
 
-  // Load notifications from Firestore
   async function loadNotifyRequests() {
     try {
       const loadingEl = document.getElementById('loading');
@@ -3923,7 +3874,6 @@ MyEssantia Team`;
     }
   }
 
-  // Search functionality
   const searchInput = document.getElementById('search-requests');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -3945,7 +3895,6 @@ MyEssantia Team`;
     });
   }
 
-  // Update statistics
   function updateNotifyStats() {
     const total = window.allNotifyRequests.length;
     const pending = window.allNotifyRequests.filter(r => r.status === 'pending' || !r.status).length;
@@ -3963,7 +3912,6 @@ MyEssantia Team`;
     if (uniqueEl) uniqueEl.textContent = uniqueProducts;
   }
 
-  // Render requests
 function renderNotifyRequests() {
   if (!window.filteredNotifyRequests) return;
   
@@ -3986,7 +3934,6 @@ if (emptyState) emptyState.style.display = 'none';
 if (pagination) pagination.style.display =
   window.filteredNotifyRequests.length > window.notifyItemsPerPage ? 'flex' : 'none';
   
-  // Render table rows (desktop view)
   const tableBody = document.getElementById('table-body');
   if (tableBody) {
     tableBody.innerHTML = pageRequests.map(req => {
@@ -4061,7 +4008,6 @@ if (pagination) pagination.style.display =
     }).join('');
   }
 
-  // Render mobile cards
   const mobileCardsEl = document.getElementById('mobile-cards');
   if (mobileCardsEl) {
     mobileCardsEl.innerHTML = '';
@@ -4135,8 +4081,6 @@ if (pagination) pagination.style.display =
   updateNotifyPagination();
 }
 
-
-  // Send email function using mailto
   window.sendNotifyEmail = function(requestId) {
     const request = window.allNotifyRequests.find(r => r.id === requestId);
     if (!request) return;
@@ -4181,7 +4125,6 @@ if (pagination) pagination.style.display =
     }, 1000);
   };
 
-  // Send bulk emails to all pending
   window.sendBulkEmails = function() {
     const pendingRequests = window.filteredNotifyRequests.filter(r => r.status !== 'notified');
     
@@ -4215,7 +4158,6 @@ if (pagination) pagination.style.display =
     }
   };
 
-  // Export to CSV
   window.exportRequests = function() {
     const data = window.filteredNotifyRequests.map(req => {
       const product = window.notifyProducts[req.productId] || { title: 'Unknown Product', price: 0 };
@@ -4265,7 +4207,6 @@ if (pagination) pagination.style.display =
     return csvRows.join('\n');
   }
 
-  // Mark notification as notified
   window.markNotifyAsNotified = async function(notificationId) {
     try {
       await db.collection('notifications').doc(notificationId).update({
@@ -4281,18 +4222,15 @@ if (pagination) pagination.style.display =
     }
   };
 
-  // View product in new tab
   window.viewNotifyProduct = function(productId) {
     window.open(`product.html?id=${productId}`, '_blank');
   };
 
-  // Copy email to clipboard
   window.copyNotifyEmail = function(email) {
     navigator.clipboard.writeText(email);
     showNotification('Email copied to clipboard');
   };
 
-  // Pagination functions
   window.changePage = function(direction) {
     const totalPages = Math.ceil(window.filteredNotifyRequests.length / window.notifyItemsPerPage);
     
@@ -4343,7 +4281,6 @@ if (pagination) pagination.style.display =
     if (pageNumbers) pageNumbers.innerHTML = pageNumbersHTML;
   }
 
-  // Initialize
   loadTemplate();
   loadNotifyRequests();
 }
@@ -4365,7 +4302,6 @@ async function loadProducts() {
   }
 }
 
-// Set up real-time listener for notifications badge
 db.collection('notifications')
   .onSnapshot((snapshot) => {
     const pendingCount = snapshot.docs.filter(doc => {
@@ -4375,14 +4311,12 @@ db.collection('notifications')
     notifyBadge.textContent = pendingCount;
   });
   
-// Set up real-time listener for reviews badge
 db.collection('reviews')
   .onSnapshot((snapshot) => {
     const reviewsBadge = document.getElementById('reviewsBadge');
     if (reviewsBadge) reviewsBadge.textContent = snapshot.size;
   });
 
-// ========== DASHBOARD HELPER FUNCTIONS ==========
 function renderMediaGrid() {
   const mediaGrid = document.getElementById('media-grid');
   if (!mediaGrid) return;
@@ -4573,7 +4507,6 @@ window.deleteProduct = function(id) {
   }
 };
 
-// ========== PRICE CALCULATION FUNCTIONS ==========
 function calculatePrepaidPrice(sellingPrice) {
   const discount = sellingPrice * 0.15;
   const prepaid = sellingPrice - discount;
@@ -4614,16 +4547,12 @@ function addTextBlock() {
     console.error('Text block template not found');
     return;
   }
-  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
-  if (!container) {
-    console.error('Description blocks container not found');
-    return;
+  if (container) {
+    container.appendChild(clone);
+    updatePreview();
   }
-  
-  container.appendChild(clone);
-  updatePreview();
 }
 
 function addHeadingBlock() {
@@ -4632,16 +4561,12 @@ function addHeadingBlock() {
     console.error('Heading block template not found');
     return;
   }
-  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
-  if (!container) {
-    console.error('Description blocks container not found');
-    return;
+  if (container) {
+    container.appendChild(clone);
+    updatePreview();
   }
-  
-  container.appendChild(clone);
-  updatePreview();
 }
 
 function addImageBlock() {
@@ -4650,16 +4575,12 @@ function addImageBlock() {
     console.error('Image block template not found');
     return;
   }
-  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
-  if (!container) {
-    console.error('Description blocks container not found');
-    return;
+  if (container) {
+    container.appendChild(clone);
+    updatePreview();
   }
-  
-  container.appendChild(clone);
-  updatePreview();
 }
 
 function addVideoBlock() {
@@ -4668,16 +4589,12 @@ function addVideoBlock() {
     console.error('Video block template not found');
     return;
   }
-  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
-  if (!container) {
-    console.error('Description blocks container not found');
-    return;
+  if (container) {
+    container.appendChild(clone);
+    updatePreview();
   }
-  
-  container.appendChild(clone);
-  updatePreview();
 }
 
 function addBulletBlock() {
@@ -4686,30 +4603,30 @@ function addBulletBlock() {
     console.error('Bullet block template not found');
     return;
   }
-  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
-  if (!container) {
-    console.error('Description blocks container not found');
-    return;
-  }
   
-  const bulletContainer = clone.querySelector('.bullet-items-container');
-  if (bulletContainer) {
-    addBulletItemToContainer(bulletContainer);
+  if (container) {
+    const bulletContainer = clone.querySelector('.bullet-items-container');
+    if (bulletContainer) {
+      addBulletItemToContainer(bulletContainer);
+    }
+    container.appendChild(clone);
+    updatePreview();
   }
-  
-  container.appendChild(clone);
-  updatePreview();
 }
 
 function addBulletItem(button) {
-  const bulletContainer = button.closest('.bullet-block').querySelector('.bullet-items-container');
-  addBulletItemToContainer(bulletContainer);
-  updatePreview();
+  const bulletContainer = button.closest('.bullet-block')?.querySelector('.bullet-items-container');
+  if (bulletContainer) {
+    addBulletItemToContainer(bulletContainer);
+    updatePreview();
+  }
 }
 
 function addBulletItemToContainer(container) {
+  if (!container) return;
+  
   const bulletItemDiv = document.createElement('div');
   bulletItemDiv.className = 'bullet-item';
   bulletItemDiv.style.display = 'flex';
@@ -4727,14 +4644,16 @@ function addBulletItemToContainer(container) {
 }
 
 function removeBulletItem(button) {
-  button.closest('.bullet-item').remove();
+  button.closest('.bullet-item')?.remove();
   updatePreview();
 }
 
 function uploadImageForBlock(button) {
   const block = button.closest('.image-block');
-  const fileInput = block.querySelector('.image-upload-input');
-  fileInput.click();
+  const fileInput = block?.querySelector('.image-upload-input');
+  if (fileInput) {
+    fileInput.click();
+  }
 }
 
 function handleImageUploadForBlock(input) {
@@ -4749,93 +4668,86 @@ function handleImageUploadForBlock(input) {
   const reader = new FileReader();
   reader.onload = function(e) {
     const block = input.closest('.image-block');
-    const urlInput = block.querySelector('.block-content');
-    const preview = block.querySelector('.image-preview-block');
-    const previewImg = preview.querySelector('img');
-    
-    urlInput.value = e.target.result;
-    previewImg.src = e.target.result;
-    preview.style.display = 'block';
-    updatePreview();
+    if (block) {
+      const urlInput = block.querySelector('.block-content');
+      const preview = block.querySelector('.image-preview-block');
+      const previewImg = preview?.querySelector('img');
+      
+      if (urlInput) urlInput.value = e.target.result;
+      if (previewImg) previewImg.src = e.target.result;
+      if (preview) preview.style.display = 'block';
+      updatePreview();
+    }
   };
   reader.readAsDataURL(file);
 }
 
 function moveBlockUp(button) {
   const block = button.closest('.description-block');
-  const prevBlock = block.previousElementSibling;
-  if (prevBlock && prevBlock.classList.contains('description-block')) {
-    block.parentNode.insertBefore(block, prevBlock);
-    updatePreview();
+  if (block) {
+    const prevBlock = block.previousElementSibling;
+    if (prevBlock && prevBlock.classList.contains('description-block')) {
+      block.parentNode.insertBefore(block, prevBlock);
+      updatePreview();
+    }
   }
 }
 
 function moveBlockDown(button) {
   const block = button.closest('.description-block');
-  const nextBlock = block.nextElementSibling;
-  if (nextBlock && nextBlock.classList.contains('description-block')) {
-    block.parentNode.insertBefore(nextBlock, block);
-    updatePreview();
+  if (block) {
+    const nextBlock = block.nextElementSibling;
+    if (nextBlock && nextBlock.classList.contains('description-block')) {
+      block.parentNode.insertBefore(nextBlock, block);
+      updatePreview();
+    }
   }
 }
 
 function removeBlock(button) {
   if (confirm('Remove this block?')) {
     const block = button.closest('.description-block');
-    block.remove();
-    updatePreview();
+    if (block) {
+      block.remove();
+      updatePreview();
+    }
   }
 }
 
 function updatePreview() {
   const preview = document.getElementById('description-preview');
-  if (!preview) {
-    console.warn('Preview element not found');
-    return;
-  }
+  if (!preview) return;
   
   const blocks = document.querySelectorAll('#description-blocks-container .description-block');
-  if (!blocks) {
-    preview.innerHTML = '<p style="color: #999; text-align: center;">No description blocks added yet.</p>';
-    return;
-  }
   
   let html = '';
   
   blocks.forEach(block => {
-    if (!block) return;
-    
     if (block.classList.contains('text-block')) {
-      const textarea = block.querySelector('.block-content');
-      const text = textarea?.value || '';
-      if (text.trim()) {
+      const text = block.querySelector('.block-content')?.value || '';
+      if (text) {
         html += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${text}</p>`;
       }
     }
     else if (block.classList.contains('heading-block')) {
-      const select = block.querySelector('.heading-level');
-      const input = block.querySelector('.block-content');
-      const level = select?.value || 'h2';
-      const text = input?.value || '';
-      if (text.trim()) {
+      const level = block.querySelector('.heading-level')?.value || 'h2';
+      const text = block.querySelector('.block-content')?.value || '';
+      if (text) {
         html += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${text}</${level}>`;
       }
     }
     else if (block.classList.contains('image-block')) {
-      const input = block.querySelector('.block-content');
-      const url = input?.value || '';
-      if (url.trim()) {
+      const url = block.querySelector('.block-content')?.value || '';
+      if (url) {
         html += `<p style="text-align: center;"><img src="${url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
       }
     }
     else if (block.classList.contains('video-block')) {
-      const input = block.querySelector('.block-content');
-      const select = block.querySelector('.video-alignment');
-      const url = input?.value || '';
-      const alignment = select?.value || 'center';
+      const url = block.querySelector('.block-content')?.value || '';
+      const alignment = block.querySelector('.video-alignment')?.value || 'center';
       const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
       
-      if (url.trim()) {
+      if (url) {
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
           let videoId = '';
           if (url.includes('youtube.com/watch?v=')) {
@@ -4858,8 +4770,8 @@ function updatePreview() {
       let bulletHtml = '<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">';
       
       bullets.forEach(bullet => {
-        const text = bullet?.value || '';
-        if (text.trim()) {
+        const text = bullet.value || '';
+        if (text) {
           hasContent = true;
           bulletHtml += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${text}</li>`;
         }
@@ -4877,6 +4789,8 @@ function updatePreview() {
 
 function loadDescriptionBlocks(blocks) {
   const container = document.getElementById('description-blocks-container');
+  if (!container) return;
+  
   container.innerHTML = '';
   
   if (blocks && Array.isArray(blocks)) {
@@ -4884,58 +4798,72 @@ function loadDescriptionBlocks(blocks) {
       if (block.type === 'text') {
         addTextBlock();
         const lastBlock = container.lastElementChild;
-        lastBlock.querySelector('.block-content').value = block.content || '';
+        if (lastBlock) {
+          const contentInput = lastBlock.querySelector('.block-content');
+          if (contentInput) contentInput.value = block.content || '';
+        }
       }
       else if (block.type === 'heading') {
         addHeadingBlock();
         const lastBlock = container.lastElementChild;
-        lastBlock.querySelector('.block-content').value = block.content || '';
-        if (block.level) {
-          lastBlock.querySelector('.heading-level').value = block.level;
+        if (lastBlock) {
+          const contentInput = lastBlock.querySelector('.block-content');
+          if (contentInput) contentInput.value = block.content || '';
+          const levelSelect = lastBlock.querySelector('.heading-level');
+          if (levelSelect && block.level) levelSelect.value = block.level;
         }
       }
       else if (block.type === 'image') {
         addImageBlock();
         const lastBlock = container.lastElementChild;
-        lastBlock.querySelector('.block-content').value = block.url || '';
-        if (block.url) {
-          const preview = lastBlock.querySelector('.image-preview-block');
-          const previewImg = preview.querySelector('img');
-          previewImg.src = block.url;
-          preview.style.display = 'block';
+        if (lastBlock) {
+          const urlInput = lastBlock.querySelector('.block-content');
+          if (urlInput) urlInput.value = block.url || '';
+          if (block.url) {
+            const preview = lastBlock.querySelector('.image-preview-block');
+            const previewImg = preview?.querySelector('img');
+            if (previewImg) previewImg.src = block.url;
+            if (preview) preview.style.display = 'block';
+          }
         }
       }
       else if (block.type === 'video') {
         addVideoBlock();
         const lastBlock = container.lastElementChild;
-        lastBlock.querySelector('.block-content').value = block.url || '';
-        if (block.alignment) {
-          lastBlock.querySelector('.video-alignment').value = block.alignment;
+        if (lastBlock) {
+          const urlInput = lastBlock.querySelector('.block-content');
+          if (urlInput) urlInput.value = block.url || '';
+          const alignmentSelect = lastBlock.querySelector('.video-alignment');
+          if (alignmentSelect && block.alignment) alignmentSelect.value = block.alignment;
         }
       }
       else if (block.type === 'bullets') {
         addBulletBlock();
         const lastBlock = container.lastElementChild;
-        const bulletContainer = lastBlock.querySelector('.bullet-items-container');
-        bulletContainer.innerHTML = '';
-        
-        if (block.items && Array.isArray(block.items)) {
-          block.items.forEach(item => {
-            const bulletItemDiv = document.createElement('div');
-            bulletItemDiv.className = 'bullet-item';
-            bulletItemDiv.style.display = 'flex';
-            bulletItemDiv.style.alignItems = 'center';
-            bulletItemDiv.style.gap = '10px';
-            bulletItemDiv.style.marginBottom = '8px';
+        if (lastBlock) {
+          const bulletContainer = lastBlock.querySelector('.bullet-items-container');
+          if (bulletContainer) {
+            bulletContainer.innerHTML = '';
             
-            bulletItemDiv.innerHTML = `
-              <i class="fa-solid fa-grip-vertical" style="color: #d4af37; cursor: move;"></i>
-              <input type="text" class="bullet-text" value="${item.replace(/"/g, '&quot;')}" style="flex: 1; padding: 8px 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
-              <button type="button" class="remove-bullet-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBulletItem(this)"><i class="fa-solid fa-times"></i></button>
-            `;
-            
-            bulletContainer.appendChild(bulletItemDiv);
-          });
+            if (block.items && Array.isArray(block.items)) {
+              block.items.forEach(item => {
+                const bulletItemDiv = document.createElement('div');
+                bulletItemDiv.className = 'bullet-item';
+                bulletItemDiv.style.display = 'flex';
+                bulletItemDiv.style.alignItems = 'center';
+                bulletItemDiv.style.gap = '10px';
+                bulletItemDiv.style.marginBottom = '8px';
+                
+                bulletItemDiv.innerHTML = `
+                  <i class="fa-solid fa-grip-vertical" style="color: #d4af37; cursor: move;"></i>
+                  <input type="text" class="bullet-text" value="${item.replace(/"/g, '&quot;')}" style="flex: 1; padding: 8px 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
+                  <button type="button" class="remove-bullet-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBulletItem(this)"><i class="fa-solid fa-times"></i></button>
+                `;
+                
+                bulletContainer.appendChild(bulletItemDiv);
+              });
+            }
+          }
         }
       }
     });
@@ -4944,7 +4872,6 @@ function loadDescriptionBlocks(blocks) {
   updatePreview();
 }
 
-// ========== ENHANCED PRODUCT SAVE FUNCTION ==========
 async function handleProductSubmit(e) {
   e.preventDefault();
 
@@ -4963,14 +4890,24 @@ async function handleProductSubmit(e) {
   const showOnEssentials = document.getElementById('show-on-essentials');
   const productHighDemand = document.getElementById('product-high-demand');
 
+  if (!productTitle || !productTitle.value) {
+    showNotification('Please enter product title', 'error');
+    return;
+  }
+
   const sellingPrice = parseFloat(productPrice.value);
+  if (isNaN(sellingPrice) || sellingPrice <= 0) {
+    showNotification('Please enter a valid price', 'error');
+    return;
+  }
+  
   const originalPriceInput = parseFloat(productOriginalPrice.value) || 0;
   
   const originalPrice = calculateOriginalPrice(sellingPrice, originalPriceInput);
   const prepaidPrice = calculatePrepaidPrice(sellingPrice);
   const codPrice = calculateCodPrice(sellingPrice);
   
-  const rating = parseFloat(productRating.value);
+  const rating = parseFloat(productRating.value) || 4.5;
   const reviewCount = parseInt(productReviewCount.value) || 0;
   
   const showOnHomeChecked = showOnHome ? showOnHome.checked : false;
@@ -5068,7 +5005,6 @@ async function handleProductSubmit(e) {
   await saveProduct(productData);
 }
 
-// ========== ENHANCED EDIT PRODUCT FUNCTION ==========
 window.editProduct = async function(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
@@ -5096,19 +5032,18 @@ window.editProduct = async function(id) {
   
   renderMediaGrid();
 
-  // Load description blocks
   const container = document.getElementById('description-blocks-container');
   if (container) {
     if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks)) {
       loadDescriptionBlocks(product.descriptionBlocks);
     } else {
-      // For backward compatibility, convert old description to blocks
       container.innerHTML = '';
       if (product.description) {
         addTextBlock();
         const textBlock = document.querySelector('#description-blocks-container .text-block:last-child');
         if (textBlock) {
-          textBlock.querySelector('.block-content').value = product.description;
+          const textarea = textBlock.querySelector('.block-content');
+          if (textarea) textarea.value = product.description;
         }
       }
       if (product.specs && product.specs.length > 0) {
@@ -5116,23 +5051,25 @@ window.editProduct = async function(id) {
         const bulletBlock = document.querySelector('#description-blocks-container .bullet-block:last-child');
         if (bulletBlock) {
           const bulletContainer = bulletBlock.querySelector('.bullet-items-container');
-          bulletContainer.innerHTML = '';
-          product.specs.forEach(spec => {
-            const bulletItemDiv = document.createElement('div');
-            bulletItemDiv.className = 'bullet-item';
-            bulletItemDiv.style.display = 'flex';
-            bulletItemDiv.style.alignItems = 'center';
-            bulletItemDiv.style.gap = '10px';
-            bulletItemDiv.style.marginBottom = '8px';
-            
-            bulletItemDiv.innerHTML = `
-              <i class="fa-solid fa-grip-vertical" style="color: #d4af37; cursor: move;"></i>
-              <input type="text" class="bullet-text" value="${spec.replace(/"/g, '&quot;')}" style="flex: 1; padding: 8px 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
-              <button type="button" class="remove-bullet-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBulletItem(this)"><i class="fa-solid fa-times"></i></button>
-            `;
-            
-            bulletContainer.appendChild(bulletItemDiv);
-          });
+          if (bulletContainer) {
+            bulletContainer.innerHTML = '';
+            product.specs.forEach(spec => {
+              const bulletItemDiv = document.createElement('div');
+              bulletItemDiv.className = 'bullet-item';
+              bulletItemDiv.style.display = 'flex';
+              bulletItemDiv.style.alignItems = 'center';
+              bulletItemDiv.style.gap = '10px';
+              bulletItemDiv.style.marginBottom = '8px';
+              
+              bulletItemDiv.innerHTML = `
+                <i class="fa-solid fa-grip-vertical" style="color: #d4af37; cursor: move;"></i>
+                <input type="text" class="bullet-text" value="${spec.replace(/"/g, '&quot;')}" style="flex: 1; padding: 8px 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
+                <button type="button" class="remove-bullet-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBulletItem(this)"><i class="fa-solid fa-times"></i></button>
+              `;
+              
+              bulletContainer.appendChild(bulletItemDiv);
+            });
+          }
         }
       }
       updatePreview();
@@ -5152,7 +5089,6 @@ window.editProduct = async function(id) {
   document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
 };
 
-// ========== ENHANCED RENDER PRODUCTS FUNCTION ==========
 function renderProducts(productsToRender = products) {
   const productsList = document.getElementById('products-list');
   const emptyProducts = document.getElementById('empty-products');
@@ -5340,7 +5276,6 @@ function renderProducts(productsToRender = products) {
   updateStats();
 }
 
-// ========== RESET FORM WITH PRICE PREVIEW ==========
 function resetForm() {
   document.getElementById('product-form').reset();
   document.getElementById('product-id').value = '';
@@ -5351,7 +5286,7 @@ function resetForm() {
   const container = document.getElementById('description-blocks-container');
   if (container) {
     container.innerHTML = '';
-    addTextBlock(); // Add a default text block
+    addTextBlock();
   }
   document.getElementById('show-on-home').checked = false;
   document.getElementById('show-on-accessories').checked = false;
@@ -5364,62 +5299,52 @@ function resetForm() {
   document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
 }
 
-// ========== ADD EVENT LISTENERS FOR PRICE CALCULATION ==========
 function initializeDashboard() {
   console.log('Initializing dashboard with price controls and rich description editor...');
   
-  // Wait a moment for DOM to be fully ready
-  setTimeout(() => {
-    const priceInput = document.getElementById('product-price');
-    if (priceInput) {
-      priceInput.addEventListener('input', updatePricePreviews);
-    }
-    
-    // Check if templates exist before adding text block
-    const textTemplate = document.getElementById('text-block-template');
-    const container = document.getElementById('description-blocks-container');
-    
-    if (textTemplate && container) {
-      container.innerHTML = '';
+  const priceInput = document.getElementById('product-price');
+  if (priceInput) {
+    priceInput.addEventListener('input', updatePricePreviews);
+  }
+  
+  const container = document.getElementById('description-blocks-container');
+  if (container) {
+    container.innerHTML = '';
+    // Add a default text block
+    setTimeout(() => {
       addTextBlock();
-      console.log('Description blocks initialized');
-    } else {
-      console.warn('Templates or container not found yet, will retry in 500ms');
-      // Retry after a short delay
-      setTimeout(initializeDashboard, 500);
-      return;
-    }
+    }, 100);
+  }
 
-    const productForm = document.getElementById('product-form');
-    const productCategory = document.getElementById('product-category');
-    const cancelEdit = document.getElementById('cancel-edit');
-    const searchInput = document.getElementById('search-products');
-    const productHighDemand = document.getElementById('product-high-demand');
-    const mediaGrid = document.getElementById('media-grid');
+  const productForm = document.getElementById('product-form');
+  const productCategory = document.getElementById('product-category');
+  const cancelEdit = document.getElementById('cancel-edit');
+  const searchInput = document.getElementById('search-products');
+  const productHighDemand = document.getElementById('product-high-demand');
+  const mediaGrid = document.getElementById('media-grid');
 
-    productMedia = [];
-    selectedMediaIndex = 0;
-    if (mediaGrid) renderMediaGrid();
+  productMedia = [];
+  selectedMediaIndex = 0;
+  if (mediaGrid) renderMediaGrid();
 
-    if (productCategory) {
-      productCategory.addEventListener('change', updateCategorySync);
-    }
-    if (productForm) {
-      productForm.removeEventListener('submit', handleProductSubmit);
-      productForm.addEventListener('submit', handleProductSubmit);
-    }
-    if (cancelEdit) {
-      cancelEdit.addEventListener('click', resetForm);
-    }
-    if (searchInput) {
-      searchInput.addEventListener('input', filterProducts);
-    }
-    if (productHighDemand) {
-      productHighDemand.addEventListener('change', updateHighDemandChip);
-    }
+  if (productCategory) {
+    productCategory.addEventListener('change', updateCategorySync);
+  }
+  if (productForm) {
+    productForm.removeEventListener('submit', handleProductSubmit);
+    productForm.addEventListener('submit', handleProductSubmit);
+  }
+  if (cancelEdit) {
+    cancelEdit.addEventListener('click', resetForm);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', filterProducts);
+  }
+  if (productHighDemand) {
+    productHighDemand.addEventListener('change', updateHighDemandChip);
+  }
 
-    loadProducts();
-  }, 100);
+  loadProducts();
 }
 
 function updateStats() {
@@ -5509,7 +5434,6 @@ function updateNewInStatus() {
   }
 }
 
-// ========== UTILITY FUNCTIONS ==========
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
@@ -5520,7 +5444,6 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-// ========== EXPORT / IMPORT ==========
 window.exportProducts = function() {
   const data = JSON.stringify(products, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
@@ -5564,12 +5487,10 @@ window.importProducts = function() {
   input.click();
 };
 
-// ========== INITIALIZE ==========
 document.addEventListener('DOMContentLoaded', () => {
   loadPage('dashboard');
 });
 
-// Make rich description functions globally available
 window.addTextBlock = addTextBlock;
 window.addHeadingBlock = addHeadingBlock;
 window.addImageBlock = addImageBlock;
