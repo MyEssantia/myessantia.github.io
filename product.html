@@ -3077,20 +3077,16 @@
       `;
     }
 
-    function checkStickySupport() {
-  // Just ensure CSS sticky works, no complex calculations needed
-  if (window.innerWidth < 1024) {
-    const gallery = document.querySelector('.gallery-section');
-    if (gallery) {
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-    }
-  }
-}
-
-// Call it on resize
-window.addEventListener('resize', checkStickySupport);
-
+  // ===== STICKY GALLERY FUNCTION =====
+function initStickyGallery() {
+  const gallery = document.querySelector('.gallery-section');
+  const productGrid = document.querySelector('.product-grid');
+  
+  if (!gallery || !productGrid) return;
+  
+  // Remove any existing listeners to prevent duplicates
+  window.removeEventListener('scroll', handleStickyScroll);
+  window.addEventListener('scroll', handleStickyScroll);
   
   function handleStickyScroll() {
     if (window.innerWidth < 1024) return; // Only on desktop
@@ -3531,7 +3527,8 @@ function renderProduct(product) {
           </div>
 <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
   <div class="delivery-eta-circle">
-<i class="fa-solid fa-calendar-days"></i>  </div>
+<i class="fa-solid fa-calendar-days"></i>
+</div>
   <div>
     <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
     <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
@@ -3620,8 +3617,8 @@ function renderProduct(product) {
   updateDeliveryBar(sellingPrice);
   updateButtonStates();
  setTimeout(() => {
-  checkStickySupport();
-}, 200);
+    initStickyGallery();
+  }, 200); // Small delay to ensure DOM is fully rendered
   
   const dates = getDeliveryDates();
   const deliveryElement = document.getElementById('deliveryDates');
