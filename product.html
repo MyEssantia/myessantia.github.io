@@ -3435,12 +3435,11 @@ function renderProduct(product) {
           <div class="price-header">
             <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
             <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-            <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> ${discount}% OFF</span>
-          </div>
+<span class="discount sale-badge"><i class="fa-solid fa-tag"></i>SALE</span></div>
           <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
           <div class="price-options">
             <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-              <div class="option-label">Prepaid (15% off)</div>
+              <div class="option-label">Prepaid</div>
               <div class="option-price">₹${prepaidPrice}</div>
             </div>
             <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
