@@ -1441,9 +1441,26 @@
     let selectedPaymentMethod = 'prepaid';
     let currentAction = null; // 'buy' or 'cart' for high demand popup
     let productReviews = [];
+    let currentUser = null;
     
     const STORAGE_KEY = 'myessantia_product_data';
     const NOTIFICATION_STORAGE_KEY = 'myessantia_notifications';
+    const PURCHASE_STORAGE_KEY = 'myessantia_purchased_products';
+    
+    // Check if user has purchased this product (simulated - in real app, check from orders)
+    function hasUserPurchased(productId) {
+      // This is a simulation - in a real app, you would check from Firebase orders collection
+      // For demo purposes, we'll check localStorage or return true for testing
+      const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
+      return purchased[productId] === true;
+    }
+    
+    // Mark that user has purchased (for testing)
+    function markAsPurchased(productId) {
+      const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
+      purchased[productId] = true;
+      localStorage.setItem(PURCHASE_STORAGE_KEY, JSON.stringify(purchased));
+    }
     
     function getStoredProductData(productId) {
       const stored = sessionStorage.getItem(STORAGE_KEY);
@@ -1520,10 +1537,9 @@
           return [];
         }
         
-        // TEMPORARY FIX: Remove orderBy while index is building
         const snapshot = await db.collection('reviews')
           .where('productId', '==', productId)
-          .get(); // Removed .orderBy('timestamp', 'desc')
+          .get();
         
         console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
         
@@ -1568,6 +1584,33 @@
       } catch (error) {
         console.error('Error loading reviews:', error);
         return [];
+      }
+    }
+
+    // Submit a new review
+    async function submitReview(reviewData) {
+      try {
+        if (typeof db !== 'undefined' && db) {
+          await db.collection('reviews').add({
+            ...reviewData,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            verified: true // Mark as verified since user purchased
+          });
+          return true;
+        } else {
+          // Fallback to localStorage
+          const localReviews = JSON.parse(localStorage.getItem('myessantia_local_reviews') || '[]');
+          localReviews.push({
+            ...reviewData,
+            id: 'local_' + Date.now(),
+            timestamp: new Date().toISOString()
+          });
+          localStorage.setItem('myessantia_local_reviews', JSON.stringify(localReviews));
+          return true;
+        }
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        return false;
       }
     }
 
@@ -1672,23 +1715,115 @@
       if (popup) popup.classList.toggle('show');
     };
 
-    // Close Razorpay popup (now only called from "Yes, got it" button)
+    // Close Razorpay popup
     window.closeRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.remove('show');
     };
 
-    function toggleReviews() {
-      const container = document.getElementById('reviews-container');
-      const btn = document.getElementById('view-more-btn');
-      if (container.classList.contains('expanded')) {
-        container.classList.remove('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> View More Reviews';
-      } else {
-        container.classList.add('expanded');
-        btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> Show Less';
+    // Toggle Write Review Modal
+    window.toggleReviewModal = function() {
+      const modal = document.getElementById('reviewModal');
+      if (modal) {
+        modal.classList.toggle('show');
       }
-    }
+    };
+
+    // Close Review Modal
+    window.closeReviewModal = function() {
+      const modal = document.getElementById('reviewModal');
+      if (modal) {
+        modal.classList.remove('show');
+        // Reset form
+        document.getElementById('reviewForm')?.reset();
+        document.getElementById('reviewImagePreview')?.style.setProperty('display', 'none');
+        window.selectedReviewImage = null;
+      }
+    };
+
+    // Handle review image upload
+    window.handleReviewImageUpload = function(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('Image too large (max 5MB)', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('reviewImagePreview');
+        const previewImg = document.getElementById('reviewImagePreviewImg');
+        previewImg.src = e.target.result;
+        preview.style.display = 'block';
+        window.selectedReviewImage = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // Remove review image
+    window.removeReviewImage = function() {
+      document.getElementById('reviewImagePreview').style.display = 'none';
+      document.getElementById('reviewImagePreviewImg').src = '';
+      document.getElementById('reviewImageFile').value = '';
+      window.selectedReviewImage = null;
+    };
+
+    // Submit review
+    window.submitReview = async function() {
+      if (!currentProduct) return;
+      
+      // Check if user has purchased
+      if (!hasUserPurchased(currentProduct.id)) {
+        showNotification('You can only review products you have purchased!', 'error');
+        return;
+      }
+      
+      const name = document.getElementById('reviewerName').value.trim();
+      const rating = parseInt(document.getElementById('reviewRating').value);
+      const comment = document.getElementById('reviewComment').value.trim();
+      const city = document.getElementById('reviewerCity').value.trim() || 'India';
+      
+      if (!name) {
+        showNotification('Please enter your name', 'error');
+        return;
+      }
+      
+      if (!rating || rating < 1 || rating > 5) {
+        showNotification('Please select a rating', 'error');
+        return;
+      }
+      
+      if (!comment) {
+        showNotification('Please write your review', 'error');
+        return;
+      }
+      
+      const reviewData = {
+        productId: currentProduct.id,
+        reviewerName: name,
+        city: city,
+        rating: rating,
+        comment: comment,
+        imageUrl: window.selectedReviewImage || null,
+        verified: true
+      };
+      
+      const success = await submitReview(reviewData);
+      
+      if (success) {
+        showNotification('Thank you for your review!', 'success');
+        closeReviewModal();
+        
+        // Reload reviews to show the new one
+        productReviews = await loadProductReviews(currentProduct.id);
+        renderProduct(currentProduct);
+      } else {
+        showNotification('Failed to submit review. Please try again.', 'error');
+      }
+    };
 
     // High Demand Popup Functions
     window.showHighDemandPopup = function(action) {
@@ -1995,9 +2130,9 @@
       // Calculate rating distribution from actual reviews
       const ratingDist = generateRatingDistribution(productReviews);
 
-      // Create rating chart HTML
+      // Create rating chart HTML - This will only appear in mobile section now
       const ratingChartHTML = `
-        <div class="rating-chart-card">
+        <div class="rating-chart-card mobile-only-rating">
           <div class="rating-chart-header">
             <div>
               <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
@@ -2023,10 +2158,15 @@
       let reviewsHTML = '';
 
       if (productReviews && productReviews.length > 0) {
-        // Add reviews header
+        // Add reviews header with Write Review button
         reviewsHTML = `<div class="reviews-header">
           <span>Customer Reviews</span>
-          <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
+            <button class="write-review-btn" onclick="toggleReviewModal()">
+              <i class="fa-solid fa-pen"></i> Write Review
+            </button>
+          </div>
         </div>`;
         
         // Create a common frame container - NO FRAME
@@ -2081,6 +2221,7 @@
                   <div class="review-header">
                     <div class="author-name-w-details">
                       <div class="author-name">${review.reviewerName}</div>
+                      ${review.verified ? '<span class="verified-badge"><i class="fa-solid fa-check-circle"></i> Verified Purchase</span>' : ''}
                     </div>
                   </div>
                   <div class="tydal-star-wrapper">
@@ -2101,7 +2242,12 @@
         reviewsHTML = `
           <div class="reviews-header">
             <span>Customer Reviews</span>
-            <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
+              <button class="write-review-btn" onclick="toggleReviewModal()">
+                <i class="fa-solid fa-pen"></i> Write Review
+              </button>
+            </div>
           </div>
           <div class="reviews-common-frame">
             <div class="empty-state">
@@ -2113,7 +2259,7 @@
         `;
       }
 
-      // DESKTOP REVIEWS SECTION - positioned below rating chart
+      // DESKTOP REVIEWS SECTION - positioned below rating chart (without duplicate rating chart)
       const desktopReviewsHTML = `
         <div class="desktop-reviews-section">
           <div class="desktop-reviews">
@@ -2122,7 +2268,7 @@
         </div>
       `;
       
-      // MOBILE REVIEWS SECTION (hidden on desktop)
+      // MOBILE REVIEWS SECTION (hidden on desktop) - WITH rating chart
       const mobileReviewsHTML = `
         <div class="mobile-reviews">
           ${ratingChartHTML}
@@ -2132,6 +2278,66 @@
 
       const container = document.getElementById('product-container');
       container.innerHTML = `
+        <!-- Write Review Modal -->
+        <div class="review-modal" id="reviewModal">
+          <div class="review-modal-content">
+            <div class="review-modal-header">
+              <h3><i class="fa-solid fa-pen"></i> Write a Review</h3>
+              <button class="close-modal-btn" onclick="closeReviewModal()">×</button>
+            </div>
+            <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
+              <div class="review-modal-body">
+                <div class="form-group">
+                  <label><i class="fa-solid fa-user"></i> Your Name *</label>
+                  <input type="text" id="reviewerName" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-location-dot"></i> City</label>
+                  <input type="text" id="reviewerCity" placeholder="e.g. Mumbai">
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-star"></i> Rating *</label>
+                  <select id="reviewRating" required>
+                    <option value="">Select rating</option>
+                    <option value="5">5 ★ (Excellent)</option>
+                    <option value="4">4 ★ (Good)</option>
+                    <option value="3">3 ★ (Average)</option>
+                    <option value="2">2 ★ (Poor)</option>
+                    <option value="1">1 ★ (Terrible)</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-comment"></i> Your Review *</label>
+                  <textarea id="reviewComment" rows="4" placeholder="Share your experience with this product..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-image"></i> Add Photos (Optional)</label>
+                  <div class="image-upload-area">
+                    <input type="file" id="reviewImageFile" accept="image/*" onchange="handleReviewImageUpload(this)" style="display: none;">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('reviewImageFile').click()">
+                      <i class="fa-solid fa-cloud-upload-alt"></i> Choose Image
+                    </button>
+                    <div class="image-preview" id="reviewImagePreview" style="display: none;">
+                      <img id="reviewImagePreviewImg" src="" alt="Preview">
+                      <button type="button" class="remove-image-btn" onclick="removeReviewImage()">×</button>
+                    </div>
+                  </div>
+                  <small class="hint">Max 5MB. Images help other customers.</small>
+                </div>
+              </div>
+              
+              <div class="review-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
         <div class="product-grid">
           <!-- GALLERY COLUMN -->
           <div class="gallery-section">
@@ -2139,8 +2345,27 @@
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
-            <!-- Rating Chart below thumbnails -->
-            ${ratingChartHTML}
+            <!-- Rating Chart for desktop only (hidden on mobile via CSS) -->
+            <div class="rating-chart-card desktop-only-rating">
+              <div class="rating-chart-header">
+                <div>
+                  <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
+                  <span class="rating-outof">/5</span>
+                </div>
+                <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
+                <span class="rating-count">${reviewCount} reviews</span>
+              </div>
+              <div class="rating-bars">
+                ${[5,4,3,2,1].map(star => `
+                <div class="rating-bar-row">
+                  <span class="bar-label">${star} ★</span>
+                  <div class="bar-container">
+                    <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
+                  </div>
+                  <span class="bar-percent">${ratingDist[star]}%</span>
+                </div>`).join('')}
+              </div>
+            </div>
           </div>
           
           <!-- INFO COLUMN -->
@@ -2481,5 +2706,6 @@
       console.log('Product page ready, cart functions should be available from common.js');
     };
   </script>
+  
 </body>
 </html>
