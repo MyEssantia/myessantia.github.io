@@ -1697,7 +1697,7 @@
   <div id="footer"></div>
   <div id="common-modals"></div>
 
-  <!-- Load common.js first (contains Firebase, cart logic, component loading) -->
+  <!-- Load common.js first -->
   <script src="common.js"></script>
   
   <script>
@@ -2130,10 +2130,13 @@
       // Use the global addToCart function from common.js
       if (typeof window.addToCart === 'function') {
         const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
-        // Call the global addToCart with the product ID
-        // We need to add multiple quantities if quantity > 1
+        // Call the global addToCart for each item
         for (let i = 0; i < quantity; i++) {
-          window.addToCart(currentProduct.id, i === 0 ? event?.target : null);
+          if (i === 0) {
+            window.addToCart(currentProduct.id, event?.target);
+          } else {
+            window.addToCart(currentProduct.id, null);
+          }
         }
       } else {
         console.error('addToCart function not available');
@@ -2238,7 +2241,7 @@
           }
         }, 100);
         
-        // Timeout after 3 seconds
+        // Timeout after 5 seconds
         setTimeout(() => {
           clearInterval(checkProducts);
           if (!currentProduct) {
@@ -2261,7 +2264,7 @@
               showNotFound();
             });
           }
-        }, 3000);
+        }, 5000);
         
       } catch (error) { 
         console.error('Error loading product:', error); 
@@ -2774,11 +2777,12 @@
       }
     };
 
+    // Wait for DOM and common.js to load
     document.addEventListener('DOMContentLoaded', () => { 
-      // Load product after common.js has initialized
+      // Load product after a short delay to let common.js initialize
       setTimeout(() => {
         loadProduct(); 
-      }, 500);
+      }, 1000);
     });
 
     window.copyLink = function() { 
