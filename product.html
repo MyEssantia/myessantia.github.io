@@ -3503,9 +3503,9 @@ function renderProduct(product) {
             <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
           </div>
 <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
-  <div class="delivery-eta-circle">
-<i class="fa-solid fa-calendar-days"></i>
-</div>
+  <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+    <i class="<i class="fa-solid fa-calendar-days"></i>" style="color: #000; font-size: 1rem;"></i>
+  </div>
   <div>
     <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
     <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
