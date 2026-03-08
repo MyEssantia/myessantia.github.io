@@ -3686,7 +3686,66 @@ window.editReview = editReview;
 window.deleteReview = deleteReview;
 window.viewReviewProduct = viewReviewProduct;
 window.exportReviews = exportReviews;
+function initializeDashboard() {
+  console.log('Initializing dashboard...');
+  
+  // Check if all required elements exist
+  const requiredElements = [
+    'product-form', 'product-title', 'product-category', 
+    'product-original-price', 'product-price', 'product-prepaid-price',
+    'product-cod-price', 'product-rating', 'product-review-count',
+    'product-stock', 'product-brand', 'product-short-desc',
+    'product-description', 'product-specs', 'show-on-home',
+    'show-on-accessories', 'show-on-essentials', 'product-high-demand',
+    'products-list', 'empty-products', 'media-grid'
+  ];
+  
+  for (const id of requiredElements) {
+    const element = document.getElementById(id);
+    if (!element) {
+      console.warn(`Element #${id} not found in dashboard`);
+    }
+  }
+  
+  // Re-get all dashboard DOM elements
+  const productForm = document.getElementById('product-form');
+  const productCategory = document.getElementById('product-category');
+  const cancelEdit = document.getElementById('cancel-edit');
+  const searchInput = document.getElementById('search-products');
+  const productHighDemand = document.getElementById('product-high-demand');
+  const mediaGrid = document.getElementById('media-grid');
 
+  // Reinitialize media array
+  productMedia = [];
+  selectedMediaIndex = 0;
+  if (mediaGrid) renderMediaGrid();
+
+  // Setup event listeners
+  if (productCategory) {
+    productCategory.addEventListener('change', updateCategorySync);
+  }
+  if (productForm) {
+    // Remove any existing listeners and add new one
+    const newForm = productForm.cloneNode(true);
+    productForm.parentNode.replaceChild(newForm, productForm);
+    newForm.addEventListener('submit', handleProductSubmit);
+  }
+  if (cancelEdit) {
+    cancelEdit.addEventListener('click', resetForm);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', filterProducts);
+  }
+  if (productHighDemand) {
+    productHighDemand.addEventListener('change', updateHighDemandChip);
+  }
+
+  // Setup price calculation preview
+  setupPriceCalculationPreview();
+
+  // Load products
+  loadProducts();
+}
 
 // ========== DASHBOARD FUNCTIONS ==========
 function initializeDashboard() {
@@ -4402,20 +4461,32 @@ if (pagination) pagination.style.display =
   loadNotifyRequests();
 }
 
-// ========== DASHBOARD FIREBASE FUNCTIONS ==========
 async function loadProducts() {
   try {
+    console.log('Loading products from Firestore...');
     const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-    products = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    
+    if (snapshot.empty) {
+      console.log('No products found');
+      products = [];
+    } else {
+      products = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log(`Loaded ${products.length} products`);
+    }
+    
     renderProducts();
     updateStats();
     startNewInMonitor();
   } catch (error) {
     console.error('Error loading products:', error);
-    showNotification('failed to load products', 'error');
+    showNotification('Failed to load products: ' + error.message, 'error');
+    
+    // Set empty products array to avoid further errors
+    products = [];
+    renderProducts();
   }
 }
 
@@ -4783,6 +4854,57 @@ async function saveProduct(productData) {
     showNotification('failed to save product', 'error');
   }
 }
+
+  // Add this at the bottom of your dashboard.html script, before the DOMContentLoaded event
+// This ensures any missing functions have fallbacks
+window.getRandomSold = function() { return Math.floor(Math.random() * 100) + 50; };
+window.getRandomViewers = function() { return Math.floor(Math.random() * 20) + 5; };
+window.getLargeStars = function(rating) { 
+  let stars = '';
+  for(let i = 1; i <= 5; i++) {
+    if(rating >= i) stars += '<i class="fa-solid fa-star"></i>';
+    else if(rating > i-1 && rating < i) stars += '<i class="fa-solid fa-star-half-alt"></i>';
+    else stars += '<i class="fa-regular fa-star"></i>';
+  }
+  return stars;
+};
+window.getStars = function(rating) { return window.getLargeStars(rating); };
+window.generateRatingDistribution = function(reviews) {
+  let distribution = {5:0,4:0,3:0,2:0,1:0};
+  if (reviews && reviews.length > 0) {
+    reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) distribution[Math.floor(r.rating)]++; });
+    const total = reviews.length;
+    if (total > 0) {
+      distribution = {
+        5: Math.round((distribution[5]/total)*100),
+        4: Math.round((distribution[4]/total)*100),
+        3: Math.round((distribution[3]/total)*100),
+        2: Math.round((distribution[2]/total)*100),
+        1: Math.round((distribution[1]/total)*100)
+      };
+    }
+  }
+  return distribution;
+};
+window.updateDeliveryBar = function() {};
+window.updateButtonStates = function() {};
+window.getDeliveryDates = function() { 
+  return { display: '5-7 days' }; 
+};
+window.changeImage = function() {};
+window.updateQuantity = function() {};
+window.toggleShare = function() {};
+window.copyLink = function() {};
+window.shareOn = function() {};
+window.switchTab = function() {};
+window.selectPaymentMethod = function() {};
+window.toggleRazorpayPopup = function() {};
+window.closeRazorpayPopup = function() {};
+window.addToCart = function() {};
+window.buyNow = function() {};
+window.showHighDemandPopup = function() {};
+window.closeHighDemandPopup = function() {};
+window.submitNotification = function() {};
 
 async function deleteProductFromFirebase(id) {
   try {
@@ -5305,45 +5427,178 @@ function renderProduct(product) {
             <div class="specs-grid">
               <div class="spec-item">
                 <div class="spec-label">Material</div>
-                <div class="spec-value">Premium Quality</div>
-              </div>
-              <div class="spec-item">
-                <div class="spec-label">Brand</div>
-                <div class="spec-value">${product.brand || 'MyEssantia'}</div>
-              </div>
-            </div>
+                <div class="spec-value">Prefunction renderProducts(productsToRender = products) {
+  const productsList = document.getElementById('products-list');
+  const emptyProducts = document.getElementById('empty-products');
+  
+  if (!productsList) return;
+  
+  if (productsToRender.length === 0 && products.length === 0) {
+    emptyProducts.style.display = 'block';
+    productsList.innerHTML = '';
+    return;
+  }
+  
+  emptyProducts.style.display = 'none';
+  
+  let desktopHTML = '';
+  let mobileHTML = '<div class="product-cards">';
+  
+  productsToRender.forEach(product => {
+    const pages = [];
+    if (product.showOnHome) pages.push('<span class="page-badge home"><i class="fa-solid fa-house"></i> home</span>');
+    if (product.showOnAccessories) pages.push('<span class="page-badge accessories"><i class="fa-solid fa-bag-shopping"></i> acc</span>');
+    if (product.showOnEssentials) pages.push('<span class="page-badge essentials"><i class="fa-solid fa-bolt"></i> ess</span>');
+    
+    const isNewIn = product.createdAt && 
+                    (new Date() - (product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt))) < (24 * 60 * 60 * 1000);
+    
+    let mainMedia = product.primaryImg || 
+                   (product.media && product.media[0]?.url) || 
+                   'https://via.placeholder.com/300/f0f0f0/999999?text=no+image';
+    
+    let stockClass = 'high';
+    if (product.stock <= 5) stockClass = 'low';
+    else if (product.stock <= 15) stockClass = 'medium';
+    
+    desktopHTML += `<tr>
+      <td>
+        <div class="product-thumb" 
+             style="background-image: url('${mainMedia}')" 
+             onclick="window.open('product.html?id=${product.id}', '_blank')">
+        </div>
+      </td>
+      <td>
+        <strong>${product.title}</strong>
+        ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
+        ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HIGH DEMAND</span>' : ''}
+        ${product.brand ? `<div style="font-size:0.7rem; color:#666; text-transform:uppercase;">${product.brand}</div>` : ''}
+      </td>
+      <td><span style="text-transform:uppercase;">${product.category}</span></td>
+      <td>
+        <div>
+          <strong>₹${product.price?.toFixed(2)}</strong>
+          ${product.originalPrice ? `<br><small style="text-decoration:line-through; color:#999;">₹${product.originalPrice.toFixed(2)}</small>` : ''}
+        </div>
+      </td>
+      <td>
+        <span class="stock-badge ${stockClass}">
+          ${product.stock || 0}
+        </span>
+      </td>
+      <td>${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i></td>
+      <td>
+        <div style="display:flex; gap:4px; flex-wrap:wrap;">
+          ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
+          ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
+        </div>
+      </td>
+      <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
+      <td>
+        <div class="action-btns">
+          <button class="action-btn" onclick="window.open('product.html?id=${product.id}', '_blank')" title="View">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <button class="action-btn" onclick="editProduct('${product.id}')" title="Edit">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="action-btn" onclick="deleteProduct('${product.id}')" title="Delete">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+    
+    mobileHTML += `
+      <div class="product-item">
+        <div class="product-item-header">
+          <div class="product-item-thumb" 
+               style="background-image: url('${mainMedia}')"
+               onclick="window.open('product.html?id=${product.id}', '_blank')">
           </div>
-          <div class="tab-content" id="tab-videos">
-            <div class="video-grid">
-              <div class="video-item">
-                <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-                <i class="fa-solid fa-play"></i>
-              </div>
-              <div class="video-item">
-                <img src="https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400">
-                <i class="fa-solid fa-play"></i>
-              </div>
+          <div class="product-item-info">
+            <div class="product-item-category">${product.category}</div>
+            <div class="product-item-title">
+              <strong>${product.title}</strong>
+            </div>
+            <div class="product-item-flags">
+              ${isNewIn ? '<span class="newin-badge"><i class="fa-regular fa-clock"></i> NEW</span>' : ''}
+              ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
             </div>
           </div>
         </div>
         
-        <!-- MOBILE REVIEWS SECTION -->
-        ${mobileReviewsHTML}
+        <div class="product-item-details">
+          <div class="product-item-detail">
+            <span class="label">price</span>
+            <span class="value">₹${product.price?.toFixed(2)}</span>
+          </div>
+          <div class="product-item-detail">
+            <span class="label">stock</span>
+            <span class="value"><span class="stock-badge ${stockClass}">${product.stock || 0}</span></span>
+          </div>
+          <div class="product-item-detail">
+            <span class="label">rating</span>
+            <span class="value">${product.rating?.toFixed(1)} <small>★</small></span>
+          </div>
+        </div>
+        
+        ${product.originalPrice ? `
+          <div style="font-size:0.7rem; color:#999; margin-bottom:4px;">
+            MRP: <span style="text-decoration:line-through;">₹${product.originalPrice.toFixed(2)}</span>
+          </div>
+        ` : ''}
+        
+        ${pages.length > 0 ? `
+          <div class="product-item-pages">
+            ${pages.join(' ')}
+          </div>
+        ` : ''}
+        
+        <div class="product-item-actions">
+          <button class="action-btn" onclick="window.open('product.html?id=${product.id}', '_blank')" title="View">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <button class="action-btn" onclick="editProduct('${product.id}')" title="Edit">
+            <i class="fa-solid fa-edit"></i>
+          </button>
+          <button class="action-btn" onclick="deleteProduct('${product.id}')" title="Delete">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
       </div>
+    `;
+  });
+  
+  mobileHTML += '</div>';
+  
+  productsList.innerHTML = `
+    <div class="desktop-table">
+      <table>
+        <thead>
+          <tr>
+            <th>media</th>
+            <th>title</th>
+            <th>category</th>
+            <th>price</th>
+            <th>stock</th>
+            <th>rating</th>
+            <th>flags</th>
+            <th>pages</th>
+            <th>actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${desktopHTML}
+        </tbody>
+      </table>
     </div>
-    
-    <!-- DESKTOP REVIEWS SECTION -->
-    ${desktopReviewsHTML}
+    <div class="products-list">
+      ${mobileHTML}
+    </div>
   `;
-
-  updateDeliveryBar(product.price);
   
-  // Update button states based on high demand
-  updateButtonStates();
-  
-  // Update delivery dates
-  const dates = getDeliveryDates();
-  document.getElementById('deliveryDates').textContent = dates.display;
+  updateStats();
 }
 
 function updateCategorySync() {
