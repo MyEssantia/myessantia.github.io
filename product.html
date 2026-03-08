@@ -1697,10 +1697,46 @@
   <div id="footer"></div>
   <div id="common-modals"></div>
 
-  <!-- Load common.js first -->
-  <script src="common.js"></script>
-  
   <script>
+    // ========== FIREBASE INITIALIZATION ==========
+    const firebaseConfig = {
+      apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
+      authDomain: "myessantia.firebaseapp.com",
+      projectId: "myessantia",
+      storageBucket: "myessantia.firebasestorage.app",
+      messagingSenderId: "701726517205",
+      appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
+      measurementId: "G-SZF11SHZBH"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ========== HEADER/FOOTER LOADING FUNCTION ==========
+    async function loadComponents() {
+      try {
+        // Load header
+        const headerResponse = await fetch('header.html');
+        const headerHtml = await headerResponse.text();
+        document.getElementById('header').innerHTML = headerHtml;
+        
+        // Load footer
+        const footerResponse = await fetch('footer.html');
+        const footerHtml = await footerResponse.text();
+        document.getElementById('footer').innerHTML = footerHtml;
+        
+        // Initialize cart count after header is loaded
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        }
+      } catch (error) {
+        console.error('Error loading components:', error);
+        document.getElementById('header').innerHTML = '<div style="padding:20px; text-align:center;">Header failed to load</div>';
+        document.getElementById('footer').innerHTML = '<div style="padding:20px; text-align:center;">Footer failed to load</div>';
+      }
+    }
+
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
     let selectedPaymentMethod = 'prepaid';
@@ -2127,20 +2163,51 @@
         return;
       }
       
-      // Use the global addToCart function from common.js
-      if (typeof window.addToCart === 'function') {
+      if (typeof window.addToCartGlobal === 'function') {
+        window.addToCartGlobal(currentProduct.id);
+      } else {
         const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
-        // Call the global addToCart for each item
-        for (let i = 0; i < quantity; i++) {
-          if (i === 0) {
-            window.addToCart(currentProduct.id, event?.target);
+        
+        if (currentProduct.stock <= 0) {
+          showNotification('Sorry, this product is out of stock!');
+          return;
+        }
+
+        if (quantity > currentProduct.stock) {
+          showNotification(`Only ${currentProduct.stock} items available!`);
+          return;
+        }
+
+        if (window.cart && Array.isArray(window.cart)) {
+          const existingItem = window.cart.find(item => item.id === currentProduct.id);
+          
+          if (existingItem) {
+            existingItem.quantity += quantity;
           } else {
-            window.addToCart(currentProduct.id, null);
+            window.cart.push({
+              id: currentProduct.id,
+              title: currentProduct.title,
+              category: currentProduct.category || 'accessory',
+              price: currentProduct.price,
+              primaryImg: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || (currentProduct.media?.images && currentProduct.media.images[0]?.url),
+              quantity: quantity
+            });
+          }
+          
+          localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+          
+          if (typeof window.updateCartCount === 'function') {
+            window.updateCartCount();
           }
         }
-      } else {
-        console.error('addToCart function not available');
-        showNotification('Cart functionality unavailable', 'error');
+        
+        showNotification(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart!`);
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+        }, 500);
       }
     };
 
@@ -2152,11 +2219,9 @@
         return;
       }
       
-      // Use the global buyNow function from common.js
-      if (typeof window.buyNow === 'function') {
-        window.buyNow(currentProduct.id);
+      if (typeof window.buyNowGlobal === 'function') {
+        window.buyNowGlobal(currentProduct.id);
       } else {
-        // Fallback
         window.addToCart();
         setTimeout(() => {
           window.location.href = 'checkout.html';
@@ -2203,68 +2268,28 @@
       try {
         console.log('Loading product with ID:', productId);
         
-        // Wait for products to be loaded from common.js
-        const checkProducts = setInterval(() => {
-          if (window.products && window.products.length > 0) {
-            clearInterval(checkProducts);
-            const product = window.products.find(p => p.id === productId);
-            if (product) {
-              currentProduct = product;
-              document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-              console.log('Product loaded:', currentProduct.title);
-              
-              loadProductReviews(productId).then(reviews => {
-                productReviews = reviews;
-                console.log('Reviews loaded:', productReviews.length);
-                renderProduct(currentProduct);
-              });
-            } else {
-              // Try to load from Firestore directly
-              db.collection('products').doc(productId).get().then(doc => {
-                if (doc.exists) {
-                  currentProduct = { id: doc.id, ...doc.data() };
-                  document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-                  console.log('Product loaded from Firestore:', currentProduct.title);
-                  
-                  loadProductReviews(productId).then(reviews => {
-                    productReviews = reviews;
-                    renderProduct(currentProduct);
-                  });
-                } else {
-                  showNotFound();
-                }
-              }).catch(error => {
-                console.error('Error loading product from Firestore:', error);
-                showNotFound();
-              });
-            }
+        const doc = await db.collection('products').doc(productId).get();
+        if (!doc.exists) {
+          // Try to load from localStorage as fallback
+          const localProducts = JSON.parse(localStorage.getItem('myessantia_products') || '[]');
+          const localProduct = localProducts.find(p => p.id === productId);
+          if (localProduct) {
+            currentProduct = localProduct;
+          } else {
+            return showNotFound();
           }
-        }, 100);
+        } else {
+          currentProduct = { id: doc.id, ...doc.data() };
+        }
         
-        // Timeout after 5 seconds
-        setTimeout(() => {
-          clearInterval(checkProducts);
-          if (!currentProduct) {
-            // Try Firestore directly as fallback
-            db.collection('products').doc(productId).get().then(doc => {
-              if (doc.exists) {
-                currentProduct = { id: doc.id, ...doc.data() };
-                document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-                console.log('Product loaded from Firestore (timeout fallback):', currentProduct.title);
-                
-                loadProductReviews(productId).then(reviews => {
-                  productReviews = reviews;
-                  renderProduct(currentProduct);
-                });
-              } else {
-                showNotFound();
-              }
-            }).catch(error => {
-              console.error('Error loading product from Firestore:', error);
-              showNotFound();
-            });
-          }
-        }, 5000);
+        document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+        
+        console.log('Product loaded:', currentProduct.title);
+        
+        productReviews = await loadProductReviews(productId);
+        console.log('Reviews loaded:', productReviews.length);
+        
+        renderProduct(currentProduct);
         
       } catch (error) { 
         console.error('Error loading product:', error); 
@@ -2303,7 +2328,7 @@
       const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
       const codPrice = product.codPrice || Math.round(sellingPrice + 100);
       
-      // Use admin-provided review count
+      // Use admin-provided review count - THIS IS THE KEY FIX
       const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
 
       const ratingDist = generateRatingDistribution(productReviews);
@@ -2777,12 +2802,11 @@
       }
     };
 
-    // Wait for DOM and common.js to load
     document.addEventListener('DOMContentLoaded', () => { 
-      // Load product after a short delay to let common.js initialize
-      setTimeout(() => {
-        loadProduct(); 
-      }, 1000);
+      // Load header and footer first
+      loadComponents();
+      // Then load product
+      loadProduct(); 
     });
 
     window.copyLink = function() { 
