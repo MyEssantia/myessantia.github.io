@@ -212,6 +212,55 @@
       font-weight: var(--font-heading-weight);
     }
 
+    /* ===== FIX DUPLICATE REVIEWS ON MOBILE ===== */
+@media (max-width: 1023px) {
+  /* Hide desktop reviews section on mobile */
+  .gallery-section .desktop-reviews-section {
+    display: none !important;
+  }
+  
+  /* Hide desktop rating chart on mobile */
+  .gallery-section .desktop-only-rating {
+    display: none !important;
+  }
+  
+  /* Ensure mobile reviews are visible */
+  .product-info .mobile-reviews {
+    display: flex !important;
+    flex-direction: column;
+    margin-top: 30px;
+    width: 100%;
+  }
+  
+  /* Ensure mobile rating chart is visible */
+  .mobile-only-rating {
+    display: block !important;
+  }
+}
+
+/* ===== DESKTOP STYLES ===== */
+@media (min-width: 1024px) {
+  /* Hide mobile reviews on desktop */
+  .product-info .mobile-reviews {
+    display: none !important;
+  }
+  
+  /* Hide mobile rating chart on desktop */
+  .mobile-only-rating {
+    display: none !important;
+  }
+  
+  /* Show desktop reviews */
+  .gallery-section .desktop-reviews-section {
+    display: block !important;
+  }
+  
+  /* Show desktop rating chart */
+  .desktop-only-rating {
+    display: block !important;
+  }
+}
+
  /* ===== REDUCED DESCRIPTION SECTION STYLES ===== */
 .product__description {
   margin: 1.5rem 0 !important; /* Reduced from 2.5rem */
