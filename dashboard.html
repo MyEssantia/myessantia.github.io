@@ -2989,35 +2989,70 @@ function initializeReviews() {
 }
   
 async function loadDashboardPage() {
-  // Fetch dashboard HTML
-  const response = await fetch('dashhome.html');
-  const html = await response.text();
-  
-  // Parse the HTML
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  
-  // Create a container for dashboard content
-  const dashboardContent = document.createElement('div');
-  
-  // Add stats grid
-  const statsGrid = doc.querySelector('.stats-grid');
-  if (statsGrid) dashboardContent.appendChild(statsGrid.cloneNode(true));
-  
-  // Add product form
-  const productForm = doc.querySelector('.product-form');
-  if (productForm) dashboardContent.appendChild(productForm.cloneNode(true));
-  
-  // Add products table
-  const productsTable = doc.querySelector('.products-table');
-  if (productsTable) dashboardContent.appendChild(productsTable.cloneNode(true));
-  
-  // Clear and append
-  pageContainer.innerHTML = '';
-  pageContainer.appendChild(dashboardContent);
-  
-  // Reinitialize dashboard functionality
-  initializeDashboard();
+  try {
+    console.log('Loading dashboard page...');
+    
+    // Fetch dashboard HTML
+    const response = await fetch('dashhome.html');
+    if (!response.ok) {
+      throw new Error(`Failed to load dashhome.html: ${response.status}`);
+    }
+    const html = await response.text();
+    console.log('Dashboard HTML loaded successfully, length:', html.length);
+    
+    // Parse the HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Check if templates exist
+    const textTemplate = doc.getElementById('text-block-template');
+    if (!textTemplate) {
+      console.error('Templates not found in dashhome.html');
+      // Log first 500 chars of HTML to see what's loaded
+      console.log('HTML preview:', html.substring(0, 500));
+    }
+    
+    // Create a container for dashboard content
+    const dashboardContent = document.createElement('div');
+    
+    // Add stats grid
+    const statsGrid = doc.querySelector('.stats-grid');
+    if (statsGrid) {
+      dashboardContent.appendChild(statsGrid.cloneNode(true));
+    }
+    
+    // Add product form
+    const productForm = doc.querySelector('.product-form');
+    if (productForm) {
+      dashboardContent.appendChild(productForm.cloneNode(true));
+    }
+    
+    // Add products table
+    const productsTable = doc.querySelector('.products-table');
+    if (productsTable) {
+      dashboardContent.appendChild(productsTable.cloneNode(true));
+    }
+    
+    // Clear and append
+    pageContainer.innerHTML = '';
+    pageContainer.appendChild(dashboardContent);
+    
+    // Reinitialize dashboard functionality
+    initializeDashboard();
+    
+  } catch (error) {
+    console.error('Error loading dashboard page:', error);
+    pageContainer.innerHTML = `
+      <div class="empty-state" style="padding: 60px 20px;">
+        <i class="fa-solid fa-exclamation-triangle" style="font-size: 4rem; color: #ff4444; margin-bottom: 16px;"></i>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-bottom: 8px;">Failed to Load Dashboard</h3>
+        <p style="font-size: 1rem; color: #666;">${error.message}</p>
+        <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 20px;">
+          <i class="fa-solid fa-rotate-right"></i> Retry
+        </button>
+      </div>
+    `;
+  }
 }
 
 async function loadNotifyPage() {
@@ -4575,43 +4610,94 @@ function updatePricePreviews() {
 // ========== RICH DESCRIPTION BLOCK FUNCTIONS ==========
 function addTextBlock() {
   const template = document.getElementById('text-block-template');
+  if (!template) {
+    console.error('Text block template not found');
+    return;
+  }
+  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
+  if (!container) {
+    console.error('Description blocks container not found');
+    return;
+  }
+  
   container.appendChild(clone);
   updatePreview();
 }
 
 function addHeadingBlock() {
   const template = document.getElementById('heading-block-template');
+  if (!template) {
+    console.error('Heading block template not found');
+    return;
+  }
+  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
+  if (!container) {
+    console.error('Description blocks container not found');
+    return;
+  }
+  
   container.appendChild(clone);
   updatePreview();
 }
 
 function addImageBlock() {
   const template = document.getElementById('image-block-template');
+  if (!template) {
+    console.error('Image block template not found');
+    return;
+  }
+  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
+  if (!container) {
+    console.error('Description blocks container not found');
+    return;
+  }
+  
   container.appendChild(clone);
   updatePreview();
 }
 
 function addVideoBlock() {
   const template = document.getElementById('video-block-template');
+  if (!template) {
+    console.error('Video block template not found');
+    return;
+  }
+  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
+  if (!container) {
+    console.error('Description blocks container not found');
+    return;
+  }
+  
   container.appendChild(clone);
   updatePreview();
 }
 
 function addBulletBlock() {
   const template = document.getElementById('bullet-block-template');
+  if (!template) {
+    console.error('Bullet block template not found');
+    return;
+  }
+  
   const clone = template.content.cloneNode(true);
   const container = document.getElementById('description-blocks-container');
+  if (!container) {
+    console.error('Description blocks container not found');
+    return;
+  }
   
   const bulletContainer = clone.querySelector('.bullet-items-container');
-  addBulletItemToContainer(bulletContainer);
+  if (bulletContainer) {
+    addBulletItemToContainer(bulletContainer);
+  }
   
   container.appendChild(clone);
   updatePreview();
@@ -4703,36 +4789,53 @@ function removeBlock(button) {
 
 function updatePreview() {
   const preview = document.getElementById('description-preview');
+  if (!preview) {
+    console.warn('Preview element not found');
+    return;
+  }
+  
   const blocks = document.querySelectorAll('#description-blocks-container .description-block');
+  if (!blocks) {
+    preview.innerHTML = '<p style="color: #999; text-align: center;">No description blocks added yet.</p>';
+    return;
+  }
   
   let html = '';
   
   blocks.forEach(block => {
+    if (!block) return;
+    
     if (block.classList.contains('text-block')) {
-      const text = block.querySelector('.block-content')?.value || '';
-      if (text) {
+      const textarea = block.querySelector('.block-content');
+      const text = textarea?.value || '';
+      if (text.trim()) {
         html += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${text}</p>`;
       }
     }
     else if (block.classList.contains('heading-block')) {
-      const level = block.querySelector('.heading-level')?.value || 'h2';
-      const text = block.querySelector('.block-content')?.value || '';
-      if (text) {
+      const select = block.querySelector('.heading-level');
+      const input = block.querySelector('.block-content');
+      const level = select?.value || 'h2';
+      const text = input?.value || '';
+      if (text.trim()) {
         html += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${text}</${level}>`;
       }
     }
     else if (block.classList.contains('image-block')) {
-      const url = block.querySelector('.block-content')?.value || '';
-      if (url) {
+      const input = block.querySelector('.block-content');
+      const url = input?.value || '';
+      if (url.trim()) {
         html += `<p style="text-align: center;"><img src="${url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
       }
     }
     else if (block.classList.contains('video-block')) {
-      const url = block.querySelector('.block-content')?.value || '';
-      const alignment = block.querySelector('.video-alignment')?.value || 'center';
+      const input = block.querySelector('.block-content');
+      const select = block.querySelector('.video-alignment');
+      const url = input?.value || '';
+      const alignment = select?.value || 'center';
       const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
       
-      if (url) {
+      if (url.trim()) {
         if (url.includes('youtube.com') || url.includes('youtu.be')) {
           let videoId = '';
           if (url.includes('youtube.com/watch?v=')) {
@@ -4755,8 +4858,8 @@ function updatePreview() {
       let bulletHtml = '<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">';
       
       bullets.forEach(bullet => {
-        const text = bullet.value || '';
-        if (text) {
+        const text = bullet?.value || '';
+        if (text.trim()) {
           hasContent = true;
           bulletHtml += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${text}</li>`;
         }
@@ -5265,46 +5368,58 @@ function resetForm() {
 function initializeDashboard() {
   console.log('Initializing dashboard with price controls and rich description editor...');
   
-  const priceInput = document.getElementById('product-price');
-  if (priceInput) {
-    priceInput.addEventListener('input', updatePricePreviews);
-  }
-  
-  const container = document.getElementById('description-blocks-container');
-  if (container) {
-    container.innerHTML = '';
-    addTextBlock();
-  }
+  // Wait a moment for DOM to be fully ready
+  setTimeout(() => {
+    const priceInput = document.getElementById('product-price');
+    if (priceInput) {
+      priceInput.addEventListener('input', updatePricePreviews);
+    }
+    
+    // Check if templates exist before adding text block
+    const textTemplate = document.getElementById('text-block-template');
+    const container = document.getElementById('description-blocks-container');
+    
+    if (textTemplate && container) {
+      container.innerHTML = '';
+      addTextBlock();
+      console.log('Description blocks initialized');
+    } else {
+      console.warn('Templates or container not found yet, will retry in 500ms');
+      // Retry after a short delay
+      setTimeout(initializeDashboard, 500);
+      return;
+    }
 
-  const productForm = document.getElementById('product-form');
-  const productCategory = document.getElementById('product-category');
-  const cancelEdit = document.getElementById('cancel-edit');
-  const searchInput = document.getElementById('search-products');
-  const productHighDemand = document.getElementById('product-high-demand');
-  const mediaGrid = document.getElementById('media-grid');
+    const productForm = document.getElementById('product-form');
+    const productCategory = document.getElementById('product-category');
+    const cancelEdit = document.getElementById('cancel-edit');
+    const searchInput = document.getElementById('search-products');
+    const productHighDemand = document.getElementById('product-high-demand');
+    const mediaGrid = document.getElementById('media-grid');
 
-  productMedia = [];
-  selectedMediaIndex = 0;
-  if (mediaGrid) renderMediaGrid();
+    productMedia = [];
+    selectedMediaIndex = 0;
+    if (mediaGrid) renderMediaGrid();
 
-  if (productCategory) {
-    productCategory.addEventListener('change', updateCategorySync);
-  }
-  if (productForm) {
-    productForm.removeEventListener('submit', handleProductSubmit);
-    productForm.addEventListener('submit', handleProductSubmit);
-  }
-  if (cancelEdit) {
-    cancelEdit.addEventListener('click', resetForm);
-  }
-  if (searchInput) {
-    searchInput.addEventListener('input', filterProducts);
-  }
-  if (productHighDemand) {
-    productHighDemand.addEventListener('change', updateHighDemandChip);
-  }
+    if (productCategory) {
+      productCategory.addEventListener('change', updateCategorySync);
+    }
+    if (productForm) {
+      productForm.removeEventListener('submit', handleProductSubmit);
+      productForm.addEventListener('submit', handleProductSubmit);
+    }
+    if (cancelEdit) {
+      cancelEdit.addEventListener('click', resetForm);
+    }
+    if (searchInput) {
+      searchInput.addEventListener('input', filterProducts);
+    }
+    if (productHighDemand) {
+      productHighDemand.addEventListener('change', updateHighDemandChip);
+    }
 
-  loadProducts();
+    loadProducts();
+  }, 100);
 }
 
 function updateStats() {
