@@ -1,4 +1,4 @@
-<!-- dashhome.html - Dashboard Content with Price Controls -->
+<!-- dashhome.html - Dashboard Content with Price Controls and Rich Description Editor -->
 <!-- Stats Cards -->
 <div class="stats-grid">
   <div class="stat-card">
@@ -197,34 +197,45 @@
         </div>
       </div>
 
-      <!-- Section 4: Descriptions -->
+      <!-- Section 4: Rich Description Editor -->
       <div class="form-section">
         <div class="form-section-title">
           <i class="fa-solid fa-align-left"></i>
-          <span>descriptions</span>
+          <span>rich product description</span>
         </div>
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label><i class="fa-solid fa-paragraph"></i> short description</label>
-            <div class="input-wrapper">
-              <textarea id="product-short-desc" rows="2" placeholder="brief description for product cards..."></textarea>
-            </div>
+        
+        <!-- Description Blocks Container -->
+        <div id="description-blocks-container">
+          <!-- Description blocks will be added here dynamically -->
+        </div>
+        
+        <!-- Add Description Block Buttons -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" onclick="addTextBlock()" style="padding: 8px 16px; font-size: 0.8rem;">
+            <i class="fa-solid fa-paragraph"></i> Add Text Block
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addHeadingBlock()" style="padding: 8px 16px; font-size: 0.8rem;">
+            <i class="fa-solid fa-heading"></i> Add Heading
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addImageBlock()" style="padding: 8px 16px; font-size: 0.8rem;">
+            <i class="fa-solid fa-image"></i> Add Image
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addVideoBlock()" style="padding: 8px 16px; font-size: 0.8rem;">
+            <i class="fa-solid fa-video"></i> Add Video
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addBulletBlock()" style="padding: 8px 16px; font-size: 0.8rem;">
+            <i class="fa-solid fa-list"></i> Add Bullet Points
+          </button>
+        </div>
+        
+        <!-- Preview of how description will look -->
+        <div style="margin-top: 20px; padding: 16px; background: #f9f9f9; border-radius: 20px; border: 1px dashed #d4af37;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <i class="fa-solid fa-eye" style="color: #d4af37;"></i>
+            <span style="font-weight: 700; font-size: 0.9rem;">Live Preview</span>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label><i class="fa-solid fa-align-justify"></i> full description</label>
-            <div class="input-wrapper">
-              <textarea id="product-description" rows="4" placeholder="detailed product description..."></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label><i class="fa-solid fa-list"></i> specifications (one per line)</label>
-            <div class="input-wrapper">
-              <textarea id="product-specs" rows="3" placeholder="e.g. material: premium leather&#10;dimensions: 10cm x 7cm&#10;warranty: 1 year"></textarea>
-            </div>
+          <div id="description-preview" style="max-height: 300px; overflow-y: auto; padding: 10px; background: #fff; border-radius: 12px; border: 1px solid #000;">
+            <!-- Preview will be updated dynamically -->
           </div>
         </div>
       </div>
@@ -294,3 +305,86 @@
     <p>add your first product using the form above.</p>
   </div>
 </div>
+
+<!-- Template for Description Blocks (hidden) -->
+<template id="text-block-template">
+  <div class="description-block text-block" style="background: #f9f9f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid #000; position: relative;">
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+      <button type="button" class="move-up-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockUp(this)"><i class="fa-solid fa-arrow-up"></i></button>
+      <button type="button" class="move-down-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockDown(this)"><i class="fa-solid fa-arrow-down"></i></button>
+      <button type="button" class="remove-block-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBlock(this)"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div style="margin-bottom: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; font-size: 0.8rem;">Text Block</div>
+    <textarea class="block-content" placeholder="Enter your text here..." style="width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px; min-height: 80px;" oninput="updatePreview()"></textarea>
+  </div>
+</template>
+
+<template id="heading-block-template">
+  <div class="description-block heading-block" style="background: #f9f9f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid #000; position: relative;">
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+      <button type="button" class="move-up-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockUp(this)"><i class="fa-solid fa-arrow-up"></i></button>
+      <button type="button" class="move-down-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockDown(this)"><i class="fa-solid fa-arrow-down"></i></button>
+      <button type="button" class="remove-block-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBlock(this)"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div style="margin-bottom: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; font-size: 0.8rem;">Heading</div>
+    <select class="heading-level" style="width: 100%; padding: 10px; border: 2px solid #000; border-radius: 12px; margin-bottom: 10px;" onchange="updatePreview()">
+      <option value="h2">Heading 2 (Main Section)</option>
+      <option value="h3">Heading 3 (Subsection)</option>
+      <option value="h4">Heading 4 (Small)</option>
+    </select>
+    <input type="text" class="block-content" placeholder="Enter heading text..." style="width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
+  </div>
+</template>
+
+<template id="image-block-template">
+  <div class="description-block image-block" style="background: #f9f9f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid #000; position: relative;">
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+      <button type="button" class="move-up-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockUp(this)"><i class="fa-solid fa-arrow-up"></i></button>
+      <button type="button" class="move-down-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockDown(this)"><i class="fa-solid fa-arrow-down"></i></button>
+      <button type="button" class="remove-block-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBlock(this)"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div style="margin-bottom: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; font-size: 0.8rem;">Image</div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="text" class="block-content" placeholder="Enter image URL..." style="flex: 1; padding: 12px; border: 2px solid #000; border-radius: 12px;" oninput="updatePreview()">
+      <button type="button" class="btn btn-outline" style="padding: 10px 20px;" onclick="uploadImageForBlock(this)">Upload</button>
+    </div>
+    <input type="file" class="image-upload-input" accept="image/*" style="display: none;" onchange="handleImageUploadForBlock(this)">
+    <div class="image-preview-block" style="margin-top: 10px; display: none;">
+      <img src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 12px; border: 2px solid #000;">
+    </div>
+  </div>
+</template>
+
+<template id="video-block-template">
+  <div class="description-block video-block" style="background: #f9f9f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid #000; position: relative;">
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+      <button type="button" class="move-up-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockUp(this)"><i class="fa-solid fa-arrow-up"></i></button>
+      <button type="button" class="move-down-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockDown(this)"><i class="fa-solid fa-arrow-down"></i></button>
+      <button type="button" class="remove-block-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBlock(this)"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div style="margin-bottom: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; font-size: 0.8rem;">Video</div>
+    <input type="text" class="block-content" placeholder="Enter video URL (MP4, YouTube, etc.)..." style="width: 100%; padding: 12px; border: 2px solid #000; border-radius: 12px; margin-bottom: 10px;" oninput="updatePreview()">
+    <select class="video-alignment" style="width: 100%; padding: 10px; border: 2px solid #000; border-radius: 12px;" onchange="updatePreview()">
+      <option value="left">Align Left</option>
+      <option value="center" selected>Align Center</option>
+      <option value="right">Align Right</option>
+    </select>
+  </div>
+</template>
+
+<template id="bullet-block-template">
+  <div class="description-block bullet-block" style="background: #f9f9f9; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid #000; position: relative;">
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+      <button type="button" class="move-up-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockUp(this)"><i class="fa-solid fa-arrow-up"></i></button>
+      <button type="button" class="move-down-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer;" onclick="moveBlockDown(this)"><i class="fa-solid fa-arrow-down"></i></button>
+      <button type="button" class="remove-block-btn" style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid #000; background: #ff4444; color: white; cursor: pointer;" onclick="removeBlock(this)"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div style="margin-bottom: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; font-size: 0.8rem;">Bullet Points</div>
+    <div class="bullet-items-container">
+      <!-- Bullet items will be added here -->
+    </div>
+    <button type="button" class="btn btn-outline" style="margin-top: 10px; padding: 8px 16px; font-size: 0.8rem;" onclick="addBulletItem(this)">
+      <i class="fa-solid fa-plus"></i> Add Bullet Point
+    </button>
+  </div>
+</template>
