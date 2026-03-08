@@ -212,42 +212,62 @@
       font-weight: var(--font-heading-weight);
     }
 
-   /* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
+/* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
 @media (min-width: 1024px) {
+  /* The main grid container */
   .product-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
-    align-items: start;
+    align-items: start; /* This is crucial for sticky to work */
+    position: relative;
   }
   
   /* LEFT SIDE - STICKY GALLERY */
   .gallery-section {
     position: sticky !important;
     top: 20px !important;
-    height: fit-content !important;
-    align-self: flex-start !important;
+    align-self: start !important;
+    height: auto !important;
+    max-height: calc(100vh - 40px); /* Prevent gallery from being too tall */
+    overflow-y: auto; /* Allow scrolling within gallery if needed */
+  }
+  
+  /* Hide scrollbar for gallery (optional, for cleaner look) */
+  .gallery-section::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .gallery-section::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
   }
   
   /* RIGHT SIDE - SCROLLABLE CONTENT */
   .product-info {
-    align-self: flex-start;
-    max-height: none; /* Allow full height */
-    overflow-y: visible; /* Normal scroll behavior */
+    align-self: start;
+    overflow: visible;
   }
   
+  /* Reviews section on left side */
   .desktop-reviews-section {
     margin-top: 30px;
     width: 100%;
   }
-}
-
-/* Optional: Add a subtle shadow to gallery when sticky */
-@media (min-width: 1024px) {
-  .gallery-section.is-sticky {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  
+  /* Add a subtle shadow when gallery is sticky */
+  .gallery-section.sticky-active {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     transition: box-shadow 0.3s ease;
     border-radius: 20px;
+  }
+}
+
+/* For smaller screens, disable sticky */
+@media (max-width: 1023px) {
+  .gallery-section {
+    position: relative !important;
+    top: 0 !important;
   }
 }
 
@@ -2968,32 +2988,61 @@
       `;
     }
 
-  function handleGallerySticky() {
+  // ===== STICKY GALLERY FUNCTION =====
+function initStickyGallery() {
   const gallery = document.querySelector('.gallery-section');
-  const productInfo = document.querySelector('.product-info');
-  const reviewsSection = document.querySelector('.desktop-reviews-section');
+  const productGrid = document.querySelector('.product-grid');
   
-  if (!gallery || !productInfo) return;
+  if (!gallery || !productGrid) return;
   
-  // Get the height of product info to know when to unstick
-  const productInfoHeight = productInfo.offsetHeight;
+  // Remove any existing listeners to prevent duplicates
+  window.removeEventListener('scroll', handleStickyScroll);
+  window.addEventListener('scroll', handleStickyScroll);
   
-  window.addEventListener('scroll', () => {
+  function handleStickyScroll() {
+    if (window.innerWidth < 1024) return; // Only on desktop
+    
     const scrollY = window.scrollY;
-    const galleryTop = gallery.offsetTop;
-    const galleryBottom = galleryTop + gallery.offsetHeight;
-    const productInfoBottom = productInfo.offsetTop + productInfoHeight;
+    const productGridTop = productGrid.offsetTop;
+    const productGridHeight = productGrid.offsetHeight;
+    const galleryHeight = gallery.offsetHeight;
     
-    // Add shadow when gallery is sticky (scrolled past its top)
-    if (scrollY > galleryTop - 20) {
-      gallery.classList.add('is-sticky');
+    // Calculate when gallery should become sticky
+    const stickyStart = productGridTop - 20;
+    const stickyEnd = productGridTop + productGridHeight - galleryHeight - 20;
+    
+    if (scrollY > stickyStart && scrollY < stickyEnd) {
+      // Gallery is within sticky range
+      gallery.style.position = 'sticky';
+      gallery.style.top = '20px';
+      gallery.style.alignSelf = 'start';
+      gallery.classList.add('sticky-active');
+    } else if (scrollY >= stickyEnd) {
+      // Past the bottom - let it scroll naturally
+      gallery.style.position = 'relative';
+      gallery.style.top = 'auto';
+      gallery.style.alignSelf = 'start';
+      gallery.classList.remove('sticky-active');
     } else {
-      gallery.classList.remove('is-sticky');
+      // Above the sticky range
+      gallery.style.position = 'relative';
+      gallery.style.top = 'auto';
+      gallery.style.alignSelf = 'start';
+      gallery.classList.remove('sticky-active');
     }
-    
-    // Optional: Log when we're past the product info
-    if (scrollY + gallery.offsetHeight > productInfoBottom) {
-      console.log('Past product info - gallery will unstick naturally');
+  }
+  
+  // Initial call
+  handleStickyScroll();
+  
+  // Also handle on resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth < 1024) {
+      gallery.style.position = 'relative';
+      gallery.style.top = 'auto';
+      gallery.classList.remove('sticky-active');
+    } else {
+      handleStickyScroll();
     }
   });
 }
@@ -3480,12 +3529,25 @@ function renderProduct(product) {
 
   updateDeliveryBar(sellingPrice);
   updateButtonStates();
-  setTimeout(handleGallerySticky, 100);
+ setTimeout(() => {
+    initStickyGallery();
+  }, 200); // Small delay to ensure DOM is fully rendered
   
   const dates = getDeliveryDates();
   const deliveryElement = document.getElementById('deliveryDates');
   if (deliveryElement) deliveryElement.textContent = dates.display;
 }
+
+    // Add this to your existing window scroll listener or create a new one
+window.addEventListener('scroll', () => {
+  const scrollTop = document.getElementById('scrollTop');
+  if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200);
+  
+  // Call sticky handler if it exists
+  if (typeof handleStickyScroll === 'function') {
+    handleStickyScroll();
+  }
+});
 
 window.changeImage = function(src, el) { 
       const mainImage = document.getElementById('mainImage');
