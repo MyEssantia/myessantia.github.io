@@ -2830,71 +2830,26 @@ function renderProduct(product) {
     `;
   }
 
-  // Enhanced product description with proper formatting like the sample
-  const productDescriptionHTML = `
+  // Use the rich HTML description from admin or create a default
+  const productDescriptionHTML = product.description || `
     <div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">
-      <p><strong>Strong magnetic hold. Rock-solid vacuum suction. Infinite angles.</strong><br>
-      ✨ <strong>Use it anywhere</strong> – Car, Office, Kitchen, Gym, Bathroom, Yoga, Makeup desk &amp; more.</p>
+      <p><strong>Premium quality product.</strong> Crafted with attention to detail.</p>
+      <p>${product.shortDesc || 'Experience the perfect blend of style and functionality.'}</p>
       
-      <p style="text-align: center;">
-        <video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; margin: auto;" controls playsinline loop muted autoplay>
-          <source src="https://cdn.shopify.com/videos/c/o/v/cc9c0c0e6be94b7a9d01dbd8657a4062.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      </p>
+      <h3 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;">✨ <strong>Key Features:</strong></h3>
       
-      <p>Say goodbye to wobbly stands and weak holders. The <strong>Vacuum Suction Magnetic Phone Holder</strong> combines <strong>24 ultra-strong N52 magnets</strong> with a <strong>vacuum-lock suction base</strong>, ensuring your phone stays secure – whether you're driving, cooking, working out, or even relaxing in the bath.</p>
-      
-      <h3 style="font-family: 'Proza Libre', sans-serif; font-weight: 400; margin-top: 2rem;">🌟 <strong>Why You'll Love It:</strong></h3>
-      
-      <p><strong>- 360° Rotation + 180° Folding Dual-Axis Adjustment</strong> → Adjust to any angle, portrait or landscape.</p>
-      
-      <p><strong>- Ultra Strong Vacuum Suction</strong> → Twist-lock system firmly grips smooth surfaces (dashboard, windshield, glass, tiles, mirrors, kitchen counters, gym equipment).</p>
-      
-      <p><strong>- MagSafe Compatible</strong> → Works directly with iPhone 12/13/14/15/16 series &amp; MagSafe cases.</p>
-      
-      <p><strong>- Universal Fit</strong> → Comes with a metal ring for Android &amp; non-magnetic cases.</p>
-      
-      <p><strong>- Portable &amp; Compact</strong> → Pocket-sized design, easy to carry anywhere.</p>
-      
-      <p><strong>- One-Handed Operation</strong> → Attach &amp; detach in seconds.</p>
-      
-      <p><strong>- Ventilated Design</strong> → Prevents phone overheating during long use.</p>
-      
-      <p style="text-align: center;">
-        <img src="https://cdn.shopify.com/s/files/1/0774/2141/2570/files/imgi_83_4c5211ef-3048-4e87-904f-0814cb0676cb.__CR0_0_1464_600_PT0_SX1464_V1.jpg?v=1755978177" alt="Product feature image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;">
-      </p>
-      
-      <h3 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;">🏆 <strong>Multi-Scene Use Cases Of Vacuum Suction Magnetic Phone Holder:</strong></h3>
-      
-      <p>✔️ <strong>Car:</strong> Navigation, music, calls – hands-free.<br>
-      ✔️ <strong>Office/Work Desk:</strong> Perfect for video calls &amp; multitasking.<br>
-      ✔️ <strong>Kitchen:</strong> Follow recipes while cooking.<br>
-      ✔️ <strong>Bathroom:</strong> Watch videos while relaxing in the tub.<br>
-      ✔️ <strong>Makeup Table:</strong> Easy mirror mounting for tutorials.<br>
-      ✔️ <strong>Gym/Fitness Vlog:</strong> Record workouts &amp; track progress.<br>
-      ✔️ <strong>Yoga &amp; Meditation:</strong> Stream online classes at the perfect angle.<br>
-      ✔️ <strong>Travel:</strong> Stick it on train/bus windows for entertainment.</p>
-      
-      <p>For best results, ensure the product is placed on a <strong>clean, smooth, and flat surface</strong>. Surfaces like <strong>fabric, textured, or uneven areas</strong> will affect the grip.</p>
-      
-      <p style="text-align: center;">
-        <img src="https://cdn.shopify.com/s/files/1/0774/2141/2570/files/imgi_89.__CR0_0_1464_600_PT0_SX1464_V1_4b22cca4-683c-4145-b024-3cd44c745d33.jpg?v=1756016882" alt="Product specification image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;">
-      </p>
+      <p><strong>- Premium Material</strong> → High-quality build for lasting durability.</p>
+      <p><strong>- Versatile Design</strong> → Perfect for everyday use.</p>
       
       <h2 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;"><strong>Specifications</strong></h2>
       
-      <p>- Material: Aluminium Alloy + ABS</p>
-      <p>- Weight Capacity: Up to 5kg hold strength</p>
-      <p>- Size: 2.5" x 2.5" x 1.5"</p>
-      <p>- Weight: 90g</p>
-      <p>- Compatibility: iPhone, Android, Tablets (with included metal ring)</p>
+      <p>- Material: Premium Quality</p>
+      <p>- Brand: ${product.brand || 'MyEssantia'}</p>
       
       <h2 style="font-family: 'Proza Libre', sans-serif; font-weight: 400;"><strong>What's in the Box?</strong></h2>
       
-      <p>✔️ 1 x Vacuum Suction Magnetic Phone Holder<br>
-      ✔️ 1 x Metal Ring (for Android &amp; non-MagSafe phones)<br>
-      ✔️ User Manual</p>
+      <p>✔️ 1 x ${product.title}</p>
+      <p>✔️ User Manual</p>
     </div>
   `;
 
@@ -3154,7 +3109,7 @@ function renderProduct(product) {
           </button>
         </div>
 
-        <!-- PRODUCT DESCRIPTION - Formatted exactly like the sample -->
+        <!-- PRODUCT DESCRIPTION - Rich HTML from admin -->
         ${productDescriptionHTML}
         
         <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
