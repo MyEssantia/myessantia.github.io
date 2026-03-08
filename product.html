@@ -212,55 +212,42 @@
       font-weight: var(--font-heading-weight);
     }
 
-    /* ===== STICKY GALLERY FOR DESKTOP ===== */
+   /* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
 @media (min-width: 1024px) {
   .product-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
-    align-items: start; /* Important for sticky to work */
+    align-items: start;
   }
   
-  /* Make gallery sticky */
+  /* LEFT SIDE - STICKY GALLERY */
   .gallery-section {
     position: sticky !important;
     top: 20px !important;
     height: fit-content !important;
     align-self: flex-start !important;
-    max-height: calc(100vh - 40px); /* Prevent gallery from taking full viewport height */
-    overflow-y: auto; /* Allow gallery to scroll if content is too tall */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
   }
   
-  /* Hide scrollbar for Chrome/Safari */
-  .gallery-section::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* Content on the right scrolls normally */
+  /* RIGHT SIDE - SCROLLABLE CONTENT */
   .product-info {
     align-self: flex-start;
+    max-height: none; /* Allow full height */
+    overflow-y: visible; /* Normal scroll behavior */
   }
   
-  /* Reviews section styling */
   .desktop-reviews-section {
     margin-top: 30px;
     width: 100%;
   }
-  
-  /* When user scrolls past the gallery, it becomes unstuck naturally */
-  /* The sticky effect only works within its parent container */
-  .product-grid {
-    position: relative;
-  }
 }
 
-/* Optional: Add a shadow when gallery is sticky to indicate it's fixed */
+/* Optional: Add a subtle shadow to gallery when sticky */
 @media (min-width: 1024px) {
   .gallery-section.is-sticky {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: box-shadow 0.3s ease;
+    border-radius: 20px;
   }
 }
 
@@ -2981,22 +2968,34 @@
       `;
     }
 
-    function handleGallerySticky() {
+  function handleGallerySticky() {
   const gallery = document.querySelector('.gallery-section');
-  if (!gallery) return;
+  const productInfo = document.querySelector('.product-info');
+  const reviewsSection = document.querySelector('.desktop-reviews-section');
   
-  const observer = new IntersectionObserver(
-    ([e]) => {
-      if (e.intersectionRatio < 1) {
-        gallery.classList.add('is-sticky');
-      } else {
-        gallery.classList.remove('is-sticky');
-      }
-    },
-    { threshold: [1] }
-  );
+  if (!gallery || !productInfo) return;
   
-  observer.observe(gallery);
+  // Get the height of product info to know when to unstick
+  const productInfoHeight = productInfo.offsetHeight;
+  
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const galleryTop = gallery.offsetTop;
+    const galleryBottom = galleryTop + gallery.offsetHeight;
+    const productInfoBottom = productInfo.offsetTop + productInfoHeight;
+    
+    // Add shadow when gallery is sticky (scrolled past its top)
+    if (scrollY > galleryTop - 20) {
+      gallery.classList.add('is-sticky');
+    } else {
+      gallery.classList.remove('is-sticky');
+    }
+    
+    // Optional: Log when we're past the product info
+    if (scrollY + gallery.offsetHeight > productInfoBottom) {
+      console.log('Past product info - gallery will unstick naturally');
+    }
+  });
 }
 
 function renderProduct(product) {
