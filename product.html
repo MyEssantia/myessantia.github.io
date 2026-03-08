@@ -1762,13 +1762,12 @@
             productId: productId,
             productTitle: currentProduct?.title || 'Unknown Product',
             email: email,
-            actionType: actionType, // 'buy' or 'cart'
+            actionType: actionType,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             status: 'pending'
           });
           console.log('Notification saved to Firebase');
         } else {
-          // Fallback to localStorage if Firebase not available
           console.log('Firebase not available, saving to localStorage only');
         }
       } catch (error) {
@@ -1776,8 +1775,13 @@
       }
     }
 
-    function getRandomSold() { return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; }
-    function getRandomViewers() { return Math.floor(Math.random() * (35 - 8 + 1)) + 8; }
+    function getRandomSold() { 
+      return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; 
+    }
+    
+    function getRandomViewers() { 
+      return Math.floor(Math.random() * (35 - 8 + 1)) + 8; 
+    }
 
     // Load reviews for this product from Firestore
     async function loadProductReviews(productId) {
@@ -1808,7 +1812,6 @@
         const reviews = snapshot.docs.map(doc => {
           const data = doc.data();
           
-          // Handle timestamp properly
           let reviewDate = new Date();
           if (data.timestamp) {
             if (data.timestamp.toDate) {
@@ -1832,7 +1835,6 @@
           };
         });
         
-        // Sort manually (descending order)
         reviews.sort((a, b) => b.timestamp - a.timestamp);
         
         console.log('Processed reviews:', reviews);
@@ -1851,11 +1853,10 @@
           await db.collection('reviews').add({
             ...reviewData,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            verified: true // Mark as verified since user purchased
+            verified: true
           });
           return true;
         } else {
-          // Fallback to localStorage
           const localReviews = JSON.parse(localStorage.getItem('myessantia_local_reviews') || '[]');
           localReviews.push({
             ...reviewData,
@@ -1871,14 +1872,14 @@
       }
     }
 
-    function getProductId() { return new URLSearchParams(window.location.search).get('id'); }
+    function getProductId() { 
+      return new URLSearchParams(window.location.search).get('id'); 
+    }
 
     function generateRatingDistribution(reviews) {
-      // Default distribution
       let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
       
       if (reviews.length === 0) {
-        // Default distribution based on product rating if no reviews
         const baseRating = currentProduct?.rating || 4.5;
         if (baseRating >= 4.5) {
           distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
@@ -1890,7 +1891,6 @@
           distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
         }
       } else {
-        // Calculate distribution from actual reviews
         reviews.forEach(review => {
           const rating = Math.round(review.rating);
           if (rating >= 1 && rating <= 5) {
@@ -1898,7 +1898,6 @@
           }
         });
         
-        // Convert counts to percentages
         const total = reviews.length;
         if (total > 0) {
           distribution = {
@@ -1911,7 +1910,6 @@
         }
       }
       
-      // Ensure percentages add to 100
       const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
       if (sum !== 100 && sum > 0) {
         distribution[5] += (100 - sum);
@@ -1966,13 +1964,11 @@
       }, 300);
     }
 
-    // Toggle Razorpay popup
     window.toggleRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.toggle('show');
     };
 
-    // Close Razorpay popup
     window.closeRazorpayPopup = function() {
       const popup = document.getElementById('razorpayPopup');
       if (popup) popup.classList.remove('show');
@@ -1991,9 +1987,8 @@
       const modal = document.getElementById('reviewModal');
       if (modal) {
         modal.classList.remove('show');
-        // Reset form
         document.getElementById('reviewForm')?.reset();
-        document.getElementById('reviewImagePreview')?.style.setProperty('display', 'none');
+        document.getElementById('reviewImagePreview').style.display = 'none';
         window.selectedReviewImage = null;
       }
     };
@@ -2003,7 +1998,6 @@
       const file = input.files[0];
       if (!file) return;
       
-      // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         showNotification('Image too large (max 5MB)', 'error');
         return;
@@ -2032,7 +2026,6 @@
     window.submitReview = async function() {
       if (!currentProduct) return;
       
-      // Check if user has purchased
       if (!hasUserPurchased(currentProduct.id)) {
         showNotification('You can only review products you have purchased!', 'error');
         return;
@@ -2074,7 +2067,6 @@
         showNotification('Thank you for your review!', 'success');
         closeReviewModal();
         
-        // Reload reviews to show the new one
         productReviews = await loadProductReviews(currentProduct.id);
         renderProduct(currentProduct);
       } else {
@@ -2089,7 +2081,6 @@
       const emailForm = document.getElementById('emailNotificationForm');
       const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
       
-      // Check if already requested
       if (hasRequestedNotification(currentProduct.id)) {
         emailForm.style.display = 'none';
         alreadyMessage.style.display = 'block';
@@ -2116,19 +2107,13 @@
         return;
       }
       
-      // Mark as requested in localStorage
       markNotificationRequested(currentProduct.id, email);
-      
-      // Submit to Firebase
       await submitNotificationToFirebase(currentProduct.id, email, actionType);
       
-      // Update UI
       document.getElementById('emailNotificationForm').style.display = 'none';
       document.getElementById('alreadyNotifiedMessage').style.display = 'block';
       
       showNotification('We\'ll notify you when this product is ready to dispatch!');
-      
-      // Update button states if needed
       updateButtonStates();
     };
 
@@ -2151,21 +2136,17 @@
       }, 3000);
     }
 
-    // USE THE GLOBAL addToCart FUNCTION FROM common.js
     window.addToCart = function() {
       if (!currentProduct) return;
       
-      // Check if product is in high demand
       if (currentProduct.highDemand) {
         showHighDemandPopup('cart');
         return;
       }
       
-      // Call the global addToCart function from common.js
       if (typeof window.addToCartGlobal === 'function') {
         window.addToCartGlobal(currentProduct.id);
       } else {
-        // Fallback if global function isn't available
         const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
         
         if (currentProduct.stock <= 0) {
@@ -2211,21 +2192,17 @@
       }
     };
 
-    // USE THE GLOBAL buyNow FUNCTION FROM common.js
     window.buyNow = function() {
       if (!currentProduct) return;
       
-      // Check if product is in high demand
       if (currentProduct.highDemand) {
         showHighDemandPopup('buy');
         return;
       }
       
-      // Call the global buyNow function from common.js
       if (typeof window.buyNowGlobal === 'function') {
         window.buyNowGlobal(currentProduct.id);
       } else {
-        // Fallback
         window.addToCart();
         setTimeout(() => {
           window.location.href = 'checkout.html';
@@ -2240,7 +2217,6 @@
       if (!addToCartBtn || !buyNowBtn || !currentProduct) return;
       
       if (currentProduct.highDemand) {
-        // Check if already requested
         if (hasRequestedNotification(currentProduct.id)) {
           addToCartBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
           buyNowBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
@@ -2249,7 +2225,6 @@
           addToCartBtn.disabled = true;
           buyNowBtn.disabled = true;
         } else {
-          // Keep buttons active but they'll trigger popup
           addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
           buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
           addToCartBtn.classList.remove('high-demand-disabled');
@@ -2258,7 +2233,6 @@
           buyNowBtn.disabled = false;
         }
       } else {
-        // Normal mode
         addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
         buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
         addToCartBtn.classList.remove('high-demand-disabled');
@@ -2292,7 +2266,6 @@
           };
           document.getElementById('breadcrumb-product').textContent = currentProduct.title;
           
-          // Try to load reviews even in demo mode
           try {
             productReviews = await loadProductReviews(productId);
           } catch (e) {
@@ -2311,11 +2284,9 @@
         
         console.log('Product loaded:', currentProduct.title);
         
-        // Load reviews for this product
         productReviews = await loadProductReviews(productId);
         console.log('Reviews loaded:', productReviews.length);
         
-        // Now render with reviews
         renderProduct(currentProduct);
         
       } catch (error) { 
@@ -2335,7 +2306,6 @@
         };
         document.getElementById('breadcrumb-product').textContent = currentProduct.title;
         
-        // Try to load reviews even after error
         try {
           productReviews = await loadProductReviews(productId);
         } catch (e) {
@@ -2370,24 +2340,17 @@
       const soldCount = getRandomSold();
       const liveViewers = getRandomViewers();
       
-      // Calculate prices with the admin rules
       const sellingPrice = product.price || 0;
       const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
       const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
       
-      // Prepaid: 15% off, rounded to nearest integer
       const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
-      
-      // COD: selling price + ₹100, rounded to nearest integer
       const codPrice = product.codPrice || Math.round(sellingPrice + 100);
       
-      // Use stored review count or calculate from reviews
       const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
 
-      // Calculate rating distribution from actual reviews
       const ratingDist = generateRatingDistribution(productReviews);
 
-      // Create rating chart HTML - This will only appear in mobile section now
       const ratingChartHTML = `
         <div class="rating-chart-card mobile-only-rating">
           <div class="rating-chart-header">
@@ -2411,11 +2374,9 @@
         </div>
       `;
 
-      // Generate reviews HTML with new card design
       let reviewsHTML = '';
 
       if (productReviews && productReviews.length > 0) {
-        // Add reviews header with Write Review button
         reviewsHTML = `<div class="reviews-header">
           <span>Customer Reviews</span>
           <div style="display: flex; align-items: center; gap: 15px;">
@@ -2426,12 +2387,10 @@
           </div>
         </div>`;
         
-        // Create a common frame container - NO FRAME
         reviewsHTML += `<div class="reviews-common-frame">`;
         reviewsHTML += `<div class="reviews-grid">`;
         
         reviewsHTML += productReviews.map(review => {
-          // Generate star rating as SVGs
           const rating = review.rating || 5;
           const fullStars = Math.floor(rating);
           const hasHalf = rating % 1 >= 0.5;
@@ -2439,7 +2398,6 @@
           let starsHTML = '';
           for (let i = 1; i <= 5; i++) {
             if (i <= fullStars) {
-              // Full star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
                   <path d="m0 0h24v24h-24z" fill="none"></path>
@@ -2448,7 +2406,6 @@
                 </svg>
               `;
             } else if (i === fullStars + 1 && hasHalf) {
-              // Half star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
                   <path d="m0 0h24v24h-24z" fill="none"></path>
@@ -2456,7 +2413,6 @@
                 </svg>
               `;
             } else {
-              // Empty star
               starsHTML += `
                 <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
                   <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
@@ -2493,8 +2449,8 @@
           `;
         }).join('');
         
-        reviewsHTML += `</div>`; // Close reviews-grid
-        reviewsHTML += `</div>`; // Close reviews-common-frame
+        reviewsHTML += `</div>`;
+        reviewsHTML += `</div>`;
       } else {
         reviewsHTML = `
           <div class="reviews-header">
@@ -2516,7 +2472,6 @@
         `;
       }
 
-      // DESKTOP REVIEWS SECTION - positioned below rating chart (without duplicate rating chart)
       const desktopReviewsHTML = `
         <div class="desktop-reviews-section">
           <div class="desktop-reviews">
@@ -2525,7 +2480,6 @@
         </div>
       `;
       
-      // MOBILE REVIEWS SECTION (hidden on desktop) - WITH rating chart
       const mobileReviewsHTML = `
         <div class="mobile-reviews">
           ${ratingChartHTML}
@@ -2602,7 +2556,6 @@
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
-            <!-- Rating Chart for desktop only (hidden on mobile via CSS) -->
             <div class="rating-chart-card desktop-only-rating">
               <div class="rating-chart-header">
                 <div>
@@ -2653,7 +2606,6 @@
               </div>
             </div>
 
-            <!-- PRICE CARD with quantity -->
             <div class="price-card">
               <div class="price-header">
                 <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
@@ -2709,7 +2661,6 @@
             </div>
 
             <div class="feature-razor-card">
-              <!-- Razorpay popup card (no close button) -->
               <div id="razorpayPopup" class="razorpay-popup">
                 <div class="popup-title">
                   <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
@@ -2743,7 +2694,6 @@
                 </div>
               </div>
               
-              <!-- Razorpay Promise clickable -->
               <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
                 <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
                 <div class="promise-content">
@@ -2770,7 +2720,6 @@
               </div>
             </div>
 
-            <!-- ACTION BUTTONS -->
             <div class="action-buttons">
               <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
                 <i class="fa-solid fa-cart-plus"></i> Add to Cart
@@ -2780,7 +2729,6 @@
               </button>
             </div>
 
-            <!-- TABS (description, specs, videos) -->
             <div class="tabs">
               <div class="tab-headers">
                 <div class="tab-header active" onclick="switchTab('desc')">Description</div>
@@ -2816,23 +2764,19 @@
               </div>
             </div>
             
-            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
             ${mobileReviewsHTML}
           </div>
         </div>
         
-        <!-- DESKTOP REVIEWS SECTION - BELOW THE GRID -->
         ${desktopReviewsHTML}
       `;
 
       updateDeliveryBar(sellingPrice);
-      
-      // Update button states based on high demand
       updateButtonStates();
       
-      // Update delivery dates
       const dates = getDeliveryDates();
-      document.getElementById('deliveryDates').textContent = dates.display;
+      const deliveryElement = document.getElementById('deliveryDates');
+      if (deliveryElement) deliveryElement.textContent = dates.display;
     }
 
     window.changeImage = function(src, el) { 
@@ -2874,11 +2818,9 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => { 
-      // Ensure header and footer are loaded
       if (typeof window.loadComponents === 'function') {
         window.loadComponents();
       }
-      
       loadProduct(); 
     });
 
@@ -2920,20 +2862,16 @@
     function getDeliveryDates() {
       const today = new Date();
       
-      // Calculate min delivery date (5 days from now)
       const minDate = new Date(today);
       minDate.setDate(today.getDate() + 5);
       
-      // Calculate max delivery date (7 days from now)
       const maxDate = new Date(today);
       maxDate.setDate(today.getDate() + 7);
       
-      // Format dates
       const options = { day: 'numeric', month: 'short' };
       const minDateStr = minDate.toLocaleDateString('en-IN', options);
       const maxDateStr = maxDate.toLocaleDateString('en-IN', options);
       
-      // Add year if month is December/January (to avoid confusion)
       const minYear = minDate.getFullYear();
       const maxYear = maxDate.getFullYear();
       const currentYear = today.getFullYear();
@@ -2958,7 +2896,6 @@
       document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 200); 
     });
 
-    // Make sure cart icon works by ensuring common.js functions are available
     window.ensureCartFunctionality = function() {
       console.log('Product page ready, cart functions should be available from common.js');
     };
