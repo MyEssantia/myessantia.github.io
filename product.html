@@ -214,63 +214,36 @@
 
 /* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
 @media (min-width: 1024px) {
-  /* The main grid container */
+  /* Main grid container */
   .product-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
-    align-items: start; /* This is crucial for sticky to work */
-    position: relative;
+    align-items: start; /* THIS IS CRUCIAL - allows sticky to work */
   }
   
-  /* LEFT SIDE - STICKY GALLERY */
+  /* LEFT SIDE - GALLERY (STICKS IN PLACE) */
   .gallery-section {
     position: sticky !important;
-    top: 20px !important;
+    top: 20px !important; /* Distance from top when sticky */
     align-self: start !important;
     height: auto !important;
-    max-height: calc(100vh - 40px); /* Prevent gallery from being too tall */
-    overflow-y: auto; /* Allow scrolling within gallery if needed */
   }
   
-  /* Hide scrollbar for gallery (optional, for cleaner look) */
-  .gallery-section::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  .gallery-section::-webkit-scrollbar-thumb {
-    background: #d4af37;
-    border-radius: 4px;
-  }
-  
-  /* RIGHT SIDE - SCROLLABLE CONTENT */
+  /* RIGHT SIDE - CONTENT (SCROLLS NORMALLY) */
   .product-info {
-    align-self: start;
-    overflow: visible;
-  }
-  
-  /* Reviews section on left side */
-  .desktop-reviews-section {
-    margin-top: 30px;
-    width: 100%;
-  }
-  
-  /* Add a subtle shadow when gallery is sticky */
-  .gallery-section.sticky-active {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    transition: box-shadow 0.3s ease;
-    border-radius: 20px;
+    align-self: start !important;
+    overflow: visible !important;
   }
 }
 
-/* For smaller screens, disable sticky */
+/* Disable sticky on mobile */
 @media (max-width: 1023px) {
   .gallery-section {
     position: relative !important;
     top: 0 !important;
   }
 }
-
     /* ===== ALIGN REVIEWS HEADER IN ONE LINE ON MOBILE ===== */
 @media (max-width: 1023px) {
   .reviews-header {
