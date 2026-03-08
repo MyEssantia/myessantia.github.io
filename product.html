@@ -8,10 +8,10 @@
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   
-<!-- Premium Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
+  <!-- Premium Fonts - Inter & Montserrat (Unified) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
   
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -24,67 +24,19 @@
   <link rel="stylesheet" href="footer.css">
   
   <style>
-    /* ========== ADDITIONAL PRODUCT PAGE STYLES – COMPACT VERSION ========== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; overflow-x: hidden; background: #ffffff; scroll-behavior: smooth; }
-    body {
-  font-family: 'Inter', 'Montserrat', sans-serif;
-      line-height: 1.4;
-    }
-    .feature-razor-card .razorpay-promise {
-      margin-bottom: 12px;
-    }
-    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
-    @media (min-width: 640px) { .container { padding: 0 20px; } }
-
-    /* active nav style */
-    .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
-    .nav-link.active::after {
-      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
-      background: #d4af37; animation: slideIn 0.3s ease;
-    }
-    @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
-
-    /* ========== BREADCRUMB ========== */
-    .breadcrumb {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-      padding: 12px 0; font-size: 0.75rem; color: #4a4a4a;
-    }
-    .breadcrumb a { color: #1e1e1e; text-decoration: none; font-weight: 600; transition: color 0.2s; }
-    .breadcrumb a:hover { color: #d4af37; }
-    .breadcrumb i { font-size: 0.6rem; color: #d4af37; }
-
-    /* ========== MAIN PRODUCT GRID ========== */
-    .product-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      padding-bottom: 40px;
-    }
-    
-    @media (min-width: 1024px) {
-      .product-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-      }
-    }
-    
-      <!-- Font imports for Archivo and Proza Libre -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
-    
-  <style>
+    /* ===== GLOBAL FONT VARIABLES - UNIFIED ===== */
     :root {
-          --font-body-family: 'Open Sans', sans-serif;
+      --font-body-family: 'Inter', 'Montserrat', sans-serif;
       --font-body-style: normal;
       --font-body-weight: 400;
       --font-body-weight-bold: 700;
-          --font-heading-family: 'Montserrat', sans-serif;
+      --font-heading-family: 'Montserrat', sans-serif;
       --font-heading-style: normal;
-      --font-heading-weight: 400;
+      --font-heading-weight: 800;
       --font-body-scale: 1.0;
       --font-heading-scale: 1.0;
+      
+      /* Keep all other CSS variables exactly the same */
       --media-padding: px;
       --media-border-opacity: 1.0;
       --media-border-width: 2px;
@@ -251,10 +203,52 @@
       letter-spacing: 0.06rem;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6,
+    .product-title,
+    .reviews-header,
+    .rating-main {
       font-family: var(--font-heading-family);
       font-style: var(--font-heading-style);
       font-weight: var(--font-heading-weight);
+    }
+
+    /* Keep all other existing styles exactly the same from your original product.html */
+    .feature-razor-card .razorpay-promise {
+      margin-bottom: 12px;
+    }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 640px) { .container { padding: 0 20px; } }
+
+    /* active nav style */
+    .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
+    .nav-link.active::after {
+      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px;
+      background: #d4af37; animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
+
+    /* ========== BREADCRUMB ========== */
+    .breadcrumb {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      padding: 12px 0; font-size: 0.75rem; color: #4a4a4a;
+    }
+    .breadcrumb a { color: #1e1e1e; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+    .breadcrumb a:hover { color: #d4af37; }
+    .breadcrumb i { font-size: 0.6rem; color: #d4af37; }
+
+    /* ========== MAIN PRODUCT GRID ========== */
+    .product-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding-bottom: 40px;
+    }
+    
+    @media (min-width: 1024px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
     }
 
     /* Product description styles */
@@ -298,151 +292,151 @@
     }
     
     /* Enhanced Description Styles */
-.enhanced-description {
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 24px;
-  margin: 20px 0;
-  border: 2px solid #000;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-}
+    .enhanced-description {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin: 20px 0;
+      border: 2px solid #000;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    }
 
-.enhanced-description h3 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 15px;
-  color: #000;
-  display: flex;
-  align-items: center;
-  border-bottom: 2px solid #d4af37;
-  padding-bottom: 10px;
-}
+    .enhanced-description h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: #000;
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #d4af37;
+      padding-bottom: 10px;
+    }
 
-.description-main {
-  margin-bottom: 25px;
-}
+    .description-main {
+      margin-bottom: 25px;
+    }
 
-.description-main p {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #333;
-}
+    .description-main p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #333;
+    }
 
-.specs-section {
-  margin-bottom: 25px;
-}
+    .specs-section {
+      margin-bottom: 25px;
+    }
 
-.specs-list {
-  list-style: none;
-  padding: 0;
-}
+    .specs-list {
+      list-style: none;
+      padding: 0;
+    }
 
-.specs-list li {
-  padding: 10px 0;
-  border-bottom: 1px dashed #e0e0e0;
-  font-size: 0.9rem;
-  color: #333;
-  display: flex;
-  align-items: center;
-}
+    .specs-list li {
+      padding: 10px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      font-size: 0.9rem;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
 
-.specs-list li:last-child {
-  border-bottom: none;
-}
+    .specs-list li:last-child {
+      border-bottom: none;
+    }
 
-.videos-section {
-  margin-top: 15px;
-}
+    .videos-section {
+      margin-top: 15px;
+    }
 
-.video-grid-enhanced {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin: 15px 0;
-}
+    .video-grid-enhanced {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 15px 0;
+    }
 
-.video-item-enhanced {
-  aspect-ratio: 16/9;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  border: 2px solid #000;
-  cursor: pointer;
-  transition: all 0.3s;
-}
+    .video-item-enhanced {
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid #000;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
-.video-item-enhanced:hover {
-  transform: scale(1.02);
-  border-color: #d4af37;
-}
+    .video-item-enhanced:hover {
+      transform: scale(1.02);
+      border-color: #d4af37;
+    }
 
-.video-item-enhanced img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .video-item-enhanced img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-.play-button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  background: #d4af37;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000;
-  border: 2px solid #000;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+      background: #d4af37;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      border: 2px solid #000;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
 
-.video-item-enhanced:hover .play-button {
-  background: #000;
-  color: #d4af37;
-}
+    .video-item-enhanced:hover .play-button {
+      background: #000;
+      color: #d4af37;
+    }
 
-.video-note {
-  font-size: 0.8rem;
-  color: #666;
-  margin-top: 10px;
-  text-align: center;
-  font-style: italic;
-}
+    .video-note {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 10px;
+      text-align: center;
+      font-style: italic;
+    }
 
-/* Desktop reviews - ensure no duplicate */
-.desktop-reviews-section {
-  margin-top: 20px;
-  width: 100%;
-}
+    /* Desktop reviews - ensure no duplicate */
+    .desktop-reviews-section {
+      margin-top: 20px;
+      width: 100%;
+    }
 
-@media (min-width: 1024px) {
-  .desktop-reviews-section {
-    display: block;
-  }
-  
-  /* Hide any stray reviews in info column on desktop */
-  .product-info .desktop-reviews-section {
-    display: none;
-  }
-}
+    @media (min-width: 1024px) {
+      .desktop-reviews-section {
+        display: block;
+      }
+      
+      /* Hide any stray reviews in info column on desktop */
+      .product-info .desktop-reviews-section {
+        display: none;
+      }
+    }
 
-/* Mobile reviews - only visible on mobile */
-.mobile-reviews {
-  display: none;
-}
+    /* Mobile reviews - only visible on mobile */
+    .mobile-reviews {
+      display: none;
+    }
 
-@media (max-width: 1023px) {
-  .mobile-reviews {
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
-    width: 100%;
-  }
-}
+    @media (max-width: 1023px) {
+      .mobile-reviews {
+        display: flex;
+        flex-direction: column;
+        margin-top: 30px;
+        width: 100%;
+      }
+    }
 
     /* ========== GALLERY ========== */
     .gallery-section { width: 100%; }
@@ -487,7 +481,7 @@
 
     .rating-main {
       font-size: 1.8rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #000;
       line-height: 1;
     }
@@ -2017,6 +2011,7 @@
       background: #f5f5f5;
     }
   </style>
+ 
 </head>
 <body>
 
