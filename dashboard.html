@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -3686,129 +3686,6 @@ window.editReview = editReview;
 window.deleteReview = deleteReview;
 window.viewReviewProduct = viewReviewProduct;
 window.exportReviews = exportReviews;
-function initializeDashboard() {
-  console.log('Initializing dashboard...');
-  
-  // Check if all required elements exist
-  const requiredElements = [
-    'product-form', 'product-title', 'product-category', 
-    'product-original-price', 'product-price', 'product-prepaid-price',
-    'product-cod-price', 'product-rating', 'product-review-count',
-    'product-stock', 'product-brand', 'product-short-desc',
-    'product-description', 'product-specs', 'show-on-home',
-    'show-on-accessories', 'show-on-essentials', 'product-high-demand',
-    'products-list', 'empty-products', 'media-grid'
-  ];
-  
-  for (const id of requiredElements) {
-    const element = document.getElementById(id);
-    if (!element) {
-      console.warn(`Element #${id} not found in dashboard`);
-    }
-  }
-  
-  // Re-get all dashboard DOM elements
-  const productForm = document.getElementById('product-form');
-  const productCategory = document.getElementById('product-category');
-  const cancelEdit = document.getElementById('cancel-edit');
-  const searchInput = document.getElementById('search-products');
-  const productHighDemand = document.getElementById('product-high-demand');
-  const mediaGrid = document.getElementById('media-grid');
-
-  // Reinitialize media array
-  productMedia = [];
-  selectedMediaIndex = 0;
-  if (mediaGrid) renderMediaGrid();
-
-  // Setup event listeners
-  if (productCategory) {
-    productCategory.addEventListener('change', updateCategorySync);
-  }
-  if (productForm) {
-    // Remove any existing listeners and add new one
-    const newForm = productForm.cloneNode(true);
-    productForm.parentNode.replaceChild(newForm, productForm);
-    newForm.addEventListener('submit', handleProductSubmit);
-  }
-  if (cancelEdit) {
-    cancelEdit.addEventListener('click', resetForm);
-  }
-  if (searchInput) {
-    searchInput.addEventListener('input', filterProducts);
-  }
-  if (productHighDemand) {
-    productHighDemand.addEventListener('change', updateHighDemandChip);
-  }
-
-  // Setup price calculation preview
-  setupPriceCalculationPreview();
-
-  // Load products
-  loadProducts();
-}
-
-// ========== DASHBOARD FUNCTIONS ==========
-function initializeDashboard() {
-  console.log('Initializing dashboard...');
-  
-  // Re-get all dashboard DOM elements
-  const productForm = document.getElementById('product-form');
-  const productId = document.getElementById('product-id');
-  const productCreationDate = document.getElementById('product-creation-date');
-  const productTitle = document.getElementById('product-title');
-  const productCategory = document.getElementById('product-category');
-  const productPrice = document.getElementById('product-price');
-  const productRating = document.getElementById('product-rating');
-  const productStock = document.getElementById('product-stock');
-  const productBrand = document.getElementById('product-brand');
-  const productShortDesc = document.getElementById('product-short-desc');
-  const productDescription = document.getElementById('product-description');
-  const productSpecs = document.getElementById('product-specs');
-  const productHighDemand = document.getElementById('product-high-demand');
-  const showOnHome = document.getElementById('show-on-home');
-  const showOnAccessories = document.getElementById('show-on-accessories');
-  const showOnEssentials = document.getElementById('show-on-essentials');
-  const showOnNew = document.getElementById('show-on-new');
-  const productsList = document.getElementById('products-list');
-  const emptyProducts = document.getElementById('empty-products');
-  const totalProducts = document.getElementById('total-products');
-  const newinProducts = document.getElementById('newin-products');
-  const highDemandProducts = document.getElementById('high-demand-products');
-  const totalStock = document.getElementById('total-stock');
-  const productCount = document.getElementById('product-count');
-  const formTitle = document.getElementById('form-title');
-  const cancelEdit = document.getElementById('cancel-edit');
-  const searchInput = document.getElementById('search-products');
-  const highDemandChip = document.getElementById('high-demand-chip');
-  const mediaGrid = document.getElementById('media-grid');
-
-  // Reinitialize media array
-  productMedia = [];
-  selectedMediaIndex = 0;
-  if (mediaGrid) renderMediaGrid();
-
-  // Setup event listeners
-  if (productCategory) {
-    productCategory.addEventListener('change', updateCategorySync);
-  }
-  if (productForm) {
-    productForm.addEventListener('submit', handleProductSubmit);
-  }
-  if (cancelEdit) {
-    cancelEdit.addEventListener('click', resetForm);
-  }
-  if (searchInput) {
-    searchInput.addEventListener('input', filterProducts);
-  }
-  if (productHighDemand) {
-    productHighDemand.addEventListener('change', updateHighDemandChip);
-  }
-
-  // Load products
-  loadProducts();
-    setupPriceCalculationPreview();
-
-}
 
 // ========== NOTIFY FUNCTIONS ==========
 function initializeNotify() {
@@ -4461,32 +4338,20 @@ if (pagination) pagination.style.display =
   loadNotifyRequests();
 }
 
+// ========== DASHBOARD FIREBASE FUNCTIONS ==========
 async function loadProducts() {
   try {
-    console.log('Loading products from Firestore...');
     const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-    
-    if (snapshot.empty) {
-      console.log('No products found');
-      products = [];
-    } else {
-      products = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      console.log(`Loaded ${products.length} products`);
-    }
-    
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     renderProducts();
     updateStats();
     startNewInMonitor();
   } catch (error) {
     console.error('Error loading products:', error);
-    showNotification('Failed to load products: ' + error.message, 'error');
-    
-    // Set empty products array to avoid further errors
-    products = [];
-    renderProducts();
+    showNotification('failed to load products', 'error');
   }
 }
 
@@ -4656,179 +4521,6 @@ window.toggleHighDemand = function() {
   }
 };
 
-async function handleProductSubmit(e) {
-  e.preventDefault();
-
-  // Get all form elements
-  const productTitle = document.getElementById('product-title');
-  const productCategory = document.getElementById('product-category');
-  const productOriginalPrice = document.getElementById('product-original-price');
-  const productPrice = document.getElementById('product-price');
-  const productPrepaidPrice = document.getElementById('product-prepaid-price');
-  const productCodPrice = document.getElementById('product-cod-price');
-  const productRating = document.getElementById('product-rating');
-  const productReviewCount = document.getElementById('product-review-count');
-  const productStock = document.getElementById('product-stock');
-  const productBrand = document.getElementById('product-brand');
-  const productShortDesc = document.getElementById('product-short-desc');
-  const productDescription = document.getElementById('product-description');
-  const productSpecs = document.getElementById('product-specs');
-  const productId = document.getElementById('product-id');
-  const showOnHome = document.getElementById('show-on-home');
-  const showOnAccessories = document.getElementById('show-on-accessories');
-  const showOnEssentials = document.getElementById('show-on-essentials');
-  const productHighDemand = document.getElementById('product-high-demand');
-
-  // Parse numeric values with proper validation
-  const originalPrice = parseFloat(productOriginalPrice.value) || 0;
-  const price = parseFloat(productPrice.value);
-  const prepaidPrice = productPrepaidPrice.value ? parseFloat(productPrepaidPrice.value) : null;
-  const codPrice = productCodPrice.value ? parseFloat(productCodPrice.value) : null;
-  const rating = parseFloat(productRating.value) || 4.5;
-  const reviewCount = parseInt(productReviewCount.value) || 0;
-  
-  // Validate required fields
-  if (!price || price <= 0) {
-    showNotification('Please enter a valid selling price', 'error');
-    return;
-  }
-
-  if (!originalPrice || originalPrice <= 0) {
-    showNotification('Please enter a valid original price (MRP)', 'error');
-    return;
-  }
-
-  if (originalPrice < price) {
-    showNotification('Original price (MRP) should be greater than selling price', 'error');
-    return;
-  }
-
-  const showOnHomeChecked = showOnHome ? showOnHome.checked : false;
-  const showOnAccessoriesChecked = showOnAccessories ? showOnAccessories.checked : false;
-  const showOnEssentialsChecked = showOnEssentials ? showOnEssentials.checked : false;
-  const highDemandChecked = productHighDemand ? productHighDemand.checked : false;
-
-  // Calculate default prices for preview/validation
-  const defaultPrepaidPrice = Math.round(price * 0.92); // 8% off = 92% of price
-  const defaultCodPrice = Math.round(price * 1.04); // +4%
-
-  // Validate prepaid price if provided
-  if (prepaidPrice && prepaidPrice > price) {
-    showNotification('Prepaid price should be less than or equal to selling price', 'error');
-    return;
-  }
-
-  // Validate COD price if provided
-  if (codPrice && codPrice < price) {
-    showNotification('COD price should be greater than or equal to selling price', 'error');
-    return;
-  }
-
-  const productData = {
-    title: productTitle.value,
-    category: productCategory.value,
-    
-    // Price fields
-    originalPrice: originalPrice,
-    price: price,
-    prepaidPrice: prepaidPrice, // Will be null if not set
-    codPrice: codPrice, // Will be null if not set
-    
-    // For backward compatibility, store the calculated defaults as well
-    defaultPrepaidPrice: defaultPrepaidPrice,
-    defaultCodPrice: defaultCodPrice,
-    
-    // Rating and review fields
-    rating: rating,
-    reviewCount: reviewCount,
-    
-    // Stock and brand
-    stock: parseInt(productStock.value) || 10,
-    brand: productBrand.value || 'MyEssantia',
-    
-    // Media
-    media: productMedia.map(m => ({ 
-      url: m.url, 
-      type: m.type,
-      // If it's a file object, we might want to handle upload separately
-      ...(m.file && { fileName: m.file.name })
-    })),
-    primaryImg: productMedia[selectedMediaIndex]?.url || '',
-    
-    // Descriptions
-    shortDesc: productShortDesc.value,
-    description: productDescription.value,
-    specs: productSpecs.value ? productSpecs.value.split('\n').filter(s => s.trim()) : [],
-    
-    // Visibility flags
-    showOnHome: showOnHomeChecked,
-    showOnAccessories: showOnAccessoriesChecked,
-    showOnEssentials: showOnEssentialsChecked,
-    showOnNew: true, // Always true, will be managed by timer
-    
-    // Special flags
-    highDemand: highDemandChecked
-  };
-
-  // Add timestamps based on whether it's new or update
-  if (productId.value) {
-    // Update existing product
-    productData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-  } else {
-    // New product
-    productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    productData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-  }
-
-  // Save the product
-  await saveProduct(productData);
-}
-
-// Add this function to the dashboard.html script section
-function setupPriceCalculationPreview() {
-  const originalPriceInput = document.getElementById('product-original-price');
-  const priceInput = document.getElementById('product-price');
-  const prepaidInput = document.getElementById('product-prepaid-price');
-  const codInput = document.getElementById('product-cod-price');
-  
-  function updatePricePreviews() {
-    const price = parseFloat(priceInput.value) || 0;
-    const originalPrice = parseFloat(originalPriceInput.value) || 0;
-    
-    // Calculate discount percentage
-    if (originalPrice > 0 && price > 0) {
-      const discountPercent = Math.round(((originalPrice - price) / originalPrice) * 100);
-      if (discountPercent > 0) {
-        // You could display this somewhere if you want
-        console.log(`Discount: ${discountPercent}%`);
-      }
-    }
-    
-    // Update prepaid price placeholder
-    if (price > 0) {
-      const defaultPrepaid = Math.round(price * 0.92); // 8% off
-      prepaidInput.placeholder = `Auto: ₹${defaultPrepaid.toFixed(2)} (8% off)`;
-      
-      const defaultCod = Math.round(price * 1.04); // +4%
-      codInput.placeholder = `Auto: ₹${defaultCod.toFixed(2)} (+₹${Math.round(price * 0.04)})`;
-    } else {
-      prepaidInput.placeholder = 'Auto-calculated';
-      codInput.placeholder = 'Auto-calculated';
-    }
-  }
-  
-  // Add input listeners
-  if (priceInput) {
-    priceInput.addEventListener('input', updatePricePreviews);
-  }
-  
-  if (originalPriceInput) {
-    originalPriceInput.addEventListener('input', updatePricePreviews);
-  }
-  
-  // Initial update
-  updatePricePreviews();
-}
 
 async function saveProduct(productData) {
   try {
@@ -4855,57 +4547,6 @@ async function saveProduct(productData) {
   }
 }
 
-  // Add this at the bottom of your dashboard.html script, before the DOMContentLoaded event
-// This ensures any missing functions have fallbacks
-window.getRandomSold = function() { return Math.floor(Math.random() * 100) + 50; };
-window.getRandomViewers = function() { return Math.floor(Math.random() * 20) + 5; };
-window.getLargeStars = function(rating) { 
-  let stars = '';
-  for(let i = 1; i <= 5; i++) {
-    if(rating >= i) stars += '<i class="fa-solid fa-star"></i>';
-    else if(rating > i-1 && rating < i) stars += '<i class="fa-solid fa-star-half-alt"></i>';
-    else stars += '<i class="fa-regular fa-star"></i>';
-  }
-  return stars;
-};
-window.getStars = function(rating) { return window.getLargeStars(rating); };
-window.generateRatingDistribution = function(reviews) {
-  let distribution = {5:0,4:0,3:0,2:0,1:0};
-  if (reviews && reviews.length > 0) {
-    reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) distribution[Math.floor(r.rating)]++; });
-    const total = reviews.length;
-    if (total > 0) {
-      distribution = {
-        5: Math.round((distribution[5]/total)*100),
-        4: Math.round((distribution[4]/total)*100),
-        3: Math.round((distribution[3]/total)*100),
-        2: Math.round((distribution[2]/total)*100),
-        1: Math.round((distribution[1]/total)*100)
-      };
-    }
-  }
-  return distribution;
-};
-window.updateDeliveryBar = function() {};
-window.updateButtonStates = function() {};
-window.getDeliveryDates = function() { 
-  return { display: '5-7 days' }; 
-};
-window.changeImage = function() {};
-window.updateQuantity = function() {};
-window.toggleShare = function() {};
-window.copyLink = function() {};
-window.shareOn = function() {};
-window.switchTab = function() {};
-window.selectPaymentMethod = function() {};
-window.toggleRazorpayPopup = function() {};
-window.closeRazorpayPopup = function() {};
-window.addToCart = function() {};
-window.buyNow = function() {};
-window.showHighDemandPopup = function() {};
-window.closeHighDemandPopup = function() {};
-window.submitNotification = function() {};
-
 async function deleteProductFromFirebase(id) {
   try {
     await db.collection('products').doc(id).delete();
@@ -4923,6 +4564,112 @@ window.deleteProduct = function(id) {
   }
 };
 
+// ========== PRICE CALCULATION FUNCTIONS ==========
+function calculatePrepaidPrice(sellingPrice) {
+  // 15% off, rounded to nearest integer
+  const discount = sellingPrice * 0.15;
+  const prepaid = sellingPrice - discount;
+  return Math.round(prepaid);
+}
+
+function calculateCodPrice(sellingPrice) {
+  // selling price + ₹100, rounded to nearest integer
+  return Math.round(sellingPrice + 100);
+}
+
+function calculateOriginalPrice(sellingPrice, originalPrice) {
+  // If original price is provided, use it. Otherwise calculate default (25% higher)
+  if (originalPrice && originalPrice > sellingPrice) {
+    return originalPrice;
+  } else {
+    // Default: original price is 25% higher than selling price, rounded
+    return Math.round(sellingPrice * 1.25);
+  }
+}
+
+function updatePricePreviews() {
+  const sellingPrice = parseFloat(document.getElementById('product-price')?.value) || 0;
+  
+  if (sellingPrice > 0) {
+    const prepaid = calculatePrepaidPrice(sellingPrice);
+    const cod = calculateCodPrice(sellingPrice);
+    
+    document.getElementById('prepaid-preview').textContent = `₹${prepaid}`;
+    document.getElementById('cod-preview').textContent = `₹${cod}`;
+  } else {
+    document.getElementById('prepaid-preview').textContent = '₹0';
+    document.getElementById('cod-preview').textContent = '₹0';
+  }
+}
+
+// ========== ENHANCED PRODUCT SAVE FUNCTION ==========
+async function handleProductSubmit(e) {
+  e.preventDefault();
+
+  const productTitle = document.getElementById('product-title');
+  const productCategory = document.getElementById('product-category');
+  const productPrice = document.getElementById('product-price');
+  const productOriginalPrice = document.getElementById('product-original-price');
+  const productRating = document.getElementById('product-rating');
+  const productReviewCount = document.getElementById('product-review-count');
+  const productStock = document.getElementById('product-stock');
+  const productBrand = document.getElementById('product-brand');
+  const productShortDesc = document.getElementById('product-short-desc');
+  const productDescription = document.getElementById('product-description');
+  const productSpecs = document.getElementById('product-specs');
+  const productId = document.getElementById('product-id');
+  const showOnHome = document.getElementById('show-on-home');
+  const showOnAccessories = document.getElementById('show-on-accessories');
+  const showOnEssentials = document.getElementById('show-on-essentials');
+  const productHighDemand = document.getElementById('product-high-demand');
+
+  const sellingPrice = parseFloat(productPrice.value);
+  const originalPriceInput = parseFloat(productOriginalPrice.value) || 0;
+  
+  // Calculate derived prices
+  const originalPrice = calculateOriginalPrice(sellingPrice, originalPriceInput);
+  const prepaidPrice = calculatePrepaidPrice(sellingPrice);
+  const codPrice = calculateCodPrice(sellingPrice);
+  
+  const rating = parseFloat(productRating.value);
+  const reviewCount = parseInt(productReviewCount.value) || 0;
+  
+  const showOnHomeChecked = showOnHome ? showOnHome.checked : false;
+  const showOnAccessoriesChecked = showOnAccessories ? showOnAccessories.checked : false;
+  const showOnEssentialsChecked = showOnEssentials ? showOnEssentials.checked : false;
+  const highDemandChecked = productHighDemand ? productHighDemand.checked : false;
+
+  const productData = {
+    title: productTitle.value,
+    category: productCategory.value,
+    price: sellingPrice,
+    originalPrice: originalPrice,
+    prepaidPrice: prepaidPrice,
+    codPrice: codPrice,
+    rating: rating,
+    reviewCount: reviewCount, // Store the manual review count
+    stock: parseInt(productStock.value) || 10,
+    brand: productBrand.value || 'MyEssantia',
+    media: productMedia.map(m => ({ url: m.url, type: m.type })),
+    primaryImg: productMedia[selectedMediaIndex]?.url || '',
+    shortDesc: productShortDesc.value,
+    description: productDescription.value,
+    specs: productSpecs.value ? productSpecs.value.split('\n').filter(s => s.trim()) : [],
+    showOnHome: showOnHomeChecked,
+    showOnAccessories: showOnAccessoriesChecked,
+    showOnEssentials: showOnEssentialsChecked,
+    showOnNew: true,
+    highDemand: highDemandChecked
+  };
+
+  if (productId.value) {
+    productData.id = productId.value;
+  }
+
+  await saveProduct(productData);
+}
+
+// ========== ENHANCED EDIT PRODUCT FUNCTION ==========
 window.editProduct = async function(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
@@ -4931,15 +4678,16 @@ window.editProduct = async function(id) {
   document.getElementById('product-creation-date').value = product.createdAt || '';
   document.getElementById('product-title').value = product.title;
   document.getElementById('product-category').value = product.category;
-  
-  // New price fields
-  document.getElementById('product-original-price').value = product.originalPrice || '';
   document.getElementById('product-price').value = product.price;
-  document.getElementById('product-prepaid-price').value = product.prepaidPrice || '';
-  document.getElementById('product-cod-price').value = product.codPrice || '';
+  document.getElementById('product-original-price').value = product.originalPrice || '';
   document.getElementById('product-rating').value = product.rating;
   document.getElementById('product-review-count').value = product.reviewCount || 0;
-  
+  document.getElementById('product-stock').value = product.stock || 10;
+  document.getElementById('product-brand').value = product.brand || 'MyEssantia';
+  document.getElementById('product-short-desc').value = product.shortDesc || '';
+  document.getElementById('product-description').value = product.description || '';
+  document.getElementById('product-specs').value = product.specs ? product.specs.join('\n') : '';
+
   productMedia = product.media ? [...product.media] : [];
   
   if (product.primaryImg && productMedia.length > 0) {
@@ -4957,477 +4705,15 @@ window.editProduct = async function(id) {
   document.getElementById('product-high-demand').checked = product.highDemand || false;
   
   updateHighDemandChip();
+  updatePricePreviews();
   
   document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-edit"></i> edit product';
   
   document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
 };
 
-function resetForm() {
-  document.getElementById('product-form').reset();
-  document.getElementById('product-id').value = '';
-  document.getElementById('product-creation-date').value = '';
-  
-  // Reset new fields
-  document.getElementById('product-original-price').value = '';
-  document.getElementById('product-price').value = '';
-  document.getElementById('product-prepaid-price').value = '';
-  document.getElementById('product-cod-price').value = '';
-  document.getElementById('product-review-count').value = '0';
-  
-  productMedia = [];
-  selectedMediaIndex = 0;
-  renderMediaGrid();
-  
-  document.getElementById('show-on-home').checked = false;
-  document.getElementById('show-on-accessories').checked = false;
-  document.getElementById('show-on-essentials').checked = false;
-  document.getElementById('show-on-new').checked = false;
-  document.getElementById('product-high-demand').checked = false;
-  updateHighDemandChip();
-  document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
-}
-
-function updateStats() {
-  const totalProducts = document.getElementById('total-products');
-  const newinProducts = document.getElementById('newin-products');
-  const highDemandProducts = document.getElementById('high-demand-products');
-  const totalStock = document.getElementById('total-stock');
-  const productCount = document.getElementById('product-count');
-
-  if (!totalProducts) return;
-  
-  totalProducts.textContent = products.length;
-  const now = new Date();
-  const newInCount = products.filter(p => {
-    if (!p.createdAt) return false;
-    const creationDate = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
-    return (now - creationDate) < (24 * 60 * 60 * 1000);
-  }).length;
-  newinProducts.textContent = newInCount;
-  
-  const highDemandCount = products.filter(p => p.highDemand).length;
-  highDemandProducts.textContent = highDemandCount;
-  
-  const totalStockValue = products.reduce((sum, p) => sum + (p.stock || 0), 0);
-  totalStock.textContent = totalStockValue;
-  productCount.textContent = `${products.length} products`;
-}
-
-// Helper function to generate rating distribution from overall rating
-function generateDistributionFromRating(rating, totalReviews) {
-  // Default distribution based on product rating
-  let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  
-  if (rating >= 4.5) {
-    distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
-  } else if (rating >= 4.0) {
-    distribution = { 5: 55, 4: 25, 3: 12, 2: 5, 1: 3 };
-  } else if (rating >= 3.5) {
-    distribution = { 5: 35, 4: 30, 3: 20, 2: 10, 1: 5 };
-  } else {
-    distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
-  }
-  
-  // Adjust for total reviews if needed
-  if (totalReviews > 0) {
-    // Ensure percentages add to 100
-    const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
-    if (sum !== 100) {
-      distribution[5] += (100 - sum);
-    }
-  }
-  
-  return distribution;
-}
-
-function filterProducts() {
-  const searchInput = document.getElementById('search-products');
-  if (!searchInput) return;
-  
-  const term = searchInput.value.toLowerCase();
-  const filtered = products.filter(p => 
-    p.title.toLowerCase().includes(term) ||
-    p.category.toLowerCase().includes(term) ||
-    (p.brand && p.brand.toLowerCase().includes(term))
-  );
-  renderProducts(filtered);
-}
-
-function renderProduct(product) {
-  const images = [];
-  if (product.media && Array.isArray(product.media)) {
-    product.media.forEach(item => {
-      if (item.url) images.push(item.url);
-    });
-  }
-  if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
-  
-  const stock = product.stock || 10;
-  
-  // Use admin-defined original price or calculate from selling price
-  const originalPrice = product.originalPrice || Math.round(product.price * 1.25);
-  
-  // Calculate discount percentage
-  const discount = Math.round(((originalPrice - product.price) / originalPrice) * 100);
-  
-  // PREPAID PRICE: Use admin override if provided, otherwise calculate 8% off
-  // 8% off = 92% of selling price (rounded to nearest integer)
-  let prepaidPrice;
-  if (product.prepaidPrice !== null && product.prepaidPrice !== undefined) {
-    prepaidPrice = Math.round(product.prepaidPrice); // Use admin-defined value
-  } else {
-    prepaidPrice = Math.round(product.price * 0.92); // 8% off default
-  }
-  
-  // COD PRICE: Use admin override if provided, otherwise calculate +4% (approx ₹100 on ₹2500)
-  let codPrice;
-  if (product.codPrice !== null && product.codPrice !== undefined) {
-    codPrice = Math.round(product.codPrice); // Use admin-defined value
-  } else {
-    codPrice = Math.round(product.price * 1.04); // +4% default
-  }
-  
-  const soldCount = getRandomSold();
-  const liveViewers = getRandomViewers();
-  
-  // REVIEW COUNT: Use admin-defined review count or calculate from actual reviews or random
-  const adminReviewCount = product.reviewCount || 0;
-  const actualReviewCount = productReviews.length;
-  
-  // Use admin review count if > 0, otherwise use actual reviews count, otherwise random
-  let reviewCount;
-  if (adminReviewCount > 0) {
-    reviewCount = adminReviewCount;
-  } else if (actualReviewCount > 0) {
-    reviewCount = actualReviewCount;
-  } else {
-    reviewCount = Math.floor(Math.random() * (350 - 45 + 1)) + 45; // Random fallback
-  }
-  
-  // Calculate rating distribution based on available data
-  let ratingDist;
-  if (productReviews.length > 0) {
-    // Use actual reviews for distribution
-    ratingDist = generateRatingDistribution(productReviews);
-  } else {
-    // Generate distribution from admin rating and review count
-    ratingDist = generateDistributionFromRating(product.rating || 4.5, reviewCount);
-  }
-
-  // Create rating chart HTML
-  const ratingChartHTML = `
-    <div class="rating-chart-card">
-      <div class="rating-chart-header">
-        <div>
-          <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
-          <span class="rating-outof">/5</span>
-        </div>
-        <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
-        <span class="rating-count">${reviewCount} reviews</span>
-      </div>
-      <div class="rating-bars">
-        ${[5,4,3,2,1].map(star => `
-        <div class="rating-bar-row">
-          <span class="bar-label">${star} ★</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
-          </div>
-          <span class="bar-percent">${ratingDist[star]}%</span>
-        </div>`).join('')}
-      </div>
-    </div>
-  `;
-
-  // Generate reviews HTML
-  let reviewsHTML = '';
-
-  if (productReviews && productReviews.length > 0) {
-    reviewsHTML = `<div class="reviews-header">
-      <span>Customer Reviews</span>
-      <span>★ ${(product.rating || 4.5).toFixed(1)} (${productReviews.length})</span>
-    </div>`;
-    
-    reviewsHTML += `<div class="reviews-common-frame">`;
-    reviewsHTML += `<div class="reviews-grid">`;
-    
-    reviewsHTML += productReviews.map(review => {
-      // Generate star rating as SVGs
-      const rating = review.rating || 5;
-      const fullStars = Math.floor(rating);
-      const hasHalf = rating % 1 >= 0.5;
-      
-      let starsHTML = '';
-      for (let i = 1; i <= 5; i++) {
-        if (i <= fullStars) {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"></path>
-            </svg>
-          `;
-        } else if (i === fullStars + 1 && hasHalf) {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z"></path>
-            </svg>
-          `;
-        } else {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-              <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
-              <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
-            </svg>
-          `;
-        }
-      }
-      
-      const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
-      
-      return `
-        <div class="review-item">
-          <div class="review-card">
-            <div class="review-media">
-              <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
-            </div>
-            <div class="review-details">
-              <div class="review-header">
-                <div class="author-name-w-details">
-                  <div class="author-name">${review.reviewerName}</div>
-                </div>
-              </div>
-              <div class="tydal-star-wrapper">
-                ${starsHTML}
-              </div>
-              <div class="review-text">
-                ${review.comment}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-    
-    reviewsHTML += `</div>`; // Close reviews-grid
-    reviewsHTML += `</div>`; // Close reviews-common-frame
-  } else {
-    reviewsHTML = `
-      <div class="reviews-header">
-        <span>Customer Reviews</span>
-        <span>★ ${(product.rating || 4.5).toFixed(1)} (0)</span>
-      </div>
-      <div class="reviews-common-frame">
-        <div class="empty-state">
-          <i class="fa-regular fa-star"></i>
-          <h3>No reviews yet</h3>
-          <p>Be the first to review this product!</p>
-        </div>
-      </div>
-    `;
-  }
-
-  // DESKTOP REVIEWS SECTION
-  const desktopReviewsHTML = `
-    <div class="desktop-reviews-section">
-      <div class="desktop-reviews">
-        ${reviewsHTML}
-      </div>
-    </div>
-  `;
-  
-  // MOBILE REVIEWS SECTION
-  const mobileReviewsHTML = `
-    <div class="mobile-reviews">
-      ${ratingChartHTML}
-      ${reviewsHTML}
-    </div>
-  `;
-
-  const container = document.getElementById('product-container');
-  container.innerHTML = `
-    <div class="product-grid">
-      <!-- GALLERY COLUMN -->
-      <div class="gallery-section">
-        <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-        <div class="thumbnail-grid">
-          ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-        </div>
-        <!-- Rating Chart below thumbnails -->
-        ${ratingChartHTML}
-      </div>
-      
-      <!-- INFO COLUMN -->
-      <div class="product-info">
-        <div class="social-strip">
-          <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-          <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-        </div>
-        <div class="product-category">${product.category || 'Accessories'}</div>
-        <h1 class="product-title">${product.title}</h1>
-        <div class="rating-row">
-          <div class="stars">${getStars(product.rating)}</div>
-          <span>${(product.rating || 4.5).toFixed(1)}</span>
-          <span>(${reviewCount} reviews)</span>
-          <div class="share-wrapper">
-            <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
-            <div class="share-menu" id="shareMenu">
-              <div class="share-grid">
-                <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
-                <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
-                <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
-              </div>
-              <div class="copy-link">
-                <input id="shareLink" value="${window.location.href}" readonly>
-                <button class="copy-btn" onclick="copyLink()">Copy</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PRICE CARD with quantity -->
-        <div class="price-card">
-          <div class="price-header">
-            <span class="current-price"><span class="inr-symbol">₹</span>${product.price.toFixed(2)}</span>
-            <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-            <span class="discount sale-badge"><i class="fa-solid fa-tag"></i> ${discount}% OFF</span>
-          </div>
-          <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
-          <div class="price-options">
-            <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-              <div class="option-label">Prepaid</div>
-              <div class="option-price">₹${prepaidPrice.toFixed(2)}</div>
-            </div>
-            <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
-              <div class="option-label">Cash on Delivery</div>
-              <div class="option-price">₹${codPrice.toFixed(2)}</div>
-            </div>
-          </div>
-          
-          <div class="quantity-stock-row">
-            <div class="quantity-controls">
-              <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
-              <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
-              <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
-            </div>
-            <div class="stock-badge">
-              <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-              ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
-            </div>
-          </div>
-        </div>
-
-        <div class="delivery-card">
-          <div class="delivery-header">
-            <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-            <span class="delivery-min">Min. ₹1,299</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (product.price / 1299) * 100)}%"></div>
-          </div>
-          <div class="delivery-message" id="deliveryMessage">
-            <i class="fa-solid ${product.price >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-            <span id="deliveryText">${product.price >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - product.price).toFixed(2)}</span> more`}</span>
-          </div>
-          <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
-            <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
-              <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
-              <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates">${getDeliveryDates().display}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="feature-razor-card">
-          <!-- Razorpay popup card -->
-          <div id="razorpayPopup" class="razorpay-popup">
-            <div class="popup-title">
-              <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-            </div>
-            <div class="popup-desc">
-              Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-            </div>
-            
-            <div class="popup-bullets">
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
-              </div>
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% free</strong> with no hidden costs</span>
-              </div>
-            </div>
-            
-            <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
-              Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-            </p>
-            
-            <div class="popup-footer">
-              <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
-                Yes, got it
-              </button>
-              <a href="shipping.html" class="popup-terms-link">
-                Read detailed terms and conditions
-              </a>
-            </div>
-          </div>
-          
-          <!-- Razorpay Promise clickable -->
-          <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
-            <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
-            <div class="promise-content">
-              <h4>Razorpay Money Back Promise</h4>
-              <p>Click to view full guarantee</p>
-            </div>
-          </div>
-          
-          <div class="features-grid">
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-              <div class="feature-text">
-                <h4>Free Shipping</h4>
-                <p>Above ₹1,299</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
-              <div class="feature-text">
-                <h4>Easy Returns</h4>
-                <p>7-Days</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="action-buttons">
-          <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-          </button>
-          <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-bolt"></i> Buy Now
-          </button>
-        </div>
-
-        <!-- TABS (description, specs, videos) -->
-        <div class="tabs">
-          <div class="tab-headers">
-            <div class="tab-header active" onclick="switchTab('desc')">Description</div>
-            <div class="tab-header" onclick="switchTab('specs')">Specs</div>
-            <div class="tab-header" onclick="switchTab('videos')">Videos</div>
-          </div>
-          <div class="tab-content active" id="tab-desc">
-            <p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>
-          </div>
-          <div class="tab-content" id="tab-specs">
-            <div class="specs-grid">
-              <div class="spec-item">
-                <div class="spec-label">Material</div>
-                <div class="spec-value">Prefunction renderProducts(productsToRender = products) {
+// ========== ENHANCED RENDER PRODUCTS FUNCTION ==========
+function renderProducts(productsToRender = products) {
   const productsList = document.getElementById('products-list');
   const emptyProducts = document.getElementById('empty-products');
   
@@ -5454,12 +4740,17 @@ function renderProduct(product) {
                     (new Date() - (product.createdAt.toDate ? product.createdAt.toDate() : new Date(product.createdAt))) < (24 * 60 * 60 * 1000);
     
     let mainMedia = product.primaryImg || 
-                   (product.media && product.media[0]?.url) || 
+                   (product.media?.[0]?.url) || 
                    'https://via.placeholder.com/300/f0f0f0/999999?text=no+image';
     
     let stockClass = 'high';
     if (product.stock <= 5) stockClass = 'low';
     else if (product.stock <= 15) stockClass = 'medium';
+    
+    // Calculate prices for display
+    const prepaidPrice = product.prepaidPrice || calculatePrepaidPrice(product.price);
+    const codPrice = product.codPrice || calculateCodPrice(product.price);
+    const originalPrice = product.originalPrice || calculateOriginalPrice(product.price);
     
     desktopHTML += `<tr>
       <td>
@@ -5476,9 +4767,10 @@ function renderProduct(product) {
       </td>
       <td><span style="text-transform:uppercase;">${product.category}</span></td>
       <td>
-        <div>
-          <strong>₹${product.price?.toFixed(2)}</strong>
-          ${product.originalPrice ? `<br><small style="text-decoration:line-through; color:#999;">₹${product.originalPrice.toFixed(2)}</small>` : ''}
+        <strong>₹${product.price?.toFixed(2)}</strong>
+        <div style="font-size:0.65rem; color:#666;">
+          <span>P: ₹${prepaidPrice}</span> | 
+          <span>C: ₹${codPrice}</span>
         </div>
       </td>
       <td>
@@ -5486,7 +4778,10 @@ function renderProduct(product) {
           ${product.stock || 0}
         </span>
       </td>
-      <td>${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i></td>
+      <td>
+        ${product.rating?.toFixed(1)} <i class="fa-solid fa-star" style="color:#d4af37;"></i>
+        <div style="font-size:0.65rem;">${product.reviewCount || 0} reviews</div>
+      </td>
       <td>
         <div style="display:flex; gap:4px; flex-wrap:wrap;">
           ${product.highDemand ? '<span class="high-demand-badge-table"><i class="fa-solid fa-fire"></i> HD</span>' : ''}
@@ -5496,13 +4791,13 @@ function renderProduct(product) {
       <td><div style="display:flex; gap:4px; flex-wrap:wrap;">${pages.join(' ')}</div></td>
       <td>
         <div class="action-btns">
-          <button class="action-btn" onclick="window.open('product.html?id=${product.id}', '_blank')" title="View">
+          <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
             <i class="fa-solid fa-eye"></i>
           </button>
-          <button class="action-btn" onclick="editProduct('${product.id}')" title="Edit">
+          <button class="edit-btn" onclick="editProduct('${product.id}')">
             <i class="fa-solid fa-edit"></i>
           </button>
-          <button class="action-btn" onclick="deleteProduct('${product.id}')" title="Delete">
+          <button class="delete-btn" onclick="deleteProduct('${product.id}')">
             <i class="fa-solid fa-trash"></i>
           </button>
         </div>
@@ -5534,20 +4829,25 @@ function renderProduct(product) {
             <span class="value">₹${product.price?.toFixed(2)}</span>
           </div>
           <div class="product-item-detail">
+            <span class="label">prepaid</span>
+            <span class="value">₹${prepaidPrice}</span>
+          </div>
+          <div class="product-item-detail">
+            <span class="label">COD</span>
+            <span class="value">₹${codPrice}</span>
+          </div>
+        </div>
+        
+        <div class="product-item-details" style="grid-template-columns:repeat(2,1fr);">
+          <div class="product-item-detail">
             <span class="label">stock</span>
             <span class="value"><span class="stock-badge ${stockClass}">${product.stock || 0}</span></span>
           </div>
           <div class="product-item-detail">
             <span class="label">rating</span>
-            <span class="value">${product.rating?.toFixed(1)} <small>★</small></span>
+            <span class="value">${product.rating?.toFixed(1)} <small>★</small> (${product.reviewCount || 0})</span>
           </div>
         </div>
-        
-        ${product.originalPrice ? `
-          <div style="font-size:0.7rem; color:#999; margin-bottom:4px;">
-            MRP: <span style="text-decoration:line-through;">₹${product.originalPrice.toFixed(2)}</span>
-          </div>
-        ` : ''}
         
         ${pages.length > 0 ? `
           <div class="product-item-pages">
@@ -5556,14 +4856,14 @@ function renderProduct(product) {
         ` : ''}
         
         <div class="product-item-actions">
-          <button class="action-btn" onclick="window.open('product.html?id=${product.id}', '_blank')" title="View">
-            <i class="fa-solid fa-eye"></i>
+          <button class="view-btn" onclick="window.open('product.html?id=${product.id}', '_blank')">
+            <i class="fa-solid fa-eye"></i> view
           </button>
-          <button class="action-btn" onclick="editProduct('${product.id}')" title="Edit">
-            <i class="fa-solid fa-edit"></i>
+          <button class="edit-btn" onclick="editProduct('${product.id}')">
+            <i class="fa-solid fa-edit"></i> edit
           </button>
-          <button class="action-btn" onclick="deleteProduct('${product.id}')" title="Delete">
-            <i class="fa-solid fa-trash"></i>
+          <button class="delete-btn" onclick="deleteProduct('${product.id}')">
+            <i class="fa-solid fa-trash"></i> delete
           </button>
         </div>
       </div>
@@ -5580,9 +4880,9 @@ function renderProduct(product) {
             <th>media</th>
             <th>title</th>
             <th>category</th>
-            <th>price</th>
+            <th>prices (sell/prepaid/COD)</th>
             <th>stock</th>
-            <th>rating</th>
+            <th>rating/reviews</th>
             <th>flags</th>
             <th>pages</th>
             <th>actions</th>
@@ -5600,6 +4900,133 @@ function renderProduct(product) {
   
   updateStats();
 }
+
+// ========== RESET FORM WITH PRICE PREVIEW ==========
+function resetForm() {
+  document.getElementById('product-form').reset();
+  document.getElementById('product-id').value = '';
+  document.getElementById('product-creation-date').value = '';
+  productMedia = [];
+  selectedMediaIndex = 0;
+  renderMediaGrid();
+  document.getElementById('show-on-home').checked = false;
+  document.getElementById('show-on-accessories').checked = false;
+  document.getElementById('show-on-essentials').checked = false;
+  document.getElementById('show-on-new').checked = false;
+  document.getElementById('product-high-demand').checked = false;
+  document.getElementById('product-review-count').value = '0';
+  updateHighDemandChip();
+  updatePricePreviews();
+  document.getElementById('form-title').innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
+}
+
+// ========== ADD EVENT LISTENERS FOR PRICE CALCULATION ==========
+function initializeDashboard() {
+  console.log('Initializing dashboard with price controls...');
+  
+  // Add price input listener
+  const priceInput = document.getElementById('product-price');
+  if (priceInput) {
+    priceInput.addEventListener('input', updatePricePreviews);
+  }
+  
+
+  const productForm = document.getElementById('product-form');
+  const productId = document.getElementById('product-id');
+  const productCreationDate = document.getElementById('product-creation-date');
+  const productTitle = document.getElementById('product-title');
+  const productCategory = document.getElementById('product-category');
+  const productRating = document.getElementById('product-rating');
+  const productStock = document.getElementById('product-stock');
+  const productBrand = document.getElementById('product-brand');
+  const productShortDesc = document.getElementById('product-short-desc');
+  const productDescription = document.getElementById('product-description');
+  const productSpecs = document.getElementById('product-specs');
+  const productHighDemand = document.getElementById('product-high-demand');
+  const showOnHome = document.getElementById('show-on-home');
+  const showOnAccessories = document.getElementById('show-on-accessories');
+  const showOnEssentials = document.getElementById('show-on-essentials');
+  const showOnNew = document.getElementById('show-on-new');
+  const productsList = document.getElementById('products-list');
+  const emptyProducts = document.getElementById('empty-products');
+  const totalProducts = document.getElementById('total-products');
+  const newinProducts = document.getElementById('newin-products');
+  const highDemandProducts = document.getElementById('high-demand-products');
+  const totalStock = document.getElementById('total-stock');
+  const productCount = document.getElementById('product-count');
+  const formTitle = document.getElementById('form-title');
+  const cancelEdit = document.getElementById('cancel-edit');
+  const searchInput = document.getElementById('search-products');
+  const highDemandChip = document.getElementById('high-demand-chip');
+  const mediaGrid = document.getElementById('media-grid');
+
+  // Reinitialize media array
+  productMedia = [];
+  selectedMediaIndex = 0;
+  if (mediaGrid) renderMediaGrid();
+
+  // Setup event listeners
+  if (productCategory) {
+    productCategory.addEventListener('change', updateCategorySync);
+  }
+  if (productForm) {
+    // Remove existing listener first to prevent duplicates
+    productForm.removeEventListener('submit', handleProductSubmit);
+    productForm.addEventListener('submit', handleProductSubmit);
+  }
+  if (cancelEdit) {
+    cancelEdit.addEventListener('click', resetForm);
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', filterProducts);
+  }
+  if (productHighDemand) {
+    productHighDemand.addEventListener('change', updateHighDemandChip);
+  }
+
+  // Load products
+  loadProducts();
+}
+
+function updateStats() {
+  const totalProducts = document.getElementById('total-products');
+  const newinProducts = document.getElementById('newin-products');
+  const highDemandProducts = document.getElementById('high-demand-products');
+  const totalStock = document.getElementById('total-stock');
+  const productCount = document.getElementById('product-count');
+
+  if (!totalProducts) return;
+  
+  totalProducts.textContent = products.length;
+  const now = new Date();
+  const newInCount = products.filter(p => {
+    if (!p.createdAt) return false;
+    const creationDate = p.createdAt.toDate ? p.createdAt.toDate() : new Date(p.createdAt);
+    return (now - creationDate) < (24 * 60 * 60 * 1000);
+  }).length;
+  newinProducts.textContent = newInCount;
+  
+  const highDemandCount = products.filter(p => p.highDemand).length;
+  highDemandProducts.textContent = highDemandCount;
+  
+  const totalStockValue = products.reduce((sum, p) => sum + (p.stock || 0), 0);
+  totalStock.textContent = totalStockValue;
+  productCount.textContent = `${products.length} products`;
+}
+
+function filterProducts() {
+  const searchInput = document.getElementById('search-products');
+  if (!searchInput) return;
+  
+  const term = searchInput.value.toLowerCase();
+  const filtered = products.filter(p => 
+    p.title.toLowerCase().includes(term) ||
+    p.category.toLowerCase().includes(term) ||
+    (p.brand && p.brand.toLowerCase().includes(term))
+  );
+  renderProducts(filtered);
+}
+
 
 function updateCategorySync() {
   const category = document.getElementById('product-category');
