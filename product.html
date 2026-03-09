@@ -2456,29 +2456,181 @@
     const db = firebase.firestore();
 
     // ========== HEADER/FOOTER LOADING FUNCTION ==========
-    async function loadComponents() {
-      try {
-        // Load header
-        const headerResponse = await fetch('header.html');
-        const headerHtml = await headerResponse.text();
-        document.getElementById('header').innerHTML = headerHtml;
+   // ========== IMPROVED HEADER/FOOTER LOADING FUNCTION WITH FALLBACKS ==========
+async function loadComponents() {
+  try {
+    // Try to load header with fallback
+    let headerHtml = '';
+    try {
+      const headerResponse = await fetch('header.html');
+      if (!headerResponse.ok) throw new Error('Header not found');
+      headerHtml = await headerResponse.text();
+    } catch (error) {
+      console.warn('Could not load header.html, using fallback header');
+      // Fallback header HTML
+      headerHtml = `
+        <header style="background: #000; border-bottom: 3px solid #d4af37; position: sticky; top: 0; z-index: 100;">
+          <div style="max-width: 1200px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+              <button class="mobile-menu-btn" onclick="toggleMobileMenu()" style="background: none; border: none; color: #d4af37; font-size: 1.5rem; display: none;">
+                <i class="fa-solid fa-bars"></i>
+              </button>
+              <a href="index.html" style="font-size: 1.8rem; font-weight: 900; color: #d4af37; text-decoration: none; letter-spacing: -0.5px;">
+                My<span style="color: white;">Essantia</span>
+              </a>
+            </div>
+            
+            <nav style="display: flex; gap: 25px;">
+              <a href="index.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Home</a>
+              <a href="collection.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Collection</a>
+              <a href="about.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">About</a>
+            </nav>
+            
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <button class="account-btn" onclick="toggleAccountMenu()" style="background: none; border: none; color: white; font-size: 1.2rem; position: relative;">
+                <i class="fa-regular fa-user"></i>
+              </button>
+              <button class="cart-btn" onclick="openCart()" style="background: none; border: none; color: white; font-size: 1.2rem; position: relative;">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" style="position: absolute; top: -8px; right: -8px; background: #d4af37; color: #000; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Mobile Menu (hidden by default) -->
+          <div id="mobile-menu" style="display: none; background: #111; padding: 15px; border-top: 2px solid #d4af37;">
+            <a href="index.html" style="display: block; color: white; padding: 10px; text-decoration: none;">Home</a>
+            <a href="collection.html" style="display: block; color: white; padding: 10px; text-decoration: none;">Collection</a>
+            <a href="about.html" style="display: block; color: white; padding: 10px; text-decoration: none;">About</a>
+          </div>
+          
+          <!-- Account Menu (hidden by default) -->
+          <div id="account-menu" style="display: none; position: absolute; top: 70px; right: 20px; background: white; border: 2px solid #000; border-radius: 12px; padding: 15px; min-width: 200px; box-shadow: 6px 6px 0 rgba(0,0,0,0.1);">
+            <a href="account.html" style="display: block; padding: 8px; color: #000; text-decoration: none;">My Account</a>
+            <a href="orders.html" style="display: block; padding: 8px; color: #000; text-decoration: none;">Orders</a>
+            <a href="wishlist.html" style="display: block; padding: 8px; color: #000; text-decoration: none;">Wishlist</a>
+            <hr style="margin: 8px 0; border-color: #d4af37;">
+            <a href="login.html" style="display: block; padding: 8px; color: #000; text-decoration: none;">Login / Sign Up</a>
+          </div>
+        </header>
         
-        // Load footer
-        const footerResponse = await fetch('footer.html');
-        const footerHtml = await footerResponse.text();
-        document.getElementById('footer').innerHTML = footerHtml;
-        
-        // Initialize cart count after header is loaded
-        if (typeof window.updateCartCount === 'function') {
-          window.updateCartCount();
-        }
-      } catch (error) {
-        console.error('Error loading components:', error);
-        document.getElementById('header').innerHTML = '<div style="padding:20px; text-align:center;">Header failed to load</div>';
-        document.getElementById('footer').innerHTML = '<div style="padding:20px; text-align:center;">Footer failed to load</div>';
-      }
+        <style>
+          @media (max-width: 768px) {
+            .mobile-menu-btn { display: block !important; }
+            nav { display: none !important; }
+          }
+        </style>
+      `;
     }
-
+    
+    document.getElementById('header').innerHTML = headerHtml;
+    
+    // Try to load footer with fallback
+    let footerHtml = '';
+    try {
+      const footerResponse = await fetch('footer.html');
+      if (!footerResponse.ok) throw new Error('Footer not found');
+      footerHtml = await footerResponse.text();
+    } catch (error) {
+      console.warn('Could not load footer.html, using fallback footer');
+      // Fallback footer HTML
+      footerHtml = `
+        <footer style="background: #000; color: white; padding: 40px 20px 20px; margin-top: 50px; border-top: 3px solid #d4af37;">
+          <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px;">
+            <div>
+              <h3 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 15px;">MyEssantia</h3>
+              <p style="color: #ccc; font-size: 0.85rem; line-height: 1.5;">Premium quality products for your everyday essential needs.</p>
+            </div>
+            <div>
+              <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Quick Links</h4>
+              <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 8px;"><a href="about.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">About Us</a></li>
+                <li style="margin-bottom: 8px;"><a href="contact.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Contact</a></li>
+                <li style="margin-bottom: 8px;"><a href="shipping.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Shipping</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Policies</h4>
+              <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Privacy Policy</a></li>
+                <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Terms of Use</a></li>
+                <li style="margin-bottom: 8px;"><a href="returns.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Returns</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Connect</h4>
+              <div style="display: flex; gap: 15px;">
+                <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-twitter"></i></a>
+              </div>
+            </div>
+          </div>
+          <div style="max-width: 1200px; margin: 30px auto 0; padding-top: 20px; border-top: 1px solid #333; text-align: center; color: #888; font-size: 0.8rem;">
+            © 2026 MyEssantia. All rights reserved.
+          </div>
+        </footer>
+      `;
+    }
+    
+    document.getElementById('footer').innerHTML = footerHtml;
+    
+    // Initialize mobile menu toggle
+    window.toggleMobileMenu = function() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu) {
+        if (menu.style.display === 'block') {
+          menu.style.display = 'none';
+        } else {
+          menu.style.display = 'block';
+        }
+      }
+    };
+    
+    // Initialize account menu toggle
+    window.toggleAccountMenu = function() {
+      const menu = document.getElementById('account-menu');
+      if (menu) {
+        if (menu.style.display === 'block') {
+          menu.style.display = 'none';
+        } else {
+          menu.style.display = 'block';
+          
+          // Close when clicking outside
+          setTimeout(() => {
+            document.addEventListener('click', function closeMenu(e) {
+              if (!e.target.closest('.account-btn') && !e.target.closest('#account-menu')) {
+                menu.style.display = 'none';
+                document.removeEventListener('click', closeMenu);
+              }
+            });
+          }, 100);
+        }
+      }
+    };
+    
+    // Initialize cart count after header is loaded
+    setTimeout(() => {
+      if (typeof window.updateCartCount === 'function') {
+        window.updateCartCount();
+      }
+    }, 200);
+    
+  } catch (error) {
+    console.error('Error in loadComponents:', error);
+    // Ultimate fallback
+    document.getElementById('header').innerHTML = `
+      <div style="background: #000; color: #d4af37; padding: 15px; text-align: center;">
+        <a href="index.html" style="color: #d4af37; font-size: 1.5rem; font-weight: bold; text-decoration: none;">MyEssantia</a>
+      </div>
+    `;
+    document.getElementById('footer').innerHTML = `
+      <div style="background: #000; color: white; padding: 20px; text-align: center;">
+        © 2026 MyEssantia
+      </div>
+    `;
+  }
+}
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
     let selectedPaymentMethod = 'prepaid';
@@ -2834,389 +2986,7 @@
       }
     };
 
-    // Add this after your existing loadComponents function
 
-// Global cart array initialization
-if (!window.cart) {
-  window.cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
-}
-
-// Cart functions that should be globally available
-window.openCart = function() {
-  // Create and show cart sidebar/modal
-  const cartSidebar = document.getElementById('cart-sidebar');
-  if (cartSidebar) {
-    cartSidebar.classList.add('open');
-  } else {
-    // If cart sidebar doesn't exist, create it
-    createCartSidebar();
-  }
-};
-
-window.closeCart = function() {
-  const cartSidebar = document.getElementById('cart-sidebar');
-  if (cartSidebar) {
-    cartSidebar.classList.remove('open');
-  }
-};
-
-window.updateCartCount = function() {
-  const cartCountElements = document.querySelectorAll('.cart-count');
-  const totalItems = window.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  
-  cartCountElements.forEach(el => {
-    el.textContent = totalItems;
-    el.style.display = totalItems > 0 ? 'flex' : 'none';
-  });
-  
-  // Also update cart sidebar if it's open
-  updateCartSidebar();
-};
-
-window.addToCartGlobal = function(productId, quantity = 1) {
-  // This will be called from product page
-  if (currentProduct && currentProduct.id === productId) {
-    window.addToCart();
-  }
-};
-
-window.buyNowGlobal = function(productId) {
-  if (currentProduct && currentProduct.id === productId) {
-    window.buyNow();
-  }
-};
-
-// Create cart sidebar if it doesn't exist
-function createCartSidebar() {
-  const cartHTML = `
-    <div id="cart-sidebar" class="cart-sidebar">
-      <div class="cart-header">
-        <h3>Your Cart (<span class="cart-count-header">0</span>)</h3>
-        <button class="close-cart" onclick="closeCart()">×</button>
-      </div>
-      <div class="cart-items" id="cart-items">
-        <!-- Cart items will be dynamically added here -->
-      </div>
-      <div class="cart-footer">
-        <div class="cart-total">
-          <span>Total:</span>
-          <span class="total-amount" id="cart-total">₹0</span>
-        </div>
-        <button class="btn btn-primary checkout-btn" onclick="window.location.href='checkout.html'">
-          Proceed to Checkout
-        </button>
-      </div>
-    </div>
-  `;
-  
-  // Add cart sidebar to body if it doesn't exist
-  if (!document.getElementById('cart-sidebar')) {
-    document.body.insertAdjacentHTML('beforeend', cartHTML);
-  }
-}
-
-function updateCartSidebar() {
-  const cartItemsContainer = document.getElementById('cart-items');
-  const cartTotalElement = document.getElementById('cart-total');
-  const cartCountHeader = document.querySelector('.cart-count-header');
-  
-  if (!cartItemsContainer) return;
-  
-  if (window.cart.length === 0) {
-    cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-    if (cartTotalElement) cartTotalElement.textContent = '₹0';
-    if (cartCountHeader) cartCountHeader.textContent = '0';
-    return;
-  }
-  
-  let total = 0;
-  let itemsHTML = '';
-  
-  window.cart.forEach((item, index) => {
-    const itemTotal = (item.price || 0) * (item.quantity || 1);
-    total += itemTotal;
-    
-    itemsHTML += `
-      <div class="cart-item" data-index="${index}">
-        <img src="${item.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=100'}" alt="${item.title}">
-        <div class="cart-item-details">
-          <h4>${item.title}</h4>
-          <div class="cart-item-price">₹${item.price?.toFixed(2) || '0'}</div>
-          <div class="cart-item-quantity">
-            <button onclick="updateCartItemQuantity(${index}, -1)">-</button>
-            <span>${item.quantity || 1}</span>
-            <button onclick="updateCartItemQuantity(${index}, 1)">+</button>
-          </div>
-        </div>
-        <button class="remove-item" onclick="removeCartItem(${index})">×</button>
-      </div>
-    `;
-  });
-  
-  cartItemsContainer.innerHTML = itemsHTML;
-  if (cartTotalElement) cartTotalElement.textContent = `₹${total.toFixed(2)}`;
-  if (cartCountHeader) cartCountHeader.textContent = window.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  
-  // Update cart count in header
-  window.updateCartCount();
-}
-
-window.updateCartItemQuantity = function(index, delta) {
-  if (index >= 0 && index < window.cart.length) {
-    const item = window.cart[index];
-    const newQuantity = (item.quantity || 1) + delta;
-    
-    if (newQuantity < 1) {
-      window.removeCartItem(index);
-      return;
-    }
-    
-    item.quantity = newQuantity;
-    localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-    updateCartSidebar();
-    window.updateCartCount();
-  }
-};
-
-window.removeCartItem = function(index) {
-  if (index >= 0 && index < window.cart.length) {
-    window.cart.splice(index, 1);
-    localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-    updateCartSidebar();
-    window.updateCartCount();
-    
-    // Show notification
-    showNotification('Item removed from cart');
-  }
-};
-
-// Initialize cart on page load
-document.addEventListener('DOMContentLoaded', () => {
-  // Load header and footer first
-  loadComponents().then(() => {
-    // Initialize cart count after header is loaded
-    setTimeout(() => {
-      window.updateCartCount();
-    }, 500);
-  });
-  
-  // Create cart sidebar
-  createCartSidebar();
-  
-  // Then load product
-  loadProduct();
-});
-
-// Also add this CSS for the cart sidebar
-const cartStyles = `
-  .cart-sidebar {
-    position: fixed;
-    top: 0;
-    right: -400px;
-    width: 380px;
-    max-width: 90%;
-    height: 100vh;
-    background: white;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-    z-index: 1000;
-    transition: right 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    border-left: 3px solid #d4af37;
-  }
-  
-  .cart-sidebar.open {
-    right: 0;
-  }
-  
-  .cart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 2px solid #000;
-    background: #000;
-    color: #d4af37;
-  }
-  
-  .cart-header h3 {
-    font-size: 1.2rem;
-    font-weight: 800;
-    margin: 0;
-  }
-  
-  .close-cart {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #d4af37;
-    color: #000;
-    border: 2px solid #000;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-  }
-  
-  .cart-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px;
-    border: 2px solid #000;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    position: relative;
-    background: #fff;
-  }
-  
-  .cart-item img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #000;
-  }
-  
-  .cart-item-details {
-    flex: 1;
-  }
-  
-  .cart-item-details h4 {
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  
-  .cart-item-price {
-    font-weight: 800;
-    color: #d4af37;
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-  }
-  
-  .cart-item-quantity {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .cart-item-quantity button {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 1px solid #000;
-    background: #fff;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  
-  .remove-item {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #ff4444;
-    color: white;
-    border: 1px solid #000;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-  }
-  
-  .cart-footer {
-    padding: 20px;
-    border-top: 2px solid #000;
-    background: #f9f9f9;
-  }
-  
-  .cart-total {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 800;
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-  
-  .checkout-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-  }
-  
-  .empty-cart {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-    font-size: 1rem;
-  }
-  
-  /* Cart count badge in header */
-  .cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #d4af37;
-    color: #000;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    border: 1px solid #000;
-  }
-`;
-
-// Add styles to document
-const styleSheet = document.createElement('style');
-styleSheet.textContent = cartStyles;
-document.head.appendChild(styleSheet);
-
-// Account menu functionality
-window.toggleAccountMenu = function() {
-  const menu = document.getElementById('account-menu');
-  if (menu) {
-    menu.classList.toggle('show');
-  }
-};
-
-// Mobile menu functionality
-window.toggleMobileMenu = function() {
-  const menu = document.getElementById('mobile-menu');
-  if (menu) {
-    menu.classList.toggle('show');
-  }
-};
-
-// Close menus when clicking outside
-document.addEventListener('click', function(e) {
-  // Close share menu if open
-  const shareMenu = document.getElementById('shareMenu');
-  if (shareMenu && shareMenu.classList.contains('show') && 
-      !e.target.closest('.share-btn') && !e.target.closest('.share-menu')) {
-    shareMenu.classList.remove('show');
-  }
-  
-  // Close account menu if open
-  const accountMenu = document.getElementById('account-menu');
-  if (accountMenu && accountMenu.classList.contains('show') && 
-      !e.target.closest('.account-btn') && !e.target.closest('.account-menu')) {
-    accountMenu.classList.remove('show');
-  }
-});
 
     window.showHighDemandPopup = function(action) {
       currentAction = action;
@@ -4029,12 +3799,33 @@ document.addEventListener('click', function(e) {
       }
     };
 
-    document.addEventListener('DOMContentLoaded', () => { 
-      // Load header and footer first
-      loadComponents();
-      // Then load product
-      loadProduct(); 
-    });
+// Update your DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', () => {
+  // Load header and footer first
+  loadComponents().then(() => {
+    console.log('Header and footer loaded');
+    
+    // Initialize cart after components are loaded
+    if (!window.cart) {
+      window.cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
+    }
+    
+    // Create cart sidebar
+    if (typeof createCartSidebar === 'function') {
+      createCartSidebar();
+    }
+    
+    // Update cart count
+    setTimeout(() => {
+      if (typeof window.updateCartCount === 'function') {
+        window.updateCartCount();
+      }
+    }, 300);
+  });
+  
+  // Then load product
+  loadProduct();
+});
 
     window.copyLink = function() { 
       const i = document.getElementById('shareLink'); 
