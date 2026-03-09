@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>MyEssantia · product · essential</title>
   
   <!-- Font Awesome 6 -->
@@ -184,7 +184,11 @@
       --header-height: 79px;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
     
     html, body { 
       width: 100%; 
@@ -212,371 +216,369 @@
       font-weight: var(--font-heading-weight);
     }
 
-  
+    /* ===== FIXED CONTAINER PADDING FOR MOBILE ===== */
+    .container { 
+      width: 100%; 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 16px; 
+    }
     
+    @media (max-width: 640px) { 
+      .container { 
+        padding: 0 12px; 
+      }
+    }
+
+    @media (max-width: 480px) { 
+      .container { 
+        padding: 0 10px; 
+      }
+    }
+
+    /* ===== BREADCRUMB FIXES ===== */
+    .breadcrumb {
+      display: flex; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      gap: 6px;
+      padding: 12px 0; 
+      font-size: 0.75rem; 
+      color: #4a4a4a;
+    }
+
     /* Hide scrollbar but keep scrolling functionality for review modal */
-.review-modal-content {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE/Edge */
-}
+    .review-modal-content {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
 
-.review-modal-content::-webkit-scrollbar {
-  display: none !important; /* Chrome/Safari/Opera */
-}
+    .review-modal-content::-webkit-scrollbar {
+      display: none !important;
+    }
 
-/* Also apply to review text areas if needed */
-.review-text {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
+    .review-text {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
 
-.review-text::-webkit-scrollbar {
-  display: none !important;
-}
+    .review-text::-webkit-scrollbar {
+      display: none !important;
+    }
 
-/* For the desktop reviews section if it has scrollbars */
-.desktop-reviews-section .review-text {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-}
+    .desktop-reviews-section .review-text {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
 
-.desktop-reviews-section .review-text::-webkit-scrollbar {
-  display: none !important;
-}
+    .desktop-reviews-section .review-text::-webkit-scrollbar {
+      display: none !important;
+    }
 
     /* ===== 2 REVIEWS PER LINE ON DESKTOP ONLY ===== */
-@media (min-width: 1024px) {
-  /* Only target reviews inside desktop section */
-  .desktop-reviews-section .reviews-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 30px !important;
-  }
-  
-  /* Ensure cards are properly sized */
-  .desktop-reviews-section .review-item {
-    width: 100% !important;
-    margin-bottom: 0 !important;
-  }
-  
-  /* Make images consistent height */
-  .desktop-reviews-section .review-media {
-    height: 250px !important; /* Fixed height for consistency */
-    overflow: hidden !important;
-  }
-  
-  .desktop-reviews-section .review-media img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-  
-  /* Adjust text sizes for desktop 2-column layout */
-  .desktop-reviews-section .author-name {
-    font-size: 1.1rem !important;
-  }
-  
-  /* Custom scrollbar for review text */
-  .desktop-reviews-section .review-text::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  .desktop-reviews-section .review-text::-webkit-scrollbar-thumb {
-    background: #d4af37;
-    border-radius: 4px;
-  }
-}
+    @media (min-width: 1024px) {
+      .desktop-reviews-section .reviews-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 30px !important;
+      }
+      
+      .desktop-reviews-section .review-item {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+      }
+      
+      .desktop-reviews-section .review-media {
+        height: 250px !important;
+        overflow: hidden !important;
+      }
+      
+      .desktop-reviews-section .review-media img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+      }
+      
+      .desktop-reviews-section .author-name {
+        font-size: 1.1rem !important;
+      }
+      
+      .desktop-reviews-section .review-text::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      .desktop-reviews-section .review-text::-webkit-scrollbar-thumb {
+        background: #d4af37;
+        border-radius: 4px;
+      }
+    }
 
-/* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
-@media (min-width: 1024px) {
-  /* Main grid container */
-  .product-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: start; /* THIS IS CRUCIAL - allows sticky to work */
-  }
-  
-  /* LEFT SIDE - GALLERY (STICKS IN PLACE) */
-  .gallery-section {
-    position: sticky !important;
-    top: 20px !important; /* Distance from top when sticky */
-    align-self: start !important;
-    height: auto !important;
-  }
-  
-  /* RIGHT SIDE - CONTENT (SCROLLS NORMALLY) */
-  .product-info {
-    align-self: start !important;
-    overflow: visible !important;
-  }
-}
+    /* ===== STICKY LEFT GALLERY WITH SCROLLING RIGHT CONTENT FOR DESKTOP ===== */
+    @media (min-width: 1024px) {
+      .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+      
+      .gallery-section {
+        position: sticky !important;
+        top: 20px !important;
+        align-self: start !important;
+        height: auto !important;
+      }
+      
+      .product-info {
+        align-self: start !important;
+        overflow: visible !important;
+      }
+    }
 
-/* Disable sticky on mobile */
-@media (max-width: 1023px) {
-  .gallery-section {
-    position: relative !important;
-    top: 0 !important;
-  }
-}
+    @media (max-width: 1023px) {
+      .gallery-section {
+        position: relative !important;
+        top: 0 !important;
+      }
+    }
+
     /* ===== ALIGN REVIEWS HEADER IN ONE LINE ON MOBILE ===== */
-@media (max-width: 1023px) {
-  .reviews-header {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    flex-wrap: nowrap !important;
-    gap: 8px !important;
-    padding-bottom: 12px !important;
-    margin-bottom: 20px !important;
-  }
-  
-  .reviews-header span:first-child {
-    font-size: 1.2rem !important;
-    white-space: nowrap !important;
-  }
-  
-  .reviews-header > div {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-  }
-  
-  .reviews-header > div span {
-    font-size: 0.9rem !important;
-    white-space: nowrap !important;
-  }
-  
-  .write-review-btn {
-    padding: 4px 12px !important;
-    font-size: 0.7rem !important;
-    white-space: nowrap !important;
-  }
-  
-  .write-review-btn i {
-    font-size: 0.65rem !important;
-  }
-}
+    @media (max-width: 1023px) {
+      .reviews-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 20px !important;
+      }
+      
+      .reviews-header span:first-child {
+        font-size: 1.2rem !important;
+      }
+      
+      .reviews-header > div {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+      }
+      
+      .reviews-header > div span {
+        font-size: 0.9rem !important;
+      }
+      
+      .write-review-btn {
+        padding: 4px 12px !important;
+        font-size: 0.7rem !important;
+      }
+      
+      .write-review-btn i {
+        font-size: 0.65rem !important;
+      }
+    }
 
-/* For very small screens, make it even more compact */
-@media (max-width: 480px) {
-  .reviews-header span:first-child {
-    font-size: 1rem !important;
-  }
-  
-  .reviews-header > div span {
-    font-size: 0.8rem !important;
-  }
-  
-  .write-review-btn {
-    padding: 3px 8px !important;
-    font-size: 0.65rem !important;
-  }
-}
+    @media (max-width: 480px) {
+      .reviews-header span:first-child {
+        font-size: 1rem !important;
+      }
+      
+      .reviews-header > div span {
+        font-size: 0.8rem !important;
+      }
+      
+      .write-review-btn {
+        padding: 3px 8px !important;
+        font-size: 0.65rem !important;
+      }
+    }
 
     /* ===== FIX DUPLICATE REVIEWS ON MOBILE ===== */
-@media (max-width: 1023px) {
-  /* Hide desktop reviews section on mobile */
-  .gallery-section .desktop-reviews-section {
-    display: none !important;
-  }
-  
-  /* Hide desktop rating chart on mobile */
-  .gallery-section .desktop-only-rating {
-    display: none !important;
-  }
-  
-  /* Ensure mobile reviews are visible */
-  .product-info .mobile-reviews {
-    display: flex !important;
-    flex-direction: column;
-    margin-top: 30px;
-    width: 100%;
-  }
-  
-  /* Ensure mobile rating chart is visible */
-  .mobile-only-rating {
-    display: block !important;
-  }
-}
+    @media (max-width: 1023px) {
+      .gallery-section .desktop-reviews-section {
+        display: none !important;
+      }
+      
+      .gallery-section .desktop-only-rating {
+        display: none !important;
+      }
+      
+      .product-info .mobile-reviews {
+        display: flex !important;
+        flex-direction: column;
+        margin-top: 30px;
+        width: 100%;
+      }
+      
+      .mobile-only-rating {
+        display: block !important;
+      }
+    }
 
-/* ===== DESKTOP STYLES ===== */
-@media (min-width: 1024px) {
-  /* Hide mobile reviews on desktop */
-  .product-info .mobile-reviews {
-    display: none !important;
-  }
-  
-  /* Hide mobile rating chart on desktop */
-  .mobile-only-rating {
-    display: none !important;
-  }
-  
-  /* Show desktop reviews */
-  .gallery-section .desktop-reviews-section {
-    display: block !important;
-  }
-  
-  /* Show desktop rating chart */
-  .desktop-only-rating {
-    display: block !important;
-  }
-}
+    @media (min-width: 1024px) {
+      .product-info .mobile-reviews {
+        display: none !important;
+      }
+      
+      .mobile-only-rating {
+        display: none !important;
+      }
+      
+      .gallery-section .desktop-reviews-section {
+        display: block !important;
+      }
+      
+      .desktop-only-rating {
+        display: block !important;
+      }
+    }
 
- /* ===== REDUCED DESCRIPTION SECTION STYLES ===== */
-.product__description {
-  margin: 1.5rem 0 !important; /* Reduced from 2.5rem */
-  font-size: 0.95rem !important; /* Smaller base font size */
-  line-height: 1.5 !important;
-}
+    /* ===== REDUCED DESCRIPTION SECTION STYLES ===== */
+    .product__description {
+      margin: 1.5rem 0 !important;
+      font-size: 0.95rem !important;
+      line-height: 1.5 !important;
+    }
 
-.product__description p {
-  margin-bottom: 1rem !important; /* Reduced from 1.5rem */
-  font-size: 0.95rem !important;
-}
+    .product__description p {
+      margin-bottom: 1rem !important;
+      font-size: 0.95rem !important;
+    }
 
-.product__description h1,
-.product__description h2,
-.product__description h3,
-.product__description h4,
-.product__description h5,
-.product__description h6 {
-  margin: 1.2rem 0 0.8rem !important; /* Reduced margins */
-  font-size: 1.3rem !important; /* Smaller headings */
-}
+    .product__description h1,
+    .product__description h2,
+    .product__description h3,
+    .product__description h4,
+    .product__description h5,
+    .product__description h6 {
+      margin: 1.2rem 0 0.8rem !important;
+      font-size: 1.3rem !important;
+    }
 
-.product__description h2 {
-  font-size: 1.5rem !important; /* Reduced from 2rem */
-  margin: 1.5rem 0 1rem !important; /* Reduced from 2.5rem 0 1.5rem */
-}
+    .product__description h2 {
+      font-size: 1.5rem !important;
+      margin: 1.5rem 0 1rem !important;
+    }
 
-.product__description h3 {
-  font-size: 1.2rem !important; /* Reduced from 1.8rem */
-  margin: 1.2rem 0 0.8rem !important; /* Reduced from 2rem 0 1rem */
-}
+    .product__description h3 {
+      font-size: 1.2rem !important;
+      margin: 1.2rem 0 0.8rem !important;
+    }
 
-.product__description ul,
-.product__description ol {
-  margin-bottom: 1rem !important;
-  padding-left: 1.5rem !important;
-}
+    .product__description ul,
+    .product__description ol {
+      margin-bottom: 1rem !important;
+      padding-left: 1.5rem !important;
+    }
 
-.product__description li {
-  margin-bottom: 0.3rem !important;
-  font-size: 0.95rem !important;
-}
+    .product__description li {
+      margin-bottom: 0.3rem !important;
+      font-size: 0.95rem !important;
+    }
 
-.product__description img {
-  max-width: 100%;
-  max-height: 300px !important; /* Limit image height */
-  width: auto;
-  height: auto;
-  border-radius: 8px; /* Slightly smaller border radius */
-  margin: 0.8rem 0 !important; /* Reduced margins */
-}
+    .product__description img {
+      max-width: 100%;
+      max-height: 300px !important;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      margin: 0.8rem 0 !important;
+    }
 
-.product__description video {
-  max-width: 100%;
-  max-height: 250px !important; /* Limit video height */
-  width: auto;
-  height: auto;
-  border-radius: 8px;
-  margin: 0.8rem auto !important;
-}
+    .product__description video {
+      max-width: 100%;
+      max-height: 250px !important;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      margin: 0.8rem auto !important;
+    }
 
-.product__description iframe {
-  max-width: 100%;
-  max-height: 250px !important; /* Limit iframe (YouTube) height */
-  height: auto !important;
-  aspect-ratio: 16/9;
-  margin: 0.8rem auto !important;
-}
+    .product__description iframe {
+      max-width: 100%;
+      max-height: 250px !important;
+      height: auto !important;
+      aspect-ratio: 16/9;
+      margin: 0.8rem auto !important;
+    }
 
-.product__description blockquote {
-  margin: 1rem 0 !important;
-  padding: 0.8rem !important;
-  font-size: 0.95rem !important;
-}
+    .product__description blockquote {
+      margin: 1rem 0 !important;
+      padding: 0.8rem !important;
+      font-size: 0.95rem !important;
+    }
 
-.product__description table {
-  font-size: 0.9rem !important;
-  margin: 1rem 0 !important;
-}
+    .product__description table {
+      font-size: 0.9rem !important;
+      margin: 1rem 0 !important;
+    }
 
-.product__description code,
-.product__description pre {
-  font-size: 0.9rem !important;
-}
+    .product__description code,
+    .product__description pre {
+      font-size: 0.9rem !important;
+    }
 
-/* Compact lists with check icons (common in admin descriptions) */
-.product__description ul li {
-  margin-bottom: 0.3rem !important;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+    .product__description ul li {
+      margin-bottom: 0.3rem !important;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-.product__description ul li i {
-  font-size: 0.9rem !important;
-}
+    .product__description ul li i {
+      font-size: 0.9rem !important;
+    }
 
-/* For bullet blocks specifically */
-.product__description .bullet-item,
-.product__description [class*="bullet"] {
-  margin-bottom: 0.3rem !important;
-}
+    .product__description .bullet-item,
+    .product__description [class*="bullet"] {
+      margin-bottom: 0.3rem !important;
+    }
 
-/* For the container that holds the description */
-.enhanced-description {
-  padding: 1.2rem !important; /* Reduced from 24px */
-  margin: 1rem 0 !important; /* Reduced from 20px 0 */
-}
+    .enhanced-description {
+      padding: 1.2rem !important;
+      margin: 1rem 0 !important;
+    }
 
-.enhanced-description h3 {
-  font-size: 1.1rem !important;
-  margin-bottom: 0.8rem !important;
-}
+    .enhanced-description h3 {
+      font-size: 1.1rem !important;
+      margin-bottom: 0.8rem !important;
+    }
 
-.enhanced-description p {
-  font-size: 0.9rem !important;
-  margin-bottom: 0.8rem !important;
-}
+    .enhanced-description p {
+      font-size: 0.9rem !important;
+      margin-bottom: 0.8rem !important;
+    }
 
-/* For the main product info column to give more space */
-.product-info {
-  font-size: 0.95rem;
-}
+    .product-info {
+      font-size: 0.95rem;
+    }
 
-/* Compact the video section */
-.video-grid-enhanced {
-  gap: 0.8rem !important; /* Reduced from 15px */
-  margin: 0.8rem 0 !important; /* Reduced from 15px 0 */
-}
+    .video-grid-enhanced {
+      gap: 0.8rem !important;
+      margin: 0.8rem 0 !important;
+    }
 
-.video-item-enhanced {
-  border-radius: 8px !important;
-}
+    .video-item-enhanced {
+      border-radius: 8px !important;
+    }
 
-.video-note {
-  font-size: 0.75rem !important;
-  margin-top: 0.5rem !important;
-}
+    .video-note {
+      font-size: 0.75rem !important;
+      margin-top: 0.5rem !important;
+    }
 
-/* Compact specifications list */
-.specs-list li {
-  padding: 0.5rem 0 !important; /* Reduced from 10px */
-  font-size: 0.85rem !important;
-}
+    .specs-list li {
+      padding: 0.5rem 0 !important;
+      font-size: 0.85rem !important;
+    }
 
     /* Keep all other existing styles exactly the same from your original product.html */
     .feature-razor-card .razorpay-promise {
       margin-bottom: 12px;
     }
-    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
-    @media (min-width: 640px) { .container { padding: 0 20px; } }
 
     /* active nav style */
     .nav-link.active { color: #d4af37 !important; font-weight: 700; position: relative; }
@@ -587,10 +589,6 @@
     @keyframes slideIn { from { width: 0; opacity: 0; } to { width: 100%; opacity: 1; } }
 
     /* ========== BREADCRUMB ========== */
-    .breadcrumb {
-      display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-      padding: 12px 0; font-size: 0.75rem; color: #4a4a4a;
-    }
     .breadcrumb a { color: #1e1e1e; text-decoration: none; font-weight: 600; transition: color 0.2s; }
     .breadcrumb a:hover { color: #d4af37; }
     .breadcrumb i { font-size: 0.6rem; color: #d4af37; }
@@ -777,7 +775,6 @@
         display: block;
       }
       
-      /* Hide any stray reviews in info column on desktop */
       .product-info .desktop-reviews-section {
         display: none;
       }
@@ -1258,36 +1255,32 @@
       fill: #F1C645;
     }
 
-    /* Base review text style */
-.review-text {
-  font-size: var(--regular-font-size);
-  line-height: 1.5;
-  color: #000;
-  word-wrap: break-word !important; /* Breaks long words if needed */
-  overflow-wrap: break-word !important; /* Modern alternative */
-  white-space: normal !important; /* Ensures text wraps */
-  max-width: 100% !important; /* Prevents overflow */
-}
+    .review-text {
+      font-size: var(--regular-font-size);
+      line-height: 1.5;
+      color: #000;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      white-space: normal !important;
+      max-width: 100% !important;
+    }
 
-/* Mobile specific */
-@media (max-width: 499px) {
-  .review-text {
-    font-size: 14px;
-  }
-}
+    @media (max-width: 499px) {
+      .review-text {
+        font-size: 14px;
+      }
+    }
 
-/* Desktop reviews section */
-.desktop-reviews-section .review-text {
-  font-size: 0.95rem !important;
-  line-height: 1.5 !important;
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  white-space: normal !important;
-  /* Remove any max-height or overflow constraints */
-  max-height: none !important;
-  overflow: visible !important;
-  padding-right: 0 !important;
-}
+    .desktop-reviews-section .review-text {
+      font-size: 0.95rem !important;
+      line-height: 1.5 !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      white-space: normal !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding-right: 0 !important;
+    }
 
     /* Reviews header */
     .reviews-header {
@@ -3057,358 +3050,86 @@
       `;
     }
 
-  // ===== STICKY GALLERY FUNCTION =====
-function initStickyGallery() {
-  const gallery = document.querySelector('.gallery-section');
-  const productGrid = document.querySelector('.product-grid');
-  
-  if (!gallery || !productGrid) return;
-  
-  // Remove any existing listeners to prevent duplicates
-  window.removeEventListener('scroll', handleStickyScroll);
-  window.addEventListener('scroll', handleStickyScroll);
-  
-  function handleStickyScroll() {
-    if (window.innerWidth < 1024) return; // Only on desktop
-    
-    const scrollY = window.scrollY;
-    const productGridTop = productGrid.offsetTop;
-    const productGridHeight = productGrid.offsetHeight;
-    const galleryHeight = gallery.offsetHeight;
-    
-    // Calculate when gallery should become sticky
-    const stickyStart = productGridTop - 20;
-    const stickyEnd = productGridTop + productGridHeight - galleryHeight - 20;
-    
-    if (scrollY > stickyStart && scrollY < stickyEnd) {
-      // Gallery is within sticky range
-      gallery.style.position = 'sticky';
-      gallery.style.top = '20px';
-      gallery.style.alignSelf = 'start';
-      gallery.classList.add('sticky-active');
-    } else if (scrollY >= stickyEnd) {
-      // Past the bottom - let it scroll naturally
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-      gallery.style.alignSelf = 'start';
-      gallery.classList.remove('sticky-active');
-    } else {
-      // Above the sticky range
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-      gallery.style.alignSelf = 'start';
-      gallery.classList.remove('sticky-active');
-    }
-  }
-  
-  // Initial call
-  handleStickyScroll();
-  
-  // Also handle on resize
-  window.addEventListener('resize', () => {
-    if (window.innerWidth < 1024) {
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-      gallery.classList.remove('sticky-active');
-    } else {
-      handleStickyScroll();
-    }
-  });
-}
-
-function renderProduct(product) {
-  const images = [];
-  if (product.media && Array.isArray(product.media)) {
-    product.media.forEach(item => {
-      if (item.url) images.push(item.url);
-    });
-  }
-  if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
-  
-  const stock = product.stock || 10;
-  const soldCount = getRandomSold();
-  const liveViewers = getRandomViewers();
-  
-  const sellingPrice = product.price || 0;
-  const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
-  const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
-  
-  const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
-  const codPrice = product.codPrice || Math.round(sellingPrice + 100);
-  
-  // Use admin-provided review count
-  const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
-
-  const ratingDist = generateRatingDistribution(productReviews);
-
-  // Rating Chart HTML (used for mobile only)
-  const ratingChartHTML = `
-    <div class="rating-chart-card mobile-only-rating">
-      <div class="rating-chart-header">
-        <div>
-          <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
-          <span class="rating-outof">/5</span>
-        </div>
-        <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
-        <span class="rating-count">${reviewCount} reviews</span>
-      </div>
-      <div class="rating-bars">
-        ${[5,4,3,2,1].map(star => `
-        <div class="rating-bar-row">
-          <span class="bar-label">${star} ★</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
-          </div>
-          <span class="bar-percent">${ratingDist[star]}%</span>
-        </div>`).join('')}
-      </div>
-    </div>
-  `;
-
-  let reviewsHTML = '';
-
-  if (productReviews && productReviews.length > 0) {
-    reviewsHTML = `<div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
-      <span>Customer Reviews</span>
-      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-        <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
-        <button class="write-review-btn" onclick="toggleReviewModal()">
-          <i class="fa-solid fa-pen"></i> Write Review
-        </button>
-      </div>
-    </div>`;
-    
-    reviewsHTML += `<div class="reviews-common-frame">`;
-    reviewsHTML += `<div class="reviews-grid">`;
-    
-    reviewsHTML += productReviews.map(review => {
-      const rating = review.rating || 5;
-      const fullStars = Math.floor(rating);
-      const hasHalf = rating % 1 >= 0.5;
+    // ===== STICKY GALLERY FUNCTION =====
+    function initStickyGallery() {
+      const gallery = document.querySelector('.gallery-section');
+      const productGrid = document.querySelector('.product-grid');
       
-      let starsHTML = '';
-      for (let i = 1; i <= 5; i++) {
-        if (i <= fullStars) {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"></path>
-            </svg>
-          `;
-        } else if (i === fullStars + 1 && hasHalf) {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
-              <path d="m0 0h24v24h-24z" fill="none"></path>
-              <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z"></path>
-            </svg>
-          `;
-        } else {
-          starsHTML += `
-            <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-              <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
-              <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
-            </svg>
-          `;
-        }
-      }
+      if (!gallery || !productGrid) return;
       
-      const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
+      window.removeEventListener('scroll', handleStickyScroll);
+      window.addEventListener('scroll', handleStickyScroll);
       
-      return `
-        <div class="review-item">
-          <div class="review-card">
-            <div class="review-media">
-              <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
-            </div>
-            <div class="review-details">
-              <div class="review-header">
-                <div class="author-name-w-details">
-                  <div class="author-name">${review.reviewerName}</div>
-                </div>
-              </div>
-              <div class="tydal-star-wrapper">
-                ${starsHTML}
-              </div>
-              <div class="review-text">
-                ${review.comment}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-    
-    reviewsHTML += `</div>`;
-    reviewsHTML += `</div>`;
-  } else {
-    reviewsHTML = `
-      <div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
-        <span>Customer Reviews</span>
-        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-          <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
-          <button class="write-review-btn" onclick="toggleReviewModal()">
-            <i class="fa-solid fa-pen"></i> Write Review
-          </button>
-        </div>
-      </div>
-      <div class="reviews-common-frame">
-        <div class="empty-state">
-          <i class="fa-regular fa-star"></i>
-          <h3>No reviews yet</h3>
-          <p>Be the first to review this product!</p>
-        </div>
-      </div>
-    `;
-  }
-
-  // Generate product description HTML from blocks
-  let productDescriptionHTML = '<div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">';
-
-  if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks) && product.descriptionBlocks.length > 0) {
-    product.descriptionBlocks.forEach(block => {
-      if (block.type === 'text') {
-        productDescriptionHTML += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${block.content || ''}</p>`;
-      }
-      else if (block.type === 'heading') {
-        const level = block.level || 'h2';
-        productDescriptionHTML += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${block.content || ''}</${level}>`;
-      }
-      else if (block.type === 'image') {
-        if (block.url) {
-          productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
-        }
-      }
-      else if (block.type === 'video') {
-        const url = block.url || '';
-        const alignment = block.alignment || 'center';
-        const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
+      function handleStickyScroll() {
+        if (window.innerWidth < 1024) return; // Only on desktop
         
-        if (url) {
-          if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            // Extract YouTube ID
-            let videoId = '';
-            if (url.includes('youtube.com/watch?v=')) {
-              videoId = url.split('v=')[1]?.split('&')[0];
-            } else if (url.includes('youtu.be/')) {
-              videoId = url.split('youtu.be/')[1]?.split('?')[0];
-            }
-            
-            if (videoId) {
-              productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000;"></iframe></p>`;
-            }
-          } else {
-            productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
-          }
+        const scrollY = window.scrollY;
+        const productGridTop = productGrid.offsetTop;
+        const productGridHeight = productGrid.offsetHeight;
+        const galleryHeight = gallery.offsetHeight;
+        
+        const stickyStart = productGridTop - 20;
+        const stickyEnd = productGridTop + productGridHeight - galleryHeight - 20;
+        
+        if (scrollY > stickyStart && scrollY < stickyEnd) {
+          gallery.style.position = 'sticky';
+          gallery.style.top = '20px';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.add('sticky-active');
+        } else if (scrollY >= stickyEnd) {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.remove('sticky-active');
+        } else {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.remove('sticky-active');
         }
       }
-      else if (block.type === 'bullets') {
-        if (block.items && block.items.length > 0) {
-          productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
-          block.items.forEach(item => {
-            if (item) {
-              productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${item}</li>`;
-            }
-          });
-          productDescriptionHTML += `</ul>`;
+      
+      handleStickyScroll();
+      
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 1024) {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.classList.remove('sticky-active');
+        } else {
+          handleStickyScroll();
         }
-      }
-    });
-  } else {
-    // Fallback for older products or if no description blocks
-    productDescriptionHTML += `<p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>`;
-    
-    if (product.specs && product.specs.length > 0) {
-      productDescriptionHTML += `<h3 style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem;">✨ <strong>Key Features:</strong></h3>`;
-      productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
-      product.specs.forEach(spec => {
-        productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${spec}</li>`;
       });
-      productDescriptionHTML += `</ul>`;
     }
-  }
 
-  productDescriptionHTML += '</div>';
+    function renderProduct(product) {
+      const images = [];
+      if (product.media && Array.isArray(product.media)) {
+        product.media.forEach(item => {
+          if (item.url) images.push(item.url);
+        });
+      }
+      if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
+      
+      const stock = product.stock || 10;
+      const soldCount = getRandomSold();
+      const liveViewers = getRandomViewers();
+      
+      const sellingPrice = product.price || 0;
+      const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
+      const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+      
+      const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
+      const codPrice = product.codPrice || Math.round(sellingPrice + 100);
+      
+      // Use admin-provided review count
+      const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
 
-  // MOBILE REVIEWS - with rating chart included (only for mobile)
-  const mobileReviewsHTML = `
-    <div class="mobile-reviews">
-      ${ratingChartHTML}
-      ${reviewsHTML}
-    </div>
-  `;
+      const ratingDist = generateRatingDistribution(productReviews);
 
-  const container = document.getElementById('product-container');
-  container.innerHTML = `
-    <!-- Write Review Modal -->
-    <div class="review-modal" id="reviewModal">
-      <div class="review-modal-content">
-        <div class="review-modal-header">
-          <h3><i class="fa-solid fa-pen"></i> Write a Review</h3>
-          <button class="close-modal-btn" onclick="closeReviewModal()">×</button>
-        </div>
-        <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
-          <div class="review-modal-body">
-            <div class="form-group">
-              <label><i class="fa-solid fa-user"></i> Your Name *</label>
-              <input type="text" id="reviewerName" placeholder="Enter your name" required>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-location-dot"></i> City</label>
-              <input type="text" id="reviewerCity" placeholder="e.g. Mumbai">
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-star"></i> Rating *</label>
-              <select id="reviewRating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 ★ (Excellent)</option>
-                <option value="4">4 ★ (Good)</option>
-                <option value="3">3 ★ (Average)</option>
-                <option value="2">2 ★ (Poor)</option>
-                <option value="1">1 ★ (Terrible)</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-comment"></i> Your Review *</label>
-              <textarea id="reviewComment" rows="4" placeholder="Share your experience with this product..." required></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-image"></i> Add Photos (Optional)</label>
-              <div class="image-upload-area">
-                <input type="file" id="reviewImageFile" accept="image/*" onchange="handleReviewImageUpload(this)" style="display: none;">
-                <button type="button" class="upload-btn" onclick="document.getElementById('reviewImageFile').click()">
-                  <i class="fa-solid fa-cloud-upload-alt"></i> Choose Image
-                </button>
-                <div class="image-preview" id="reviewImagePreview" style="display: none;">
-                  <img id="reviewImagePreviewImg" src="" alt="Preview">
-                  <button type="button" class="remove-image-btn" onclick="removeReviewImage()">×</button>
-                </div>
-              </div>
-              <small class="hint">Max 5MB. Images help other customers.</small>
-            </div>
-          </div>
-          
-          <div class="review-modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="product-grid">
-      <!-- GALLERY COLUMN -->
-      <div class="gallery-section">
-        <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-        <div class="thumbnail-grid">
-          ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-        </div>
-        <!-- Rating Chart for DESKTOP - positioned in gallery column -->
-        <div class="rating-chart-card desktop-only-rating">
+      // Rating Chart HTML (used for mobile only)
+      const ratingChartHTML = `
+        <div class="rating-chart-card mobile-only-rating">
           <div class="rating-chart-header">
             <div>
               <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
@@ -3428,195 +3149,460 @@ function renderProduct(product) {
             </div>`).join('')}
           </div>
         </div>
+      `;
+
+      let reviewsHTML = '';
+
+      if (productReviews && productReviews.length > 0) {
+        reviewsHTML = `<div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
+          <span>Customer Reviews</span>
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
+            <button class="write-review-btn" onclick="toggleReviewModal()">
+              <i class="fa-solid fa-pen"></i> Write Review
+            </button>
+          </div>
+        </div>`;
         
-        <!-- DESKTOP REVIEWS - Only here, no duplicate below -->
-        <div class="desktop-reviews-section">
+        reviewsHTML += `<div class="reviews-common-frame">`;
+        reviewsHTML += `<div class="reviews-grid">`;
+        
+        reviewsHTML += productReviews.map(review => {
+          const rating = review.rating || 5;
+          const fullStars = Math.floor(rating);
+          const hasHalf = rating % 1 >= 0.5;
+          
+          let starsHTML = '';
+          for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"></path>
+                </svg>
+              `;
+            } else if (i === fullStars + 1 && hasHalf) {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z"></path>
+                </svg>
+              `;
+            } else {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+                  <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
+                  <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
+                </svg>
+              `;
+            }
+          }
+          
+          const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
+          
+          return `
+            <div class="review-item">
+              <div class="review-card">
+                <div class="review-media">
+                  <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
+                </div>
+                <div class="review-details">
+                  <div class="review-header">
+                    <div class="author-name-w-details">
+                      <div class="author-name">${review.reviewerName}</div>
+                    </div>
+                  </div>
+                  <div class="tydal-star-wrapper">
+                    ${starsHTML}
+                  </div>
+                  <div class="review-text">
+                    ${review.comment}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        reviewsHTML += `</div>`;
+        reviewsHTML += `</div>`;
+      } else {
+        reviewsHTML = `
+          <div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
+            <span>Customer Reviews</span>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+              <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
+              <button class="write-review-btn" onclick="toggleReviewModal()">
+                <i class="fa-solid fa-pen"></i> Write Review
+              </button>
+            </div>
+          </div>
+          <div class="reviews-common-frame">
+            <div class="empty-state">
+              <i class="fa-regular fa-star"></i>
+              <h3>No reviews yet</h3>
+              <p>Be the first to review this product!</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // Generate product description HTML from blocks
+      let productDescriptionHTML = '<div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">';
+
+      if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks) && product.descriptionBlocks.length > 0) {
+        product.descriptionBlocks.forEach(block => {
+          if (block.type === 'text') {
+            productDescriptionHTML += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${block.content || ''}</p>`;
+          }
+          else if (block.type === 'heading') {
+            const level = block.level || 'h2';
+            productDescriptionHTML += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${block.content || ''}</${level}>`;
+          }
+          else if (block.type === 'image') {
+            if (block.url) {
+              productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
+            }
+          }
+          else if (block.type === 'video') {
+            const url = block.url || '';
+            const alignment = block.alignment || 'center';
+            const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
+            
+            if (url) {
+              if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                // Extract YouTube ID
+                let videoId = '';
+                if (url.includes('youtube.com/watch?v=')) {
+                  videoId = url.split('v=')[1]?.split('&')[0];
+                } else if (url.includes('youtu.be/')) {
+                  videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                }
+                
+                if (videoId) {
+                  productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000;"></iframe></p>`;
+                }
+              } else {
+                productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
+              }
+            }
+          }
+          else if (block.type === 'bullets') {
+            if (block.items && block.items.length > 0) {
+              productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+              block.items.forEach(item => {
+                if (item) {
+                  productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${item}</li>`;
+                }
+              });
+              productDescriptionHTML += `</ul>`;
+            }
+          }
+        });
+      } else {
+        // Fallback for older products or if no description blocks
+        productDescriptionHTML += `<p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>`;
+        
+        if (product.specs && product.specs.length > 0) {
+          productDescriptionHTML += `<h3 style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem;">✨ <strong>Key Features:</strong></h3>`;
+          productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+          product.specs.forEach(spec => {
+            productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${spec}</li>`;
+          });
+          productDescriptionHTML += `</ul>`;
+        }
+      }
+
+      productDescriptionHTML += '</div>';
+
+      // MOBILE REVIEWS - with rating chart included (only for mobile)
+      const mobileReviewsHTML = `
+        <div class="mobile-reviews">
+          ${ratingChartHTML}
           ${reviewsHTML}
         </div>
+      `;
+
+      const container = document.getElementById('product-container');
+      container.innerHTML = `
+        <!-- Write Review Modal -->
+        <div class="review-modal" id="reviewModal">
+          <div class="review-modal-content">
+            <div class="review-modal-header">
+              <h3><i class="fa-solid fa-pen"></i> Write a Review</h3>
+              <button class="close-modal-btn" onclick="closeReviewModal()">×</button>
+            </div>
+            <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
+              <div class="review-modal-body">
+                <div class="form-group">
+                  <label><i class="fa-solid fa-user"></i> Your Name *</label>
+                  <input type="text" id="reviewerName" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-location-dot"></i> City</label>
+                  <input type="text" id="reviewerCity" placeholder="e.g. Mumbai">
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-star"></i> Rating *</label>
+                  <select id="reviewRating" required>
+                    <option value="">Select rating</option>
+                    <option value="5">5 ★ (Excellent)</option>
+                    <option value="4">4 ★ (Good)</option>
+                    <option value="3">3 ★ (Average)</option>
+                    <option value="2">2 ★ (Poor)</option>
+                    <option value="1">1 ★ (Terrible)</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-comment"></i> Your Review *</label>
+                  <textarea id="reviewComment" rows="4" placeholder="Share your experience with this product..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-image"></i> Add Photos (Optional)</label>
+                  <div class="image-upload-area">
+                    <input type="file" id="reviewImageFile" accept="image/*" onchange="handleReviewImageUpload(this)" style="display: none;">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('reviewImageFile').click()">
+                      <i class="fa-solid fa-cloud-upload-alt"></i> Choose Image
+                    </button>
+                    <div class="image-preview" id="reviewImagePreview" style="display: none;">
+                      <img id="reviewImagePreviewImg" src="" alt="Preview">
+                      <button type="button" class="remove-image-btn" onclick="removeReviewImage()">×</button>
+                    </div>
+                  </div>
+                  <small class="hint">Max 5MB. Images help other customers.</small>
+                </div>
+              </div>
+              
+              <div class="review-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="product-grid">
+          <!-- GALLERY COLUMN -->
+          <div class="gallery-section">
+            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+            <div class="thumbnail-grid">
+              ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
+            </div>
+            <!-- Rating Chart for DESKTOP - positioned in gallery column -->
+            <div class="rating-chart-card desktop-only-rating">
+              <div class="rating-chart-header">
+                <div>
+                  <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
+                  <span class="rating-outof">/5</span>
+                </div>
+                <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
+                <span class="rating-count">${reviewCount} reviews</span>
+              </div>
+              <div class="rating-bars">
+                ${[5,4,3,2,1].map(star => `
+                <div class="rating-bar-row">
+                  <span class="bar-label">${star} ★</span>
+                  <div class="bar-container">
+                    <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
+                  </div>
+                  <span class="bar-percent">${ratingDist[star]}%</span>
+                </div>`).join('')}
+              </div>
+            </div>
+            
+            <!-- DESKTOP REVIEWS - Only here, no duplicate below -->
+            <div class="desktop-reviews-section">
+              ${reviewsHTML}
+            </div>
+          </div>
+          
+          <!-- INFO COLUMN -->
+          <div class="product-info">
+            <div class="social-strip">
+              <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
+              <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
+            </div>
+            <div class="product-category">${product.category || 'Accessories'}</div>
+            <h1 class="product-title">${product.title}</h1>
+            <div class="rating-row">
+              <div class="stars">${getStars(product.rating)}</div>
+              <span>${(product.rating || 4.5).toFixed(1)}</span>
+              <span>(${reviewCount} reviews)</span>
+              <div class="share-wrapper">
+                <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
+                <div class="share-menu" id="shareMenu">
+                  <div class="share-grid">
+                    <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
+                    <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
+                    <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
+                  </div>
+                  <div class="copy-link">
+                    <input id="shareLink" value="${window.location.href}" readonly>
+                    <button class="copy-btn" onclick="copyLink()">Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="price-card">
+              <div class="price-header">
+                <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
+                <span class="original-price">₹${originalPrice.toFixed(2)}</span>
+    <span class="discount sale-badge"><i class="fa-solid fa-tag"></i>SALE</span></div>
+              <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
+              <div class="price-options">
+                <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
+                  <div class="option-label">Prepaid</div>
+                  <div class="option-price">₹${prepaidPrice}</div>
+                </div>
+                <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
+                  <div class="option-label">Cash on Delivery</div>
+                  <div class="option-price">₹${codPrice}</div>
+                </div>
+              </div>
+              
+              <div class="quantity-stock-row">
+                <div class="quantity-controls">
+                  <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
+                  <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
+                  <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
+                </div>
+                <div class="stock-badge">
+                  <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
+                  ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
+                </div>
+              </div>
+            </div>
+
+            <div class="delivery-card">
+              <div class="delivery-header">
+                <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
+                <span class="delivery-min">Min. ₹1,299</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (sellingPrice / 1299) * 100)}%"></div>
+              </div>
+              <div class="delivery-message" id="deliveryMessage">
+                <i class="fa-solid ${sellingPrice >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+                <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
+              </div>
+             <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
+      <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+        <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;"></i>
       </div>
-      
-      <!-- INFO COLUMN -->
-      <div class="product-info">
-        <div class="social-strip">
-          <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-          <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-        </div>
-        <div class="product-category">${product.category || 'Accessories'}</div>
-        <h1 class="product-title">${product.title}</h1>
-        <div class="rating-row">
-          <div class="stars">${getStars(product.rating)}</div>
-          <span>${(product.rating || 4.5).toFixed(1)}</span>
-          <span>(${reviewCount} reviews)</span>
-          <div class="share-wrapper">
-            <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
-            <div class="share-menu" id="shareMenu">
-              <div class="share-grid">
-                <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
-                <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
-                <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
-              </div>
-              <div class="copy-link">
-                <input id="shareLink" value="${window.location.href}" readonly>
-                <button class="copy-btn" onclick="copyLink()">Copy</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="price-card">
-          <div class="price-header">
-            <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
-            <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-<span class="discount sale-badge"><i class="fa-solid fa-tag"></i>SALE</span></div>
-          <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
-          <div class="price-options">
-            <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-              <div class="option-label">Prepaid</div>
-              <div class="option-price">₹${prepaidPrice}</div>
-            </div>
-            <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
-              <div class="option-label">Cash on Delivery</div>
-              <div class="option-price">₹${codPrice}</div>
-            </div>
-          </div>
-          
-          <div class="quantity-stock-row">
-            <div class="quantity-controls">
-              <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
-              <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
-              <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
-            </div>
-            <div class="stock-badge">
-              <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-              ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
-            </div>
-          </div>
-        </div>
-
-        <div class="delivery-card">
-          <div class="delivery-header">
-            <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-            <span class="delivery-min">Min. ₹1,299</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (sellingPrice / 1299) * 100)}%"></div>
-          </div>
-          <div class="delivery-message" id="deliveryMessage">
-            <i class="fa-solid ${sellingPrice >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-            <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
-          </div>
-         <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
-  <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
-    <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;"></i>
-  </div>
-  <div>
-    <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
-    <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
-  </div>
-</div>
-        </div>
-
-        <div class="feature-razor-card">
-          <div id="razorpayPopup" class="razorpay-popup">
-            <div class="popup-title">
-              <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-            </div>
-            <div class="popup-desc">
-              Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-            </div>
-            
-            <div class="popup-bullets">
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
-              </div>
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% free</strong> with no hidden costs</span>
-              </div>
-            </div>
-            
-            <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
-              Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-            </p>
-            
-            <div class="popup-footer">
-              <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
-                Yes, got it
-              </button>
-              <a href="shipping.html" class="popup-terms-link">
-                Read detailed terms and conditions
-              </a>
-            </div>
-          </div>
-          
-          <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
-            <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
-            <div class="promise-content">
-              <h4>Razorpay Money Back Promise</h4>
-              <p>Click to view full guarantee</p>
-            </div>
-          </div>
-          
-          <div class="features-grid">
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-              <div class="feature-text">
-                <h4>Free Shipping</h4>
-                <p>Above ₹1,299</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
-              <div class="feature-text">
-                <h4>Easy Returns</h4>
-                <p>7-Days</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="action-buttons">
-          <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-          </button>
-          <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-bolt"></i> Buy Now
-          </button>
-        </div>
-
-        <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
-        ${productDescriptionHTML}
-        
-        <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
-        ${mobileReviewsHTML}
+      <div>
+        <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
+        <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
       </div>
     </div>
-  `;
+            </div>
 
-  updateDeliveryBar(sellingPrice);
-  updateButtonStates();
- setTimeout(() => {
-    initStickyGallery();
-  }, 200); // Small delay to ensure DOM is fully rendered
-  
-  const dates = getDeliveryDates();
-  const deliveryElement = document.getElementById('deliveryDates');
-  if (deliveryElement) deliveryElement.textContent = dates.display;
-}
+            <div class="feature-razor-card">
+              <div id="razorpayPopup" class="razorpay-popup">
+                <div class="popup-title">
+                  <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
+                </div>
+                <div class="popup-desc">
+                  Your purchase from MyEssantia is protected by Razorpay Money Back Promise
+                </div>
+                
+                <div class="popup-bullets">
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
+                  </div>
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% free</strong> with no hidden costs</span>
+                  </div>
+                </div>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
+                  Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
+                </p>
+                
+                <div class="popup-footer">
+                  <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
+                    Yes, got it
+                  </button>
+                  <a href="shipping.html" class="popup-terms-link">
+                    Read detailed terms and conditions
+                  </a>
+                </div>
+              </div>
+              
+              <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
+                <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
+                <div class="promise-content">
+                  <h4>Razorpay Money Back Promise</h4>
+                  <p>Click to view full guarantee</p>
+                </div>
+              </div>
+              
+              <div class="features-grid">
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                  <div class="feature-text">
+                    <h4>Free Shipping</h4>
+                    <p>Above ₹1,299</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                  <div class="feature-text">
+                    <h4>Easy Returns</h4>
+                    <p>7-Days</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-bolt"></i> Buy Now
+              </button>
+            </div>
+
+            <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
+            ${productDescriptionHTML}
+            
+            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
+            ${mobileReviewsHTML}
+          </div>
+        </div>
+      `;
+
+      updateDeliveryBar(sellingPrice);
+      updateButtonStates();
+      setTimeout(() => {
+        initStickyGallery();
+      }, 200); // Small delay to ensure DOM is fully rendered
+      
+      const dates = getDeliveryDates();
+      const deliveryElement = document.getElementById('deliveryDates');
+      if (deliveryElement) deliveryElement.textContent = dates.display;
+    }
 
     // Add this to your existing window scroll listener or create a new one
-window.addEventListener('scroll', () => {
-  const scrollTop = document.getElementById('scrollTop');
-  if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200);
-  
-  // Call sticky handler if it exists
-  if (typeof handleStickyScroll === 'function') {
-    handleStickyScroll();
-  }
-});
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.getElementById('scrollTop');
+      if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200);
+      
+      // Call sticky handler if it exists
+      if (typeof handleStickyScroll === 'function') {
+        handleStickyScroll();
+      }
+    });
 
-window.changeImage = function(src, el) { 
+    window.changeImage = function(src, el) { 
       const mainImage = document.getElementById('mainImage');
       if (mainImage) mainImage.src = src; 
       document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); 
