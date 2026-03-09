@@ -1056,6 +1056,64 @@ function updateProfileIcon() {
   }
 }
 
+// ===== INFINITE SCROLL STRIPS =====
+function initInfiniteScroll() {
+  // Top Bar Infinite Scroll
+  const topBarContent = document.querySelector('.top-bar-scroll-content');
+  if (topBarContent) {
+    // Clone the content for seamless scrolling
+    const topBarItems = topBarContent.innerHTML;
+    topBarContent.innerHTML = topBarItems + topBarItems; // Double the content
+    
+    let position = 0;
+    const speed = 0.5; // Scroll speed (pixels per frame)
+    
+    function scrollTopBar() {
+      position -= speed;
+      
+      // Reset position when first set completely scrolls out
+      if (Math.abs(position) >= topBarContent.scrollWidth / 2) {
+        position = 0;
+      }
+      
+      topBarContent.style.transform = `translateX(${position}px)`;
+      requestAnimationFrame(scrollTopBar);
+    }
+    
+    scrollTopBar();
+  }
+  
+  // Value Strip Infinite Scroll
+  const valueStripScroll = document.querySelector('.value-strip-scroll');
+  if (valueStripScroll) {
+    // Clone the content for seamless scrolling
+    const valueItems = valueStripScroll.innerHTML;
+    valueStripScroll.innerHTML = valueItems + valueItems; // Double the content
+    
+    let valuePosition = 0;
+    const valueSpeed = 0.5; // Scroll speed (pixels per frame)
+    
+    function scrollValueStrip() {
+      valuePosition -= valueSpeed;
+      
+      // Reset position when first set completely scrolls out
+      if (Math.abs(valuePosition) >= valueStripScroll.scrollWidth / 2) {
+        valuePosition = 0;
+      }
+      
+      valueStripScroll.style.transform = `translateX(${valuePosition}px)`;
+      requestAnimationFrame(scrollValueStrip);
+    }
+    
+    scrollValueStrip();
+  }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  initInfiniteScroll();
+});
+
 // ========== INITIALIZATION ==========
 // Setup cart button listener when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -1068,6 +1126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Initialization complete');
   });
 });
+
 
 // Also try to load modals on window load
 window.addEventListener('load', function() {
