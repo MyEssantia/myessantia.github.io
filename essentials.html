@@ -527,101 +527,125 @@
       return hoursDiff < 24;
     }
 
-    // Render products in grid
-    function renderProducts() {
-      const gridContainer = document.getElementById('product-grid-container');
-      const sortSelect = document.getElementById('sort-select');
-      
-      if (!gridContainer) return;
+   // Render products in grid
+function renderProducts() {
+  const gridContainer = document.getElementById('product-grid-container');
+  const sortSelect = document.getElementById('sort-select');
+  
+  if (!gridContainer) return;
 
-      // Ensure products exist
-      if (!window.products) window.products = [];
-      addTestData();
+  // Ensure products exist
+  if (!window.products) window.products = [];
+  addTestData();
 
-      // Filter essentials products
-      const essentialsProducts = (window.products || []).filter(p => 
-        p.category === 'essentials' || p.showOnEssentials === true
-      );
+  // Filter essentials products
+  const essentialsProducts = (window.products || []).filter(p => 
+    p.category === 'essentials' || p.showOnEssentials === true
+  );
 
-      if (essentialsProducts.length === 0) {
-        gridContainer.innerHTML = `
-          <div class="empty-state">
-            <i class="fa-solid fa-box-open"></i>
-            <h3>no essentials found</h3>
-            <p>Check back later for new arrivals!</p>
-          </div>
-        `;
-        return;
-      }
+  if (essentialsProducts.length === 0) {
+    gridContainer.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-box-open"></i>
+        <h3>no essentials found</h3>
+        <p>Check back later for new arrivals!</p>
+      </div>
+    `;
+    return;
+  }
 
-      function getSortedProducts() {
-        let sorted = [...essentialsProducts];
-        switch (sortSelect.value) {
-          case 'price-low':
-            sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-            break;
-          case 'price-high':
-            sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-            break;
-          case 'rating':
-            sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-            break;
-          default: break;
-        }
-        return sorted;
-      }
-
-      function renderAllProducts() {
-        const sortedProducts = getSortedProducts();
-        
-        let gridHtml = '';
-        sortedProducts.forEach(product => {
-          const mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
-          const secondImage = product.images?.[1] || product.secondaryImg || mainImage;
-          
-          const hasSale = product.oldPrice && product.oldPrice > product.price;
-          const isNew = isNewProduct(product);
-          
-          gridHtml += `
-            <div class="product-card" data-product-id="${product.id}">
-              <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
-                <div class="image-frame">
-                  ${isNew ? `
-                    <span class="new-badge">
-                      <i class="fa-regular fa-star"></i> NEW
-                    </span>
-                  ` : ''}
-                  ${hasSale ? `
-                    <span class="sale-badge-image">SALE</span>
-                  ` : ''}
-                  <div class="primary-img" style="background-image: url('${mainImage}');"></div>
-                  <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
-                </div>
-                <p class="product-category">${product.category || 'essential'}</p>
-                <h3 class="product-title">${product.title}</h3>
-                <div class="product-rating">${window.renderRating ? window.renderRating(product.rating) : '<span>★ 0.0</span>'}</div>
-                <div class="product-price-block">
-                  ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.oldPrice) : product.oldPrice}</span>` : ''}
-                  <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
-                </div>
-              </a>
-              <button class="card-add-btn" onclick="handleEssentialAdd('${product.id}', this); event.stopPropagation();">
-                <i class="fa-solid fa-cart-plus"></i> add
-              </button>
-            </div>
-          `;
-        });
-        
-        gridContainer.innerHTML = gridHtml;
-      }
-
-      renderAllProducts();
-      
-      if (sortSelect) {
-        sortSelect.removeEventListener('change', renderAllProducts);
-        sortSelect.addEventListener('change', renderAllProducts);
-      }
+  function getSortedProducts() {
+    let sorted = [...essentialsProducts];
+    switch (sortSelect?.value) {
+      case 'price-low':
+        sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case 'price-high':
+        sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      case 'rating':
+        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      default: break;
     }
+    return sorted;
+  }
+
+  function renderAllProducts() {
+    const sortedProducts = getSortedProducts();
+    
+    let gridHtml = '';
+    sortedProducts.forEach(product => {
+      // Get primary and secondary images from media array
+      let mainImage = '';
+      let secondImage = '';
+      
+      // Check if product has media array (from admin panel)
+      if (product.media && Array.isArray(product.media) && product.media.length > 0) {
+        // Primary image - use primaryImg if set, otherwise first media item
+        if (product.primaryImg) {
+          mainImage = product.primaryImg;
+        } else {
+          mainImage = product.media[0].url || 'https://via.placeholder.com/300';
+        }
+        
+        // Secondary image for hover - use second media item if available
+        if (product.media.length >= 2) {
+          secondImage = product.media[1].url;
+        } else {
+          // If only one media item, duplicate primary for hover
+          secondImage = mainImage;
+        }
+      } else {
+        // Fallback for older products without media array
+        mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
+        secondImage = product.images?.[1] || product.secondaryImg || mainImage;
+      }
+      
+      // Check for sale (using originalPrice from admin panel)
+      const hasSale = product.originalPrice && product.originalPrice > product.price;
+      const isNew = isNewProduct(product);
+      
+      gridHtml += `
+        <div class="product-card" data-product-id="${product.id}">
+          <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
+            <div class="image-frame">
+              ${isNew ? `
+                <span class="new-badge">
+                  <i class="fa-regular fa-star"></i> NEW
+                </span>
+              ` : ''}
+              ${hasSale ? `
+                <span class="sale-badge-image">SALE</span>
+              ` : ''}
+              <div class="primary-img" style="background-image: url('${mainImage}');"></div>
+              <div class="secondary-img" style="background-image: url('${secondImage}');"></div>
+            </div>
+            <p class="product-category">${product.category || 'essential'}</p>
+            <h3 class="product-title">${product.title}</h3>
+            <div class="product-rating">${window.renderRating ? window.renderRating(product.rating) : '<span>★ 0.0</span>'}</div>
+            <div class="product-price-block">
+              ${hasSale ? `<span class="old-price">₹${window.formatPrice ? window.formatPrice(product.originalPrice) : product.originalPrice}</span>` : ''}
+              <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
+            </div>
+          </a>
+          <button class="card-add-btn" onclick="handleEssentialAdd('${product.id}', this); event.stopPropagation();">
+            <i class="fa-solid fa-cart-plus"></i> add
+          </button>
+        </div>
+      `;
+    });
+    
+    gridContainer.innerHTML = gridHtml;
+  }
+
+  renderAllProducts();
+  
+  if (sortSelect) {
+    sortSelect.removeEventListener('change', renderAllProducts);
+    sortSelect.addEventListener('change', renderAllProducts);
+  }
+}
 
     // Handle add to cart with button feedback and cart opening
     window.handleEssentialAdd = function(productId, btn) {
