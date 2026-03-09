@@ -795,18 +795,8 @@
     }
 
     /* ========== GALLERY ========== */
-.gallery-section { 
-  width: 100%; 
-}
-
-@media (min-width: 1024px) { 
-  .gallery-section { 
-    position: sticky; 
-    top: 20px; 
-    height: fit-content; 
-  } 
-}
-
+    .gallery-section { width: 100%; }
+    @media (min-width: 1024px) { .gallery-section { position: sticky; top: 20px; height: fit-content; } }
 .main-image {
   width: 100%; 
   aspect-ratio: 1/1; 
@@ -822,70 +812,52 @@
   justify-content: center;
 }
 
-.main-image:hover { 
-  transform: scale(1.01) translate(-1px, -1px); 
-  box-shadow: 8px 8px 0 rgba(212,175,55,0.25); 
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important; /* Changed from 'cover' to 'contain' */
+  background-color: #ffffff;
+  transition: transform 0.6s;
 }
 
-.main-image img { 
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;  /* Shows entire image without cropping */
-  background-color: #f8f8f8;
-  transition: transform 0.6s; 
+.main-image:hover img {
+  transform: scale(1.02); /* Reduced zoom on hover */
 }
 
-.main-image:hover img { 
-  transform: scale(1.03); 
-}
-
-/* ===== THUMBNAIL GRID ===== */
-.thumbnail-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 12px;
-}
-
+/* Thumbnail fixes */
 .thumbnail {
-  aspect-ratio: 1/1;
-  border-radius: 12px;
-  overflow: hidden;
+  aspect-ratio: 1/1; 
+  border-radius: 12px; 
+  overflow: hidden; 
   cursor: pointer;
-  border: 2px solid #000;
-  transition: all 0.2s ease;
-  background: #f8f8f8;
+  border: 2px solid #000; 
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.thumbnail:hover {
-  border-color: #d4af37;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.thumbnail.active {
-  border-color: #d4af37;
-  border-width: 3px;
-  transform: scale(0.98);
+  background: #ffffff;
 }
 
 .thumbnail img {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;  /* Consistent with main image - shows entire image */
-  transition: transform 0.3s ease;
-  background: #f8f8f8;
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important; /* Changed from 'cover' to 'contain' */
+  background-color: #ffffff;
 }
 
-.thumbnail:hover img {
-  transform: scale(1.05);
+.thumbnail:hover { 
+  border-color: #d4af37; 
+  transform: translateY(-2px) scale(0.98); 
+}
+
+.thumbnail.active { 
+  border-color: #d4af37; 
+  border-width: 3px; 
+}
+
+/* Optional: Add a light background to images that have transparency */
+.main-image img, .thumbnail img {
+  background: #f8f8f8;
 }
     /* Rating Chart Styles */
     .rating-chart-card {
@@ -3440,7 +3412,7 @@
         <div class="product-grid">
           <!-- GALLERY COLUMN -->
           <div class="gallery-section">
-<div class="main-image" id="mainImage" style="background-image: url('${images[0]}')"></div>
+            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
