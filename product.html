@@ -797,13 +797,13 @@
     /* ========== GALLERY ========== */
     .gallery-section { width: 100%; }
     @media (min-width: 1024px) { .gallery-section { position: sticky; top: 20px; height: fit-content; } }
-.main-image {
+   .main-image {
   width: 100%; 
   aspect-ratio: 1/1; 
   border-radius: 20px; 
   overflow: hidden; 
   margin-bottom: 12px;
-  background: #ffffff; 
+  background: #f5f5f5; /* Light gray background for empty space */
   border: 2px solid #000000; 
   box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
   transition: all 0.3s;
@@ -812,19 +812,24 @@
   justify-content: center;
 }
 
-.main-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain !important; /* Changed from 'cover' to 'contain' */
-  background-color: #ffffff;
+.main-image:hover { 
+  transform: scale(1.01) translate(-1px, -1px); 
+  box-shadow: 8px 8px 0 rgba(212,175,55,0.25); 
+}
+
+.main-image img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; /* Changed from 'cover' to 'contain' */
   transition: transform 0.6s;
+  background: #f5f5f5; /* Match container background */
 }
 
-.main-image:hover img {
-  transform: scale(1.02); /* Reduced zoom on hover */
+.main-image:hover img { 
+  transform: scale(1.03); 
 }
 
-/* Thumbnail fixes */
+/* Thumbnail styles - also fix for thumbnails */
 .thumbnail {
   aspect-ratio: 1/1; 
   border-radius: 12px; 
@@ -832,17 +837,17 @@
   cursor: pointer;
   border: 2px solid #000; 
   transition: all 0.2s;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
 }
 
 .thumbnail img {
   width: 100%;
   height: 100%;
-  object-fit: contain !important; /* Changed from 'cover' to 'contain' */
-  background-color: #ffffff;
+  object-fit: contain; /* Changed from default to contain */
+  background: #f5f5f5;
 }
 
 .thumbnail:hover { 
@@ -853,11 +858,6 @@
 .thumbnail.active { 
   border-color: #d4af37; 
   border-width: 3px; 
-}
-
-/* Optional: Add a light background to images that have transparency */
-.main-image img, .thumbnail img {
-  background: #f8f8f8;
 }
     /* Rating Chart Styles */
     .rating-chart-card {
