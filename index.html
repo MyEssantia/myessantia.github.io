@@ -1085,9 +1085,9 @@ function renderProducts() {
     const hasSale = product.originalPrice && product.originalPrice > product.price;
     const isNew = isNewProduct(product);
     
-    html += `
-      <div class="product-card" data-product-id="${product.id}">
-        <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
+html += `
+  <div class="product-card" data-product-id="${product.id}">
+    <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
           <div class="image-frame">
             ${isNew ? `
               <span class="new-badge">
@@ -1107,12 +1107,12 @@ function renderProducts() {
             ${hasSale ? `<span class="old-price">₹${formatPrice(product.originalPrice)}</span>` : ''}
             <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
           </div>
-        </a>
-        <button class="card-add-btn" onclick="handleHomeAdd('${product.id}', this); event.stopPropagation();">
-          <i class="fa-solid fa-cart-plus"></i> add
-        </button>
-      </div>
-    `;
+    </a>
+    <button class="card-add-btn" onclick="handleHomeAdd('${product.id}', this); event.preventDefault(); event.stopPropagation(); return false;">
+      <i class="fa-solid fa-cart-plus"></i> add
+    </button>
+  </div>
+`;
   });
   
   grid.innerHTML = html;
@@ -1175,6 +1175,36 @@ function renderProducts() {
     });
   };
 
+    // Optimized product loading check
+function checkAndRenderProducts() {
+  if (window.products && window.products.length > 0) {
+    renderProducts();
+    setActiveNav();
+    return true;
+  }
+  
+  try {
+    const cached = localStorage.getItem('MyEssantia_products');
+    if (cached) {
+      window.products = JSON.parse(cached);
+      renderProducts();
+      setActiveNav();
+      return true;
+    }
+  } catch (e) {
+    console.warn('Error parsing cached products');
+  }
+  
+  return false;
+}
+
+// Use setTimeout instead of setInterval for cleaner checking
+(function tryRenderProducts() {
+  if (!checkAndRenderProducts()) {
+    setTimeout(tryRenderProducts, 100);
+  }
+})();
+
   // Optimize scroll to products function
   function scrollToProducts() {
     const productsSection = document.getElementById('products-section');
@@ -1183,13 +1213,13 @@ function renderProducts() {
     }
   }  
 
-    // Set active nav link
-    function setActiveNav() {
-      setTimeout(() => {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll('.nav-link[href="index.html"]').forEach(l => l.classList.add('active'));
-      }, 300);
-    }
+  function setActiveNav() {
+  // Use requestAnimationFrame for smoother DOM updates
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.nav-link[href="index.html"]').forEach(l => l.classList.add('active'));
+  });
+}
     
     // Handle scroll effects
     function handleScroll() {
