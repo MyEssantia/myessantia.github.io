@@ -22,14 +22,6 @@
   white-space: nowrap;
 }
 
-.top-bar-scroll-content {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-  padding: 0 10px;
-  will-change: transform; /* Performance optimization */
-}
-
 .scroll-item {
   display: inline-flex;
   align-items: center;
@@ -53,6 +45,22 @@
   font-weight: 700;
   margin: 0 2rem;
   display: inline-block;
+}
+
+.top-bar-scroll-content {
+  display: inline-flex;
+  align-items: center;
+  animation: scrollTopBar 20s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes scrollTopBar {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 /* ==================== MAIN HEADER ==================== */
