@@ -2455,29 +2455,188 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // ========== CART INTEGRATION FIX ==========
+// Initialize cart from localStorage
+if (typeof window.cart === 'undefined') {
+  window.cart = JSON.parse(localStorage.getItem('MyEssantia_cart') || '[]');
+}
+
+// Make sure cart functions are available globally
+window.updateCartCount = function() {
+  const cartCountElements = document.querySelectorAll('.cart-count, #cart-count');
+  const totalItems = window.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  
+  cartCountElements.forEach(el => {
+    if (el) {
+      el.textContent = totalItems;
+      el.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+  });
+  
+  // Also try to update any header cart count that might have a different class
+  const headerCartCount = document.querySelector('[data-cart-count]');
+  if (headerCartCount) headerCartCount.textContent = totalItems;
+};
+
+window.addToCartGlobal = function(productId, quantity = 1, productData = null) {
+  if (!currentProduct && !productData) return false;
+  
+  const product = productData || currentProduct;
+  
+  // Check stock
+  if (product.stock <= 0) {
+    showNotification('Sorry, this product is out of stock!', 'error');
+    return false;
+  }
+  
+  if (quantity > product.stock) {
+    showNotification(`Only ${product.stock} items available!`, 'error');
+    return false;
+  }
+  
+  // Get product image
+  let productImage = product.primaryImg;
+  if (!productImage && product.media && Array.isArray(product.media)) {
+    const imageItem = product.media.find(item => item.url);
+    if (imageItem) productImage = imageItem.url;
+  }
+  if (!productImage) productImage = 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600';
+  
+  const existingItem = window.cart.find(item => item.id === productId);
+  
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    window.cart.push({
+      id: productId,
+      title: product.title,
+      category: product.category || 'accessory',
+      price: product.price,
+      primaryImg: productImage,
+      quantity: quantity
+    });
+  }
+  
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+  window.updateCartCount();
+  
+  showNotification(`Added ${quantity} item${quantity > 1 ? 's' : ''} to cart!`);
+  
+  // Optional: open cart drawer if function exists
+  setTimeout(() => {
+    if (typeof window.openCart === 'function') {
+      window.openCart();
+    }
+  }, 500);
+  
+  return true;
+};
+
+window.openCart = function() {
+  // Check if cart drawer exists
+  let cartDrawer = document.querySelector('.cart-drawer, #cartDrawer');
+  
+  if (cartDrawer) {
+    cartDrawer.classList.add('open');
+  } else {
+    // Redirect to cart page if no drawer
+    window.location.href = 'cart.html';
+  }
+};
+
+window.closeCart = function() {
+  const cartDrawer = document.querySelector('.cart-drawer, #cartDrawer');
+  if (cartDrawer) cartDrawer.classList.remove('open');
+};
+
+// Update the existing addToCart function to use the global one
+window.addToCart = function() {
+  if (!currentProduct) return;
+  
+  if (currentProduct.highDemand) {
+    showHighDemandPopup('cart');
+    return;
+  }
+  
+  const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
+  window.addToCartGlobal(currentProduct.id, quantity);
+};
+
+// Update the existing buyNow function
+window.buyNow = function() {
+  if (!currentProduct) return;
+  
+  if (currentProduct.highDemand) {
+    showHighDemandPopup('buy');
+    return;
+  }
+  
+  const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
+  const added = window.addToCartGlobal(currentProduct.id, quantity);
+  
+  if (added) {
+    setTimeout(() => {
+      window.location.href = 'checkout.html';
+    }, 500);
+  }
+};
+
+// Initialize cart count after header loads
+document.addEventListener('headerLoaded', function() {
+  window.updateCartCount();
+});
+
+// Also try to update when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(window.updateCartCount, 500);
+});
+
+// Update cart count whenever header might be loaded
+const observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    if (mutation.addedNodes.length) {
+      if (document.querySelector('.cart-count, #cart-count, [data-cart-count]')) {
+        window.updateCartCount();
+      }
+    }
+  });
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
     // ========== HEADER/FOOTER LOADING FUNCTION ==========
-    async function loadComponents() {
-      try {
-        // Load header
-        const headerResponse = await fetch('header.html');
-        const headerHtml = await headerResponse.text();
-        document.getElementById('header').innerHTML = headerHtml;
-        
-        // Load footer
-        const footerResponse = await fetch('footer.html');
-        const footerHtml = await footerResponse.text();
-        document.getElementById('footer').innerHTML = footerHtml;
-        
-        // Initialize cart count after header is loaded
+  async function loadComponents() {
+  try {
+    // Load header
+    const headerResponse = await fetch('header.html');
+    const headerHtml = await headerResponse.text();
+    document.getElementById('header').innerHTML = headerHtml;
+    
+    // Load footer
+    const footerResponse = await fetch('footer.html');
+    const footerHtml = await footerResponse.text();
+    document.getElementById('footer').innerHTML = footerHtml;
+    
+    // Dispatch event that header is loaded
+    document.dispatchEvent(new Event('headerLoaded'));
+    
+    // Initialize cart count after header is loaded
+    if (typeof window.updateCartCount === 'function') {
+      window.updateCartCount();
+    } else {
+      // Try again after a short delay
+      setTimeout(() => {
         if (typeof window.updateCartCount === 'function') {
           window.updateCartCount();
         }
-      } catch (error) {
-        console.error('Error loading components:', error);
-        document.getElementById('header').innerHTML = '<div style="padding:20px; text-align:center;">Header failed to load</div>';
-        document.getElementById('footer').innerHTML = '<div style="padding:20px; text-align:center;">Footer failed to load</div>';
-      }
+      }, 500);
     }
+  } catch (error) {
+    console.error('Error loading components:', error);
+    document.getElementById('header').innerHTML = '<div style="padding:20px; text-align:center;">Header failed to load</div>';
+    document.getElementById('footer').innerHTML = '<div style="padding:20px; text-align:center;">Footer failed to load</div>';
+  }
+}
 
     // ========== PRODUCT PAGE SPECIFIC CODE ==========
     let currentProduct = null;
@@ -3723,6 +3882,23 @@
         display: `${minDateStr} - ${maxDateStr}`
       };
     }
+
+    // Ensure cart functions are attached to window
+window.ensureCartFunctionality = function() {
+  console.log('Cart functionality ready');
+  window.updateCartCount();
+};
+
+// Force cart count update every few seconds until it works
+const cartCheckInterval = setInterval(() => {
+  if (typeof window.updateCartCount === 'function') {
+    window.updateCartCount();
+    clearInterval(cartCheckInterval);
+  }
+}, 1000);
+
+// Clear interval after 10 seconds to prevent infinite loop
+setTimeout(() => clearInterval(cartCheckInterval), 10000);
 
     window.addEventListener('scroll', () => { 
       const scrollTop = document.getElementById('scrollTop');
