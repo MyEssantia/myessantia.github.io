@@ -377,7 +377,7 @@
       text-decoration: line-through; 
     }
     
-  .card-add-btn {
+ .card-add-btn {
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -402,8 +402,6 @@
     position: relative;
     z-index: 20; /* Higher than product link */
     outline: none;
-    -webkit-appearance: none; /* Remove default button styles on iOS */
-    appearance: none;
   }
   
   /* Active state for immediate tactile feedback */
@@ -451,70 +449,43 @@
     color: inherit;
   }
   
-  /* Improve hero buttons for better touch response */
-  .btn {
+  /* Hero buttons optimization */
+  .hero-buttons .btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
     transition: all 0.15s;
+  }
+  
+  .hero-buttons .btn:active {
+    transform: scale(0.97);
+  }
+  
+  /* View all link optimization */
+  .view-all-link {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
   }
   
-  .btn:active {
-    transform: scale(0.97);
-  }
-  
-  .btn-primary:active {
-    background: #d4af37;
-    color: #000;
-  }
-  
-  .btn-outline:active {
-    background: #000;
+  .view-all-link:active {
+    gap: 8px;
     color: #d4af37;
-    border-color: #d4af37;
+    transform: translateX(2px);
   }
   
-  /* Improve carousel arrows for touch */
+  /* Carousel arrows optimization */
   .carousel-arrow {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    user-select: none;
     transition: all 0.15s;
   }
   
   .carousel-arrow:active {
     transform: translateY(-50%) scale(0.95);
     background: #d4af37;
-    border-color: #d4af37;
-  }
-  
-  /* Improve scroll top button */
-  .scroll-top {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    transition: all 0.15s;
-  }
-  
-  .scroll-top:active {
-    transform: scale(0.9);
-    background: #d4af37;
     color: #000;
-  }
-  
-  /* Improve category chip (value strip items) */
-  .value-item {
-    transition: all 0.15s;
-    cursor: default;
-  }
-  
-  /* Improve review dots */
-  .review-dot {
-    transition: all 0.15s;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .review-dot:active {
-    transform: scale(1.5);
   }
   
   /* Improve click area on mobile */
@@ -522,18 +493,17 @@
     .card-add-btn {
       min-height: 48px;
       font-size: 0.9rem;
-      padding: 0.7rem 0.3rem;
-    }
-    
-    .btn {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0.8rem 0.3rem;
     }
     
     .hero-buttons .btn {
-      min-height: 44px;
+      min-height: 48px;
+      padding: 0.8rem 0.8rem;
+    }
+    
+    .carousel-arrow {
+      width: 44px;
+      height: 44px;
     }
   }
   
@@ -1148,7 +1118,7 @@ function renderProducts() {
   grid.innerHTML = html;
 }
     
-     window.handleHomeAdd = function(productId, btn) {
+    window.handleHomeAdd = function(productId, btn) {
     // Prevent multiple rapid clicks
     if (btn.disabled) return;
     
@@ -1169,7 +1139,7 @@ function renderProducts() {
         // Call master function synchronously
         window.masterAddToCart(productId, false);
         
-        // Open cart modal immediately (no delay)
+        // Open cart modal immediately
         if (typeof window.openCart === 'function') {
           window.openCart();
         }
@@ -1177,7 +1147,7 @@ function renderProducts() {
         // Update button to "added" state
         btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
         
-        // Reset button after 1.5 seconds (shorter than before for better UX)
+        // Reset button after 1.5 seconds
         setTimeout(() => {
           btn.classList.remove('added');
           btn.innerHTML = originalHTML;
@@ -1205,12 +1175,14 @@ function renderProducts() {
     });
   };
 
-    
-    // Scroll to products section
-    function scrollToProducts() {
-      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+  // Optimize scroll to products function
+  function scrollToProducts() {
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
     }
-    
+  }  
+
     // Set active nav link
     function setActiveNav() {
       setTimeout(() => {
