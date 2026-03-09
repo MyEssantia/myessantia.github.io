@@ -2439,1506 +2439,676 @@
   <div id="footer"></div>
   <div id="common-modals"></div>
 
+  <!-- Load common.js first (contains Firebase, cart logic, component loading) -->
+  <script src="common.js"></script>
+  
   <script>
- // ========== COMPLETE PRODUCT.JAVASCRIPT WITH WORKING CART & ACCOUNT (MATCHING ACCESSORIES.HTML) ==========
-
-// ========== FIREBASE INITIALIZATION ==========
-const firebaseConfig = {
-  apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
-  authDomain: "myessantia.firebaseapp.com",
-  projectId: "myessantia",
-  storageBucket: "myessantia.firebasestorage.app",
-  messagingSenderId: "701726517205",
-  appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
-  measurementId: "G-SZF11SHZBH"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// ========== GLOBAL VARIABLES ==========
-let currentProduct = null;
-let selectedPaymentMethod = 'prepaid';
-let currentAction = null;
-let productReviews = [];
-let currentUser = null;
-
-// Initialize cart from localStorage (matching accessories.html)
-if (!window.cart) {
-  window.cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
-}
-
-const STORAGE_KEY = 'myessantia_product_data';
-const NOTIFICATION_STORAGE_KEY = 'myessantia_notifications';
-const PURCHASE_STORAGE_KEY = 'myessantia_purchased_products';
-
-// ========== CART FUNCTIONS (EXACTLY LIKE ACCESSORIES.HTML) ==========
-
-// Open cart sidebar (slides from right)
-window.openCart = function() {
-  console.log('Opening cart sidebar...');
-  const cartSidebar = document.getElementById('cart-sidebar');
-  if (cartSidebar) {
-    cartSidebar.classList.add('open');
-    updateCartSidebar(); // Refresh cart contents when opening
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-  } else {
-    console.error('Cart sidebar not found');
-    // Create it if it doesn't exist
-    createCartSidebar();
-    setTimeout(() => {
-      const newCartSidebar = document.getElementById('cart-sidebar');
-      if (newCartSidebar) {
-        newCartSidebar.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-    }, 100);
-  }
-};
-
-// Close cart sidebar
-window.closeCart = function() {
-  const cartSidebar = document.getElementById('cart-sidebar');
-  if (cartSidebar) {
-    cartSidebar.classList.remove('open');
-    document.body.style.overflow = ''; // Restore scrolling
-  }
-};
-
-// Update cart count badge (matching accessories.html)
-window.updateCartCount = function() {
-  const cartCountElements = document.querySelectorAll('.cart-count, #cart-count, .header-cart-count');
-  const totalItems = window.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  
-  cartCountElements.forEach(el => {
-    el.textContent = totalItems;
-    el.style.display = totalItems > 0 ? 'flex' : 'none';
-  });
-  
-  // Also update in localStorage for cross-page consistency
-  localStorage.setItem('MyEssantia_cart_count', totalItems.toString());
-};
-
-// Add to cart function (matching accessories.html)
-window.addToCart = function(productId, title, price, image) {
-  if (!currentProduct) return;
-  
-  if (currentProduct.highDemand) {
-    showHighDemandPopup('cart');
-    return;
-  }
-  
-  const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
-  
-  if (currentProduct.stock <= 0) {
-    showNotification('Sorry, this product is out of stock!');
-    return;
-  }
-
-  if (quantity > currentProduct.stock) {
-    showNotification(`Only ${currentProduct.stock} items available!`);
-    return;
-  }
-
-  // Create product object matching accessories.html structure
-  const productToAdd = {
-    id: currentProduct.id,
-    title: currentProduct.title,
-    price: currentProduct.price,
-    image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
-    quantity: quantity
-  };
-
-  // Check if item already exists
-  const existingItemIndex = window.cart.findIndex(item => item.id === productToAdd.id);
-  
-  if (existingItemIndex >= 0) {
-    // Update quantity
-    window.cart[existingItemIndex].quantity += quantity;
-  } else {
-    // Add new item
-    window.cart.push(productToAdd);
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-  
-  // Update cart count
-  window.updateCartCount();
-  
-  // Update cart sidebar if it exists
-  updateCartSidebar();
-  
-  // Show notification
-  showNotification(`${productToAdd.title} added to cart!`);
-  
-  // Open cart sidebar
-  setTimeout(() => {
-    window.openCart();
-  }, 300);
-};
-
-// Global add to cart function (for compatibility)
-window.addToCartGlobal = function(productId, quantity = 1) {
-  if (currentProduct && currentProduct.id === productId) {
-    window.addToCart();
-  }
-};
-
-// Buy now function
-window.buyNow = function() {
-  if (!currentProduct) return;
-  
-  if (currentProduct.highDemand) {
-    showHighDemandPopup('buy');
-    return;
-  }
-  
-  // Add to cart first
-  window.addToCart();
-  
-  // Then redirect to checkout
-  setTimeout(() => {
-    window.location.href = 'checkout.html';
-  }, 500);
-};
-
-// Global buy now function
-window.buyNowGlobal = function(productId) {
-  if (currentProduct && currentProduct.id === productId) {
-    window.buyNow();
-  }
-};
-
-// Update cart item quantity (matching accessories.html)
-window.updateCartItem = function(productId, newQuantity) {
-  const itemIndex = window.cart.findIndex(item => item.id === productId);
-  
-  if (itemIndex >= 0) {
-    if (newQuantity <= 0) {
-      // Remove item if quantity is 0 or less
-      window.cart.splice(itemIndex, 1);
-    } else {
-      window.cart[itemIndex].quantity = newQuantity;
+    // ========== PRODUCT PAGE SPECIFIC CODE ==========
+    let currentProduct = null;
+    let selectedPaymentMethod = 'prepaid';
+    let currentAction = null;
+    let productReviews = [];
+    
+    const STORAGE_KEY = 'myessantia_product_data';
+    const NOTIFICATION_STORAGE_KEY = 'myessantia_notifications';
+    const PURCHASE_STORAGE_KEY = 'myessantia_purchased_products';
+    
+    function getProductId() { 
+      return new URLSearchParams(window.location.search).get('id'); 
     }
     
-    // Save to localStorage
-    localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+    function hasUserPurchased(productId) {
+      const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
+      return purchased[productId] === true;
+    }
     
-    // Update displays
-    window.updateCartCount();
-    updateCartSidebar();
-  }
-};
-
-// Remove item from cart (matching accessories.html)
-window.removeFromCart = function(productId) {
-  window.cart = window.cart.filter(item => item.id !== productId);
-  localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-  window.updateCartCount();
-  updateCartSidebar();
-  showNotification('Item removed from cart');
-};
-
-// Create cart sidebar (matching accessories.html style)
-function createCartSidebar() {
-  if (document.getElementById('cart-sidebar')) return;
-  
-  const cartHTML = `
-    <div id="cart-sidebar" class="cart-sidebar">
-      <div class="cart-header">
-        <h3>Your Cart (<span id="cart-count-header">0</span>)</h3>
-        <button class="close-cart" onclick="closeCart()">×</button>
-      </div>
-      <div class="cart-items" id="cart-items-container">
-        <div class="empty-cart-message">Your cart is empty</div>
-      </div>
-      <div class="cart-footer">
-        <div class="cart-total">
-          <span>Subtotal:</span>
-          <span class="total-amount" id="cart-subtotal">₹0</span>
-        </div>
-        <button class="btn btn-primary checkout-btn" onclick="window.location.href='checkout.html'">
-          Proceed to Checkout
-        </button>
-      </div>
-    </div>
-  `;
-  
-  document.body.insertAdjacentHTML('beforeend', cartHTML);
-}
-
-// Update cart sidebar contents (matching accessories.html)
-function updateCartSidebar() {
-  const cartContainer = document.getElementById('cart-items-container');
-  const cartCountHeader = document.getElementById('cart-count-header');
-  const cartSubtotal = document.getElementById('cart-subtotal');
-  
-  if (!cartContainer) return;
-  
-  if (!window.cart || window.cart.length === 0) {
-    cartContainer.innerHTML = '<div class="empty-cart-message">Your cart is empty</div>';
-    if (cartCountHeader) cartCountHeader.textContent = '0';
-    if (cartSubtotal) cartSubtotal.textContent = '₹0';
-    return;
-  }
-  
-  let subtotal = 0;
-  let itemsHTML = '';
-  
-  window.cart.forEach(item => {
-    const itemTotal = (item.price || 0) * (item.quantity || 1);
-    subtotal += itemTotal;
+    function markAsPurchased(productId) {
+      const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
+      purchased[productId] = true;
+      localStorage.setItem(PURCHASE_STORAGE_KEY, JSON.stringify(purchased));
+    }
     
-    itemsHTML += `
-      <div class="cart-item" data-id="${item.id}">
-        <img src="${item.image || item.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=100'}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=100'">
-        <div class="cart-item-details">
-          <h4>${item.title}</h4>
-          <div class="cart-item-price">₹${(item.price || 0).toFixed(2)}</div>
-          <div class="cart-item-quantity">
-            <button class="qty-btn minus" onclick="updateCartItem('${item.id}', ${(item.quantity || 1) - 1})">−</button>
-            <span class="qty-value">${item.quantity || 1}</span>
-            <button class="qty-btn plus" onclick="updateCartItem('${item.id}', ${(item.quantity || 1) + 1})">+</button>
-          </div>
-        </div>
-        <button class="remove-item" onclick="removeFromCart('${item.id}')">
-          <i class="fa-solid fa-trash-can"></i>
-        </button>
-      </div>
-    `;
-  });
-  
-  cartContainer.innerHTML = itemsHTML;
-  if (cartCountHeader) cartCountHeader.textContent = window.cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  if (cartSubtotal) cartSubtotal.textContent = `₹${subtotal.toFixed(2)}`;
-}
+    function getStoredProductData(productId) {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.productId === productId) {
+          return data;
+        }
+      }
+      return null;
+    }
 
-// ========== ACCOUNT FUNCTIONS (MATCHING ACCESSORIES.HTML) ==========
+    function storeProductData(productId, data) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        productId,
+        ...data
+      }));
+    }
 
-// Toggle account dropdown
-window.toggleAccountDropdown = function() {
-  const dropdown = document.getElementById('account-dropdown');
-  if (dropdown) {
-    dropdown.classList.toggle('show');
+    function hasRequestedNotification(productId) {
+      const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
+      return !!notifications[productId];
+    }
+
+    function markNotificationRequested(productId, email) {
+      const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
+      notifications[productId] = {
+        email: email,
+        timestamp: new Date().toISOString(),
+        productTitle: currentProduct?.title || 'Unknown Product'
+      };
+      localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications));
+    }
+
+    async function submitNotificationToFirebase(productId, email, actionType) {
+      try {
+        await db.collection('notifications').add({
+          productId: productId,
+          productTitle: currentProduct?.title || 'Unknown Product',
+          email: email,
+          actionType: actionType,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          status: 'pending'
+        });
+        console.log('Notification saved to Firebase');
+      } catch (error) {
+        console.error('Error saving notification to Firebase:', error);
+      }
+    }
+
+    function getRandomSold() { 
+      return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; 
+    }
     
-    // Close when clicking outside
-    if (dropdown.classList.contains('show')) {
-      setTimeout(() => {
-        document.addEventListener('click', function closeDropdown(e) {
-          if (!e.target.closest('.account-btn') && !e.target.closest('#account-dropdown')) {
-            dropdown.classList.remove('show');
-            document.removeEventListener('click', closeDropdown);
+    function getRandomViewers() { 
+      return Math.floor(Math.random() * (35 - 8 + 1)) + 8; 
+    }
+
+    async function loadProductReviews(productId) {
+      try {
+        console.log('Loading reviews for product:', productId);
+        
+        if (!productId) {
+          console.log('No product ID provided');
+          return [];
+        }
+        
+        const snapshot = await db.collection('reviews')
+          .where('productId', '==', productId)
+          .get();
+        
+        console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
+        
+        if (snapshot.empty) {
+          console.log('No reviews found for this product');
+          return [];
+        }
+        
+        const reviews = snapshot.docs.map(doc => {
+          const data = doc.data();
+          
+          let reviewDate = new Date();
+          if (data.timestamp) {
+            if (data.timestamp.toDate) {
+              reviewDate = data.timestamp.toDate();
+            } else if (data.timestamp.seconds) {
+              reviewDate = new Date(data.timestamp.seconds * 1000);
+            } else {
+              reviewDate = new Date(data.timestamp);
+            }
+          }
+          
+          return {
+            id: doc.id,
+            reviewerName: data.reviewerName || data.name || 'Anonymous',
+            city: data.city || 'India',
+            rating: data.rating || 5,
+            comment: data.comment || data.review || '',
+            verified: data.verified || false,
+            imageUrl: data.imageUrl || data.image || null,
+            timestamp: reviewDate
+          };
+        });
+        
+        reviews.sort((a, b) => b.timestamp - a.timestamp);
+        
+        console.log('Processed reviews:', reviews);
+        return reviews;
+        
+      } catch (error) {
+        console.error('Error loading reviews:', error);
+        return [];
+      }
+    }
+
+    async function submitReview(reviewData) {
+      try {
+        await db.collection('reviews').add({
+          ...reviewData,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          verified: true
+        });
+        return true;
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        return false;
+      }
+    }
+
+    function generateRatingDistribution(reviews) {
+      let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      
+      if (reviews.length === 0) {
+        const baseRating = currentProduct?.rating || 4.5;
+        if (baseRating >= 4.5) {
+          distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
+        } else if (baseRating >= 4.0) {
+          distribution = { 5: 55, 4: 25, 3: 12, 2: 5, 1: 3 };
+        } else if (baseRating >= 3.5) {
+          distribution = { 5: 35, 4: 30, 3: 20, 2: 10, 1: 5 };
+        } else {
+          distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
+        }
+      } else {
+        reviews.forEach(review => {
+          const rating = Math.round(review.rating);
+          if (rating >= 1 && rating <= 5) {
+            distribution[rating]++;
           }
         });
-      }, 100);
-    }
-  } else {
-    createAccountDropdown();
-    setTimeout(() => {
-      const newDropdown = document.getElementById('account-dropdown');
-      if (newDropdown) {
-        newDropdown.classList.add('show');
-      }
-    }, 50);
-  }
-};
-
-// Create account dropdown
-function createAccountDropdown() {
-  if (document.getElementById('account-dropdown')) return;
-  
-  // Check if user is logged in (you can implement actual auth later)
-  const isLoggedIn = false;
-  
-  const dropdownHTML = `
-    <div id="account-dropdown" class="account-dropdown">
-      ${!isLoggedIn ? `
-        <a href="login.html" class="dropdown-item">
-          <i class="fa-solid fa-right-to-bracket"></i> Login
-        </a>
-        <a href="signup.html" class="dropdown-item">
-          <i class="fa-solid fa-user-plus"></i> Sign Up
-        </a>
-        <div class="dropdown-divider"></div>
-      ` : ''}
-      <a href="account.html" class="dropdown-item">
-        <i class="fa-regular fa-user"></i> My Account
-      </a>
-      <a href="orders.html" class="dropdown-item">
-        <i class="fa-solid fa-box"></i> Orders
-      </a>
-      <a href="wishlist.html" class="dropdown-item">
-        <i class="fa-regular fa-heart"></i> Wishlist
-      </a>
-      ${isLoggedIn ? `
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item" onclick="logout()">
-          <i class="fa-solid fa-sign-out-alt"></i> Logout
-        </a>
-      ` : ''}
-    </div>
-  `;
-  
-  // Find the account button and insert dropdown after it
-  const accountBtn = document.querySelector('.account-btn');
-  if (accountBtn) {
-    accountBtn.insertAdjacentHTML('afterend', dropdownHTML);
-  } else {
-    // Fallback: add to body
-    document.body.insertAdjacentHTML('beforeend', dropdownHTML);
-  }
-}
-
-// Toggle mobile menu
-window.toggleMobileMenu = function() {
-  const menu = document.getElementById('mobile-menu');
-  if (menu) {
-    menu.classList.toggle('show');
-  } else {
-    createMobileMenu();
-    setTimeout(() => {
-      const newMenu = document.getElementById('mobile-menu');
-      if (newMenu) newMenu.classList.add('show');
-    }, 50);
-  }
-};
-
-// Create mobile menu
-function createMobileMenu() {
-  if (document.getElementById('mobile-menu')) return;
-  
-  const menuHTML = `
-    <div id="mobile-menu" class="mobile-menu">
-      <a href="index.html"><i class="fa-solid fa-home"></i> Home</a>
-      <a href="collection.html"><i class="fa-solid fa-grid-2"></i> Collection</a>
-      <a href="about.html"><i class="fa-regular fa-address-card"></i> About</a>
-      <a href="contact.html"><i class="fa-regular fa-envelope"></i> Contact</a>
-      <div class="mobile-menu-divider"></div>
-      <a href="account.html"><i class="fa-regular fa-user"></i> Account</a>
-      <a href="orders.html"><i class="fa-solid fa-box"></i> Orders</a>
-      <a href="wishlist.html"><i class="fa-regular fa-heart"></i> Wishlist</a>
-      <a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-    </div>
-  `;
-  
-  document.body.insertAdjacentHTML('beforeend', menuHTML);
-}
-
-// ========== NOTIFICATION FUNCTIONS ==========
-
-function showNotification(message, type = 'success') {
-  // Check if notification container exists
-  let container = document.getElementById('notification-container');
-  
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'notification-container';
-    container.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-    `;
-    document.body.appendChild(container);
-  }
-  
-  const notification = document.createElement('div');
-  notification.className = 'notification';
-  notification.style.cssText = `
-    background: ${type === 'success' ? '#000' : '#ff4444'};
-    color: ${type === 'success' ? '#d4af37' : 'white'};
-    padding: 12px 20px;
-    border-radius: 50px;
-    border: 2px solid #d4af37;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    animation: slideIn 0.3s ease;
-    font-weight: 600;
-  `;
-  
-  notification.innerHTML = `
-    <i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-    ${message}
-  `;
-  
-  container.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.style.animation = 'slideOut 0.3s ease forwards';
-    setTimeout(() => {
-      notification.remove();
-      if (container.children.length === 0) {
-        container.remove();
-      }
-    }, 300);
-  }, 3000);
-}
-
-// Add animation styles
-const animationStyles = document.createElement('style');
-animationStyles.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(animationStyles);
-
-// ========== PRODUCT FUNCTIONS ==========
-
-function getProductId() { 
-  return new URLSearchParams(window.location.search).get('id'); 
-}
-
-function hasUserPurchased(productId) {
-  const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
-  return purchased[productId] === true;
-}
-
-function markAsPurchased(productId) {
-  const purchased = JSON.parse(localStorage.getItem(PURCHASE_STORAGE_KEY) || '{}');
-  purchased[productId] = true;
-  localStorage.setItem(PURCHASE_STORAGE_KEY, JSON.stringify(purchased));
-}
-
-function getStoredProductData(productId) {
-  const stored = sessionStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    const data = JSON.parse(stored);
-    if (data.productId === productId) {
-      return data;
-    }
-  }
-  return null;
-}
-
-function storeProductData(productId, data) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-    productId,
-    ...data
-  }));
-}
-
-function hasRequestedNotification(productId) {
-  const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
-  return !!notifications[productId];
-}
-
-function markNotificationRequested(productId, email) {
-  const notifications = JSON.parse(localStorage.getItem(NOTIFICATION_STORAGE_KEY) || '{}');
-  notifications[productId] = {
-    email: email,
-    timestamp: new Date().toISOString(),
-    productTitle: currentProduct?.title || 'Unknown Product'
-  };
-  localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications));
-}
-
-async function submitNotificationToFirebase(productId, email, actionType) {
-  try {
-    await db.collection('notifications').add({
-      productId: productId,
-      productTitle: currentProduct?.title || 'Unknown Product',
-      email: email,
-      actionType: actionType,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'pending'
-    });
-    console.log('Notification saved to Firebase');
-  } catch (error) {
-    console.error('Error saving notification to Firebase:', error);
-  }
-}
-
-function getRandomSold() { 
-  return Math.floor(Math.random() * (2000 - 500 + 1)) + 500; 
-}
-
-function getRandomViewers() { 
-  return Math.floor(Math.random() * (35 - 8 + 1)) + 8; 
-}
-
-async function loadProductReviews(productId) {
-  try {
-    console.log('Loading reviews for product:', productId);
-    
-    if (!productId) {
-      console.log('No product ID provided');
-      return [];
-    }
-    
-    const snapshot = await db.collection('reviews')
-      .where('productId', '==', productId)
-      .get();
-    
-    console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
-    
-    if (snapshot.empty) {
-      console.log('No reviews found for this product');
-      return [];
-    }
-    
-    const reviews = snapshot.docs.map(doc => {
-      const data = doc.data();
-      
-      let reviewDate = new Date();
-      if (data.timestamp) {
-        if (data.timestamp.toDate) {
-          reviewDate = data.timestamp.toDate();
-        } else if (data.timestamp.seconds) {
-          reviewDate = new Date(data.timestamp.seconds * 1000);
-        } else {
-          reviewDate = new Date(data.timestamp);
+        
+        const total = reviews.length;
+        if (total > 0) {
+          distribution = {
+            5: Math.round((distribution[5] / total) * 100),
+            4: Math.round((distribution[4] / total) * 100),
+            3: Math.round((distribution[3] / total) * 100),
+            2: Math.round((distribution[2] / total) * 100),
+            1: Math.round((distribution[1] / total) * 100)
+          };
         }
       }
       
-      return {
-        id: doc.id,
-        reviewerName: data.reviewerName || data.name || 'Anonymous',
-        city: data.city || 'India',
-        rating: data.rating || 5,
-        comment: data.comment || data.review || '',
-        verified: data.verified || false,
-        imageUrl: data.imageUrl || data.image || null,
-        timestamp: reviewDate
-      };
-    });
-    
-    reviews.sort((a, b) => b.timestamp - a.timestamp);
-    
-    console.log('Processed reviews:', reviews);
-    return reviews;
-    
-  } catch (error) {
-    console.error('Error loading reviews:', error);
-    return [];
-  }
-}
-
-async function submitReview(reviewData) {
-  try {
-    await db.collection('reviews').add({
-      ...reviewData,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      verified: true
-    });
-    return true;
-  } catch (error) {
-    console.error('Error submitting review:', error);
-    return false;
-  }
-}
-
-function generateRatingDistribution(reviews) {
-  let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  
-  if (reviews.length === 0) {
-    const baseRating = currentProduct?.rating || 4.5;
-    if (baseRating >= 4.5) {
-      distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
-    } else if (baseRating >= 4.0) {
-      distribution = { 5: 55, 4: 25, 3: 12, 2: 5, 1: 3 };
-    } else if (baseRating >= 3.5) {
-      distribution = { 5: 35, 4: 30, 3: 20, 2: 10, 1: 5 };
-    } else {
-      distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
-    }
-  } else {
-    reviews.forEach(review => {
-      const rating = Math.round(review.rating);
-      if (rating >= 1 && rating <= 5) {
-        distribution[rating]++;
+      const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
+      if (sum !== 100 && sum > 0) {
+        distribution[5] += (100 - sum);
       }
-    });
-    
-    const total = reviews.length;
-    if (total > 0) {
-      distribution = {
-        5: Math.round((distribution[5] / total) * 100),
-        4: Math.round((distribution[4] / total) * 100),
-        3: Math.round((distribution[3] / total) * 100),
-        2: Math.round((distribution[2] / total) * 100),
-        1: Math.round((distribution[1] / total) * 100)
-      };
-    }
-  }
-  
-  const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
-  if (sum !== 100 && sum > 0) {
-    distribution[5] += (100 - sum);
-  }
-  
-  return distribution;
-}
-
-function getStars(r) { 
-  r = parseFloat(r) || 4.5; 
-  let s = ''; 
-  for(let i = 1; i <= 5; i++) { 
-    if(r >= i) s += '<i class="fa-solid fa-star"></i>'; 
-    else if(r > i-1 && r < i) s += '<i class="fa-solid fa-star-half-alt"></i>'; 
-    else s += '<i class="fa-regular fa-star"></i>'; 
-  } 
-  return s; 
-}
-
-function getLargeStars(rating) {
-  rating = parseFloat(rating) || 4.5;
-  let stars = '';
-  for(let i = 1; i <= 5; i++) {
-    if(rating >= i) stars += '<i class="fa-solid fa-star"></i>';
-    else if(rating > i-1 && rating < i) stars += '<i class="fa-solid fa-star-half-alt"></i>';
-    else stars += '<i class="fa-regular fa-star"></i>';
-  }
-  return stars;
-}
-
-function selectPaymentMethod(method, event) {
-  selectedPaymentMethod = method;
-  document.querySelectorAll('.price-option').forEach(opt => {
-    opt.classList.remove('selected');
-  });
-  event.currentTarget.classList.add('selected');
-  
-  event.currentTarget.style.transform = 'scale(0.95)';
-  setTimeout(() => {
-    event.currentTarget.style.transform = '';
-  }, 200);
-}
-
-// ========== POPUP FUNCTIONS ==========
-
-window.toggleRazorpayPopup = function() {
-  const popup = document.getElementById('razorpayPopup');
-  if (popup) popup.classList.toggle('show');
-};
-
-window.closeRazorpayPopup = function() {
-  const popup = document.getElementById('razorpayPopup');
-  if (popup) popup.classList.remove('show');
-};
-
-window.toggleReviewModal = function() {
-  const modal = document.getElementById('reviewModal');
-  if (modal) {
-    modal.classList.toggle('show');
-    document.body.style.overflow = modal.classList.contains('show') ? 'hidden' : '';
-  }
-};
-
-window.closeReviewModal = function() {
-  const modal = document.getElementById('reviewModal');
-  if (modal) {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-    document.getElementById('reviewForm')?.reset();
-    const preview = document.getElementById('reviewImagePreview');
-    if (preview) preview.style.display = 'none';
-    window.selectedReviewImage = null;
-  }
-};
-
-window.handleReviewImageUpload = function(input) {
-  const file = input.files[0];
-  if (!file) return;
-  
-  if (file.size > 5 * 1024 * 1024) {
-    showNotification('Image too large (max 5MB)', 'error');
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const preview = document.getElementById('reviewImagePreview');
-    const previewImg = document.getElementById('reviewImagePreviewImg');
-    if (preview && previewImg) {
-      previewImg.src = e.target.result;
-      preview.style.display = 'block';
-    }
-    window.selectedReviewImage = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-window.removeReviewImage = function() {
-  const preview = document.getElementById('reviewImagePreview');
-  const previewImg = document.getElementById('reviewImagePreviewImg');
-  const fileInput = document.getElementById('reviewImageFile');
-  if (preview) preview.style.display = 'none';
-  if (previewImg) previewImg.src = '';
-  if (fileInput) fileInput.value = '';
-  window.selectedReviewImage = null;
-};
-
-window.submitReview = async function() {
-  if (!currentProduct) return;
-  
-  if (!hasUserPurchased(currentProduct.id)) {
-    showNotification('You can only review products you have purchased!', 'error');
-    return;
-  }
-  
-  const name = document.getElementById('reviewerName')?.value.trim();
-  const rating = parseInt(document.getElementById('reviewRating')?.value);
-  const comment = document.getElementById('reviewComment')?.value.trim();
-  const city = document.getElementById('reviewerCity')?.value.trim() || 'India';
-  
-  if (!name) {
-    showNotification('Please enter your name', 'error');
-    return;
-  }
-  
-  if (!rating || rating < 1 || rating > 5) {
-    showNotification('Please select a rating', 'error');
-    return;
-  }
-  
-  if (!comment) {
-    showNotification('Please write your review', 'error');
-    return;
-  }
-  
-  const reviewData = {
-    productId: currentProduct.id,
-    reviewerName: name,
-    city: city,
-    rating: rating,
-    comment: comment,
-    imageUrl: window.selectedReviewImage || null,
-    verified: true
-  };
-  
-  const success = await submitReview(reviewData);
-  
-  if (success) {
-    showNotification('Thank you for your review!', 'success');
-    window.closeReviewModal();
-    
-    productReviews = await loadProductReviews(currentProduct.id);
-    renderProduct(currentProduct);
-  } else {
-    showNotification('Failed to submit review. Please try again.', 'error');
-  }
-};
-
-window.showHighDemandPopup = function(action) {
-  currentAction = action;
-  const popup = document.getElementById('highDemandPopup');
-  const emailForm = document.getElementById('emailNotificationForm');
-  const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
-  
-  if (hasRequestedNotification(currentProduct.id)) {
-    if (emailForm) emailForm.style.display = 'none';
-    if (alreadyMessage) alreadyMessage.style.display = 'block';
-  } else {
-    if (emailForm) emailForm.style.display = 'block';
-    if (alreadyMessage) alreadyMessage.style.display = 'none';
-    const emailInput = document.getElementById('notificationEmail');
-    if (emailInput) emailInput.value = '';
-  }
-  
-  if (popup) {
-    popup.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-};
-
-window.closeHighDemandPopup = function() {
-  const popup = document.getElementById('highDemandPopup');
-  if (popup) {
-    popup.classList.remove('show');
-    document.body.style.overflow = '';
-  }
-  currentAction = null;
-};
-
-window.submitNotification = async function(actionType) {
-  if (!currentProduct) return;
-  
-  const email = document.getElementById('notificationEmail')?.value.trim();
-  if (!email || !isValidEmail(email)) {
-    showNotification('Please enter a valid email address', 'error');
-    return;
-  }
-  
-  markNotificationRequested(currentProduct.id, email);
-  await submitNotificationToFirebase(currentProduct.id, email, actionType);
-  
-  const emailForm = document.getElementById('emailNotificationForm');
-  const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
-  if (emailForm) emailForm.style.display = 'none';
-  if (alreadyMessage) alreadyMessage.style.display = 'block';
-  
-  showNotification('We\'ll notify you when this product is ready to dispatch!');
-  updateButtonStates();
-};
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function updateButtonStates() {
-  const addToCartBtn = document.querySelector('.btn-secondary');
-  const buyNowBtn = document.querySelector('.btn-primary');
-  
-  if (!addToCartBtn || !buyNowBtn || !currentProduct) return;
-  
-  if (currentProduct.highDemand) {
-    if (hasRequestedNotification(currentProduct.id)) {
-      addToCartBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
-      buyNowBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
-      addToCartBtn.classList.add('high-demand-disabled');
-      buyNowBtn.classList.add('high-demand-disabled');
-      addToCartBtn.disabled = true;
-      buyNowBtn.disabled = true;
-    } else {
-      addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
-      buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
-      addToCartBtn.classList.remove('high-demand-disabled');
-      buyNowBtn.classList.remove('high-demand-disabled');
-      addToCartBtn.disabled = false;
-      buyNowBtn.disabled = false;
-    }
-  } else {
-    addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
-    buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
-    addToCartBtn.classList.remove('high-demand-disabled');
-    buyNowBtn.classList.remove('high-demand-disabled');
-    addToCartBtn.disabled = false;
-    buyNowBtn.disabled = false;
-  }
-}
-
-// ========== HEADER/FOOTER LOADING ==========
-
-async function loadComponents() {
-  try {
-    // Try to load header
-    let headerHtml = '';
-    try {
-      const headerResponse = await fetch('header.html');
-      if (headerResponse.ok) {
-        headerHtml = await headerResponse.text();
-      } else {
-        throw new Error('Header not found');
-      }
-    } catch (error) {
-      console.warn('Using fallback header');
-      headerHtml = getFallbackHeader();
-    }
-    
-    document.getElementById('header').innerHTML = headerHtml;
-    
-    // Try to load footer
-    let footerHtml = '';
-    try {
-      const footerResponse = await fetch('footer.html');
-      if (footerResponse.ok) {
-        footerHtml = await footerResponse.text();
-      } else {
-        throw new Error('Footer not found');
-      }
-    } catch (error) {
-      console.warn('Using fallback footer');
-      footerHtml = getFallbackFooter();
-    }
-    
-    document.getElementById('footer').innerHTML = footerHtml;
-    
-    // Create cart sidebar after header is loaded
-    setTimeout(() => {
-      createCartSidebar();
-      createAccountDropdown();
-      window.updateCartCount();
-    }, 200);
-    
-  } catch (error) {
-    console.error('Error loading components:', error);
-    document.getElementById('header').innerHTML = getFallbackHeader();
-    document.getElementById('footer').innerHTML = getFallbackFooter();
-    
-    setTimeout(() => {
-      createCartSidebar();
-      createAccountDropdown();
-      window.updateCartCount();
-    }, 200);
-  }
-}
-
-function getFallbackHeader() {
-  return `
-    <header style="background: #000; border-bottom: 3px solid #d4af37; position: sticky; top: 0; z-index: 100;">
-      <div style="max-width: 1200px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-          <button class="mobile-menu-btn" onclick="toggleMobileMenu()" style="background: none; border: none; color: #d4af37; font-size: 1.5rem; cursor: pointer; display: none;">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-          <a href="index.html" style="font-size: 1.8rem; font-weight: 900; color: #d4af37; text-decoration: none; letter-spacing: -0.5px;">
-            My<span style="color: white;">Essantia</span>
-          </a>
-        </div>
-        
-        <nav style="display: flex; gap: 25px;">
-          <a href="index.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Home</a>
-          <a href="collection.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Collection</a>
-          <a href="about.html" style="color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">About</a>
-        </nav>
-        
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <button class="account-btn" onclick="toggleAccountDropdown()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; position: relative;">
-            <i class="fa-regular fa-user"></i>
-          </button>
-          <button class="cart-btn" onclick="openCart()" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; position: relative;">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-count" style="position: absolute; top: -8px; right: -8px; background: #d4af37; color: #000; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: 800;">0</span>
-          </button>
-        </div>
-      </div>
       
-      <style>
-        @media (max-width: 768px) {
-          .mobile-menu-btn { display: block !important; }
-          nav { display: none !important; }
-        }
-      </style>
-    </header>
-  `;
-}
+      return distribution;
+    }
 
-function getFallbackFooter() {
-  return `
-    <footer style="background: #000; color: white; padding: 40px 20px 20px; margin-top: 50px; border-top: 3px solid #d4af37;">
-      <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px;">
-        <div>
-          <h3 style="color: #d4af37; font-size: 1.2rem; margin-bottom: 15px;">MyEssantia</h3>
-          <p style="color: #ccc; font-size: 0.85rem; line-height: 1.5;">Premium quality products for your everyday essential needs.</p>
-        </div>
-        <div>
-          <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Quick Links</h4>
-          <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 8px;"><a href="about.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">About Us</a></li>
-            <li style="margin-bottom: 8px;"><a href="contact.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Contact</a></li>
-            <li style="margin-bottom: 8px;"><a href="shipping.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Shipping</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Policies</h4>
-          <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 8px;"><a href="privacy.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Privacy Policy</a></li>
-            <li style="margin-bottom: 8px;"><a href="terms.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Terms of Use</a></li>
-            <li style="margin-bottom: 8px;"><a href="returns.html" style="color: #ccc; text-decoration: none; font-size: 0.85rem;">Returns</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 style="color: #d4af37; font-size: 1rem; margin-bottom: 15px;">Connect</h4>
-          <div style="display: flex; gap: 15px;">
-            <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-facebook"></i></a>
-            <a href="#" style="color: #ccc; font-size: 1.2rem;"><i class="fa-brands fa-twitter"></i></a>
-          </div>
-        </div>
-      </div>
-      <div style="max-width: 1200px; margin: 30px auto 0; padding-top: 20px; border-top: 1px solid #333; text-align: center; color: #888; font-size: 0.8rem;">
-        © 2026 MyEssantia. All rights reserved.
-      </div>
-    </footer>
-  `;
-}
-
-// ========== PRODUCT RENDERING ==========
-
-window.changeImage = function(src, el) { 
-  const mainImage = document.getElementById('mainImage');
-  if (mainImage) mainImage.src = src; 
-  document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); 
-  el.classList.add('active'); 
-};
-
-window.updateQuantity = function(delta) { 
-  const inp = document.getElementById('productQuantity'); 
-  if (!inp) return;
-  let v = parseInt(inp.value) || 1; 
-  v += delta; 
-  if(v < 1) v = 1; 
-  if(currentProduct && v > currentProduct.stock) v = currentProduct.stock; 
-  inp.value = v; 
-  if(currentProduct) updateDeliveryBar(currentProduct.price * v); 
-};
-
-function updateDeliveryBar(t) { 
-  const p = document.getElementById('deliveryProgress'); 
-  const tx = document.getElementById('deliveryText'); 
-  if(!p || !tx) return; 
-  p.style.width = Math.min(100, (t/1299) * 100) + '%'; 
-  tx.innerHTML = t >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - t).toFixed(2)}</span> more`; 
-}
-
-window.toggleShare = function(e) { 
-  e.stopPropagation(); 
-  const m = document.getElementById('shareMenu'); 
-  if (!m) return;
-  m.classList.toggle('show'); 
-  if(m.classList.contains('show')) {
-    setTimeout(() => document.addEventListener('click', function f(e) { 
-      if(!m.contains(e.target) && !e.target.closest('.share-btn')) { 
-        m.classList.remove('show'); 
-        document.removeEventListener('click', f); 
+    function getStars(r) { 
+      r = parseFloat(r) || 4.5; 
+      let s = ''; 
+      for(let i = 1; i <= 5; i++) { 
+        if(r >= i) s += '<i class="fa-solid fa-star"></i>'; 
+        else if(r > i-1 && r < i) s += '<i class="fa-solid fa-star-half-alt"></i>'; 
+        else s += '<i class="fa-regular fa-star"></i>'; 
       } 
-    }), 100); 
-  }
-};
-
-window.copyLink = function() { 
-  const i = document.getElementById('shareLink'); 
-  if (!i) return;
-  i.select(); 
-  navigator.clipboard.writeText(i.value); 
-  const copyBtn = document.querySelector('.copy-btn');
-  if (copyBtn) {
-    copyBtn.textContent = 'Copied!'; 
-    setTimeout(() => copyBtn.textContent = 'Copy', 2000); 
-  }
-};
-
-window.shareOn = function(platform) {
-  const url = encodeURIComponent(window.location.href);
-  const title = encodeURIComponent(currentProduct?.title || 'Check this product');
-  let shareUrl = '';
-  
-  switch(platform) {
-    case 'facebook':
-      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-      break;
-    case 'twitter':
-      shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
-      break;
-    case 'whatsapp':
-      shareUrl = `https://wa.me/?text=${title}%20${url}`;
-      break;
-  }
-  
-  if (shareUrl) window.open(shareUrl, '_blank');
-};
-
-window.switchTab = function(t) { 
-  document.querySelectorAll('.tab-header').forEach(h => h.classList.remove('active')); 
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); 
-  const header = document.querySelector(`.tab-header[onclick="switchTab('${t}')"]`);
-  if (header) header.classList.add('active'); 
-  const content = document.getElementById(`tab-${t}`);
-  if (content) content.classList.add('active'); 
-};
-
-function getDeliveryDates() {
-  const today = new Date();
-  
-  const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 5);
-  
-  const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + 7);
-  
-  const options = { day: 'numeric', month: 'short' };
-  const minDateStr = minDate.toLocaleDateString('en-IN', options);
-  const maxDateStr = maxDate.toLocaleDateString('en-IN', options);
-  
-  const minYear = minDate.getFullYear();
-  const maxYear = maxDate.getFullYear();
-  const currentYear = today.getFullYear();
-  
-  if (minYear !== currentYear || maxYear !== currentYear) {
-    const yearOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    return {
-      min: minDate.toLocaleDateString('en-IN', yearOptions),
-      max: maxDate.toLocaleDateString('en-IN', yearOptions),
-      display: `${minDate.toLocaleDateString('en-IN', yearOptions)} - ${maxDate.toLocaleDateString('en-IN', yearOptions)}`
-    };
-  }
-  
-  return {
-    min: minDateStr,
-    max: maxDateStr,
-    display: `${minDateStr} - ${maxDateStr}`
-  };
-}
-
-function initStickyGallery() {
-  const gallery = document.querySelector('.gallery-section');
-  const productGrid = document.querySelector('.product-grid');
-  
-  if (!gallery || !productGrid) return;
-  
-  function handleStickyScroll() {
-    if (window.innerWidth < 1024) {
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-      return;
+      return s; 
     }
-    
-    const scrollY = window.scrollY;
-    const productGridTop = productGrid.offsetTop;
-    const productGridHeight = productGrid.offsetHeight;
-    const galleryHeight = gallery.offsetHeight;
-    
-    const stickyStart = productGridTop - 20;
-    const stickyEnd = productGridTop + productGridHeight - galleryHeight - 20;
-    
-    if (scrollY > stickyStart && scrollY < stickyEnd) {
-      gallery.style.position = 'sticky';
-      gallery.style.top = '20px';
-    } else if (scrollY >= stickyEnd) {
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-    } else {
-      gallery.style.position = 'relative';
-      gallery.style.top = 'auto';
-    }
-  }
-  
-  window.addEventListener('scroll', handleStickyScroll);
-  handleStickyScroll();
-  
-  window.addEventListener('resize', handleStickyScroll);
-}
 
-async function loadProduct() {
-  const productId = getProductId();
-  if (!productId) return showNotFound();
-  
-  try {
-    console.log('Loading product with ID:', productId);
-    
-    const doc = await db.collection('products').doc(productId).get();
-    if (!doc.exists) {
-      const localProducts = JSON.parse(localStorage.getItem('myessantia_products') || '[]');
-      const localProduct = localProducts.find(p => p.id === productId);
-      if (localProduct) {
-        currentProduct = localProduct;
-      } else {
-        return showNotFound();
+    function getLargeStars(rating) {
+      rating = parseFloat(rating) || 4.5;
+      let stars = '';
+      for(let i = 1; i <= 5; i++) {
+        if(rating >= i) stars += '<i class="fa-solid fa-star"></i>';
+        else if(rating > i-1 && rating < i) stars += '<i class="fa-solid fa-star-half-alt"></i>';
+        else stars += '<i class="fa-regular fa-star"></i>';
       }
-    } else {
-      currentProduct = { id: doc.id, ...doc.data() };
+      return stars;
     }
-    
-    document.getElementById('breadcrumb-product').textContent = currentProduct.title;
-    
-    console.log('Product loaded:', currentProduct.title);
-    
-    productReviews = await loadProductReviews(productId);
-    console.log('Reviews loaded:', productReviews.length);
-    
-    renderProduct(currentProduct);
-    
-  } catch (error) { 
-    console.error('Error loading product:', error); 
-    showNotFound();
-  }
-}
 
-function showNotFound() {
-  document.getElementById('product-container').innerHTML = `
-    <div style="text-align: center; padding: 3rem 1.5rem;">
-      <i class="fa-solid fa-box-open" style="font-size: 3rem; color: #d4af37;"></i>
-      <h2 style="margin: 0.8rem 0; font-size: 1.5rem;">Product Not Found</h2>
-      <p style="font-size: 0.9rem;">The product you're looking for doesn't exist or has been removed.</p>
-      <a href="collection.html" class="btn btn-primary" style="display: inline-block; margin-top: 1.5rem; padding: 0.8rem 1.5rem; text-decoration: none;">Browse Collection</a>
-    </div>
-  `;
-}
-
-function renderProduct(product) {
-  const images = [];
-  if (product.media && Array.isArray(product.media)) {
-    product.media.forEach(item => {
-      if (item.url) images.push(item.url);
-    });
-  }
-  if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
-  
-  const stock = product.stock || 10;
-  const soldCount = getRandomSold();
-  const liveViewers = getRandomViewers();
-  
-  const sellingPrice = product.price || 0;
-  const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
-  const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
-  
-  const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
-  const codPrice = product.codPrice || Math.round(sellingPrice + 100);
-  
-  const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
-
-  const ratingDist = generateRatingDistribution(productReviews);
-
-  const ratingChartHTML = `
-    <div class="rating-chart-card mobile-only-rating">
-      <div class="rating-chart-header">
-        <div>
-          <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
-          <span class="rating-outof">/5</span>
-        </div>
-        <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
-        <span class="rating-count">${reviewCount} reviews</span>
-      </div>
-      <div class="rating-bars">
-        ${[5,4,3,2,1].map(star => `
-        <div class="rating-bar-row">
-          <span class="bar-label">${star} ★</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
-          </div>
-          <span class="bar-percent">${ratingDist[star]}%</span>
-        </div>`).join('')}
-      </div>
-    </div>
-  `;
-
-  let reviewsHTML = '';
-
-  if (productReviews && productReviews.length > 0) {
-    reviewsHTML = `<div class="reviews-header">
-      <span>Customer Reviews</span>
-      <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-        <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
-        <button class="write-review-btn" onclick="toggleReviewModal()">
-          <i class="fa-solid fa-pen"></i> Write Review
-        </button>
-      </div>
-    </div>`;
-    
-    reviewsHTML += `<div class="reviews-common-frame">`;
-    reviewsHTML += `<div class="reviews-grid">`;
-    
-    reviewsHTML += productReviews.map(review => {
-      const rating = review.rating || 5;
-      const fullStars = Math.floor(rating);
-      const hasHalf = rating % 1 >= 0.5;
+    function selectPaymentMethod(method, event) {
+      selectedPaymentMethod = method;
+      document.querySelectorAll('.price-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      event.currentTarget.classList.add('selected');
       
-      let starsHTML = '';
-      for (let i = 1; i <= 5; i++) {
-        if (i <= fullStars) {
-          starsHTML += `<i class="fa-solid fa-star" style="color: #F1C645;"></i>`;
-        } else if (i === fullStars + 1 && hasHalf) {
-          starsHTML += `<i class="fa-solid fa-star-half-alt" style="color: #F1C645;"></i>`;
-        } else {
-          starsHTML += `<i class="fa-regular fa-star" style="color: #F1C645;"></i>`;
+      event.currentTarget.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        event.currentTarget.style.transform = '';
+      }, 200);
+      
+      setTimeout(() => {
+        const actionButtons = document.querySelector('.action-buttons');
+        if (actionButtons) {
+          actionButtons.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          actionButtons.classList.add('scroll-highlight');
+          setTimeout(() => {
+            actionButtons.classList.remove('scroll-highlight');
+          }, 1000);
         }
+      }, 300);
+    }
+
+    window.toggleRazorpayPopup = function() {
+      const popup = document.getElementById('razorpayPopup');
+      if (popup) popup.classList.toggle('show');
+    };
+
+    window.closeRazorpayPopup = function() {
+      const popup = document.getElementById('razorpayPopup');
+      if (popup) popup.classList.remove('show');
+    };
+
+    window.toggleReviewModal = function() {
+      const modal = document.getElementById('reviewModal');
+      if (modal) {
+        modal.classList.toggle('show');
+      }
+    };
+
+    window.closeReviewModal = function() {
+      const modal = document.getElementById('reviewModal');
+      if (modal) {
+        modal.classList.remove('show');
+        document.getElementById('reviewForm')?.reset();
+        const preview = document.getElementById('reviewImagePreview');
+        if (preview) preview.style.display = 'none';
+        window.selectedReviewImage = null;
+      }
+    };
+
+    window.handleReviewImageUpload = function(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('Image too large (max 5MB)', 'error');
+        return;
       }
       
-      const imageUrl = review.imageUrl || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400';
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('reviewImagePreview');
+        const previewImg = document.getElementById('reviewImagePreviewImg');
+        if (preview && previewImg) {
+          previewImg.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        window.selectedReviewImage = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.removeReviewImage = function() {
+      const preview = document.getElementById('reviewImagePreview');
+      const previewImg = document.getElementById('reviewImagePreviewImg');
+      const fileInput = document.getElementById('reviewImageFile');
+      if (preview) preview.style.display = 'none';
+      if (previewImg) previewImg.src = '';
+      if (fileInput) fileInput.value = '';
+      window.selectedReviewImage = null;
+    };
+
+    window.submitReview = async function() {
+      if (!currentProduct) return;
       
-      return `
-        <div class="review-item">
-          <div class="review-card">
-            <div class="review-media">
-              <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400'">
-            </div>
-            <div class="review-details">
-              <div class="review-header">
-                <div class="author-name-w-details">
-                  <div class="author-name">${review.reviewerName}</div>
-                </div>
-              </div>
-              <div class="tydal-star-wrapper">
-                ${starsHTML}
-              </div>
-              <div class="review-text">
-                ${review.comment}
-              </div>
-            </div>
-          </div>
+      if (!hasUserPurchased(currentProduct.id)) {
+        showNotification('You can only review products you have purchased!', 'error');
+        return;
+      }
+      
+      const name = document.getElementById('reviewerName')?.value.trim();
+      const rating = parseInt(document.getElementById('reviewRating')?.value);
+      const comment = document.getElementById('reviewComment')?.value.trim();
+      const city = document.getElementById('reviewerCity')?.value.trim() || 'India';
+      
+      if (!name) {
+        showNotification('Please enter your name', 'error');
+        return;
+      }
+      
+      if (!rating || rating < 1 || rating > 5) {
+        showNotification('Please select a rating', 'error');
+        return;
+      }
+      
+      if (!comment) {
+        showNotification('Please write your review', 'error');
+        return;
+      }
+      
+      const reviewData = {
+        productId: currentProduct.id,
+        reviewerName: name,
+        city: city,
+        rating: rating,
+        comment: comment,
+        imageUrl: window.selectedReviewImage || null,
+        verified: true
+      };
+      
+      const success = await submitReview(reviewData);
+      
+      if (success) {
+        showNotification('Thank you for your review!', 'success');
+        window.closeReviewModal();
+        
+        productReviews = await loadProductReviews(currentProduct.id);
+        renderProduct(currentProduct);
+      } else {
+        showNotification('Failed to submit review. Please try again.', 'error');
+      }
+    };
+
+    window.showHighDemandPopup = function(action) {
+      currentAction = action;
+      const popup = document.getElementById('highDemandPopup');
+      const emailForm = document.getElementById('emailNotificationForm');
+      const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
+      
+      if (hasRequestedNotification(currentProduct.id)) {
+        if (emailForm) emailForm.style.display = 'none';
+        if (alreadyMessage) alreadyMessage.style.display = 'block';
+      } else {
+        if (emailForm) emailForm.style.display = 'block';
+        if (alreadyMessage) alreadyMessage.style.display = 'none';
+        const emailInput = document.getElementById('notificationEmail');
+        if (emailInput) emailInput.value = '';
+      }
+      
+      if (popup) popup.classList.add('show');
+    };
+
+    window.closeHighDemandPopup = function() {
+      const popup = document.getElementById('highDemandPopup');
+      if (popup) popup.classList.remove('show');
+      currentAction = null;
+    };
+
+    window.submitNotification = async function(actionType) {
+      if (!currentProduct) return;
+      
+      const email = document.getElementById('notificationEmail')?.value.trim();
+      if (!email || !isValidEmail(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+      }
+      
+      markNotificationRequested(currentProduct.id, email);
+      await submitNotificationToFirebase(currentProduct.id, email, actionType);
+      
+      const emailForm = document.getElementById('emailNotificationForm');
+      const alreadyMessage = document.getElementById('alreadyNotifiedMessage');
+      if (emailForm) emailForm.style.display = 'none';
+      if (alreadyMessage) alreadyMessage.style.display = 'block';
+      
+      showNotification('We\'ll notify you when this product is ready to dispatch!');
+      updateButtonStates();
+    };
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      if (type === 'error') {
+        notification.style.background = '#ff4444';
+        notification.style.color = 'white';
+        notification.style.borderColor = '#000';
+      }
+      notification.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Use the global addToCart from common.js
+    window.addToCart = function() {
+      if (!currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('cart');
+        return;
+      }
+      
+      // Use the global addToCart function from common.js
+      if (typeof window.addToCart === 'function' && window.addToCart !== arguments.callee) {
+        // Call the global function with the product ID
+        window.addToCart(currentProduct.id);
+      } else {
+        // Fallback if global function not available
+        const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
+        
+        if (currentProduct.stock <= 0) {
+          showNotification('Sorry, this product is out of stock!');
+          return;
+        }
+
+        if (quantity > currentProduct.stock) {
+          showNotification(`Only ${currentProduct.stock} items available!`);
+          return;
+        }
+
+        const productToAdd = {
+          id: currentProduct.id,
+          title: currentProduct.title,
+          price: currentProduct.price,
+          image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
+          quantity: quantity
+        };
+
+        const existingItemIndex = window.cart.findIndex(item => item.id === productToAdd.id);
+        
+        if (existingItemIndex >= 0) {
+          window.cart[existingItemIndex].quantity += quantity;
+        } else {
+          window.cart.push(productToAdd);
+        }
+        
+        localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+        
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        }
+        
+        showNotification(`${productToAdd.title} added to cart!`);
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+        }, 300);
+      }
+    };
+
+    window.buyNow = function() {
+      if (!currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('buy');
+        return;
+      }
+      
+      // Add to cart first
+      window.addToCart();
+      
+      // Then redirect to checkout
+      setTimeout(() => {
+        window.location.href = 'checkout.html';
+      }, 500);
+    };
+
+    function updateButtonStates() {
+      const addToCartBtn = document.querySelector('.btn-secondary');
+      const buyNowBtn = document.querySelector('.btn-primary');
+      
+      if (!addToCartBtn || !buyNowBtn || !currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        if (hasRequestedNotification(currentProduct.id)) {
+          addToCartBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
+          buyNowBtn.innerHTML = '<i class="fa-regular fa-bell"></i> Will Notify Soon!';
+          addToCartBtn.classList.add('high-demand-disabled');
+          buyNowBtn.classList.add('high-demand-disabled');
+          addToCartBtn.disabled = true;
+          buyNowBtn.disabled = true;
+        } else {
+          addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
+          buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
+          addToCartBtn.classList.remove('high-demand-disabled');
+          buyNowBtn.classList.remove('high-demand-disabled');
+          addToCartBtn.disabled = false;
+          buyNowBtn.disabled = false;
+        }
+      } else {
+        addToCartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Add to Cart';
+        buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Buy Now';
+        addToCartBtn.classList.remove('high-demand-disabled');
+        buyNowBtn.classList.remove('high-demand-disabled');
+        addToCartBtn.disabled = false;
+        buyNowBtn.disabled = false;
+      }
+    }
+
+    // Use the global loadComponents from common.js, but add product-specific logic
+    const originalLoadComponents = window.loadComponents || function() {};
+    window.loadComponents = async function() {
+      await originalLoadComponents();
+      // Product-specific initialization after components are loaded
+      setTimeout(() => {
+        // Set active nav for product page
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.nav-link[href="collection.html"]').forEach(l => l.classList.add('active'));
+        
+        // Also handle mobile menu
+        document.querySelectorAll('.mobile-menu-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.mobile-menu-link[href="collection.html"]').forEach(l => l.classList.add('active'));
+      }, 200);
+    };
+
+    async function loadProduct() {
+      const productId = getProductId();
+      if (!productId) return showNotFound();
+      
+      try {
+        console.log('Loading product with ID:', productId);
+        
+        const doc = await db.collection('products').doc(productId).get();
+        if (!doc.exists) {
+          // Try to load from localStorage as fallback
+          const localProducts = JSON.parse(localStorage.getItem('myessantia_products') || '[]');
+          const localProduct = localProducts.find(p => p.id === productId);
+          if (localProduct) {
+            currentProduct = localProduct;
+          } else {
+            return showNotFound();
+          }
+        } else {
+          currentProduct = { id: doc.id, ...doc.data() };
+        }
+        
+        document.getElementById('breadcrumb-product').textContent = currentProduct.title;
+        
+        console.log('Product loaded:', currentProduct.title);
+        
+        productReviews = await loadProductReviews(productId);
+        console.log('Reviews loaded:', productReviews.length);
+        
+        renderProduct(currentProduct);
+        
+      } catch (error) { 
+        console.error('Error loading product:', error); 
+        showNotFound();
+      }
+    }
+
+    function showNotFound() {
+      document.getElementById('product-container').innerHTML = `
+        <div style="text-align: center; padding: 3rem 1.5rem;">
+          <i class="fa-solid fa-box-open" style="font-size: 3rem; color: #d4af37;"></i>
+          <h2 style="margin: 0.8rem 0; font-size: 1.5rem;">Product Not Found</h2>
+          <p style="font-size: 0.9rem;">The product you're looking for doesn't exist or has been removed.</p>
+          <a href="collection.html" class="btn btn-primary" style="display: inline-block; margin-top: 1.5rem; padding: 0.8rem 1.5rem; text-decoration: none;">Browse Collection</a>
         </div>
       `;
-    }).join('');
-    
-    reviewsHTML += `</div>`;
-    reviewsHTML += `</div>`;
-  } else {
-    reviewsHTML = `
-      <div class="reviews-header">
-        <span>Customer Reviews</span>
-        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-          <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
-          <button class="write-review-btn" onclick="toggleReviewModal()">
-            <i class="fa-solid fa-pen"></i> Write Review
-          </button>
-        </div>
-      </div>
-      <div class="reviews-common-frame">
-        <div class="empty-state">
-          <i class="fa-regular fa-star"></i>
-          <h3>No reviews yet</h3>
-          <p>Be the first to review this product!</p>
-        </div>
-      </div>
-    `;
-  }
-
-  // Generate product description HTML
-  let productDescriptionHTML = '<div class="product__description rte quick-add-hidden">';
-
-  if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks) && product.descriptionBlocks.length > 0) {
-    product.descriptionBlocks.forEach(block => {
-      if (block.type === 'text') {
-        productDescriptionHTML += `<p>${block.content || ''}</p>`;
-      }
-      else if (block.type === 'heading') {
-        const level = block.level || 'h2';
-        productDescriptionHTML += `<${level}>${block.content || ''}</${level}>`;
-      }
-      else if (block.type === 'image') {
-        if (block.url) {
-          productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image"></p>`;
-        }
-      }
-      else if (block.type === 'video') {
-        const url = block.url || '';
-        const alignment = block.alignment || 'center';
-        
-        if (url) {
-          if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            let videoId = '';
-            if (url.includes('youtube.com/watch?v=')) {
-              videoId = url.split('v=')[1]?.split('&')[0];
-            } else if (url.includes('youtu.be/')) {
-              videoId = url.split('youtu.be/')[1]?.split('?')[0];
-            }
-            
-            if (videoId) {
-              productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></p>`;
-            }
-          } else {
-            productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
-          }
-        }
-      }
-      else if (block.type === 'bullets') {
-        if (block.items && block.items.length > 0) {
-          productDescriptionHTML += `<ul>`;
-          block.items.forEach(item => {
-            if (item) {
-              productDescriptionHTML += `<li><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${item}</li>`;
-            }
-          });
-          productDescriptionHTML += `</ul>`;
-        }
-      }
-    });
-  } else {
-    productDescriptionHTML += `<p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>`;
-    
-    if (product.specs && product.specs.length > 0) {
-      productDescriptionHTML += `<h3>✨ <strong>Key Features:</strong></h3>`;
-      productDescriptionHTML += `<ul>`;
-      product.specs.forEach(spec => {
-        productDescriptionHTML += `<li><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${spec}</li>`;
-      });
-      productDescriptionHTML += `</ul>`;
     }
-  }
 
-  productDescriptionHTML += '</div>';
+    // ===== STICKY GALLERY FUNCTION =====
+    function initStickyGallery() {
+      const gallery = document.querySelector('.gallery-section');
+      const productGrid = document.querySelector('.product-grid');
+      
+      if (!gallery || !productGrid) return;
+      
+      function handleStickyScroll() {
+        if (window.innerWidth < 1024) return; // Only on desktop
+        
+        const scrollY = window.scrollY;
+        const productGridTop = productGrid.offsetTop;
+        const productGridHeight = productGrid.offsetHeight;
+        const galleryHeight = gallery.offsetHeight;
+        
+        const stickyStart = productGridTop - 20;
+        const stickyEnd = productGridTop + productGridHeight - galleryHeight - 20;
+        
+        if (scrollY > stickyStart && scrollY < stickyEnd) {
+          gallery.style.position = 'sticky';
+          gallery.style.top = '20px';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.add('sticky-active');
+        } else if (scrollY >= stickyEnd) {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.remove('sticky-active');
+        } else {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.style.alignSelf = 'start';
+          gallery.classList.remove('sticky-active');
+        }
+      }
+      
+      window.addEventListener('scroll', handleStickyScroll);
+      handleStickyScroll();
+      
+      window.addEventListener('resize', () => {
+        if (window.innerWidth < 1024) {
+          gallery.style.position = 'relative';
+          gallery.style.top = 'auto';
+          gallery.classList.remove('sticky-active');
+        } else {
+          handleStickyScroll();
+        }
+      });
+    }
 
-  const mobileReviewsHTML = `
-    <div class="mobile-reviews">
-      ${ratingChartHTML}
-      ${reviewsHTML}
-    </div>
-  `;
+    function renderProduct(product) {
+      const images = [];
+      if (product.media && Array.isArray(product.media)) {
+        product.media.forEach(item => {
+          if (item.url) images.push(item.url);
+        });
+      }
+      if (images.length === 0) images.push(product.primaryImg || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600');
+      
+      const stock = product.stock || 10;
+      const soldCount = getRandomSold();
+      const liveViewers = getRandomViewers();
+      
+      const sellingPrice = product.price || 0;
+      const originalPrice = product.originalPrice || Math.round(sellingPrice * 1.25);
+      const discount = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+      
+      const prepaidPrice = product.prepaidPrice || Math.round(sellingPrice * 0.85);
+      const codPrice = product.codPrice || Math.round(sellingPrice + 100);
+      
+      // Use admin-provided review count
+      const reviewCount = product.reviewCount || (productReviews.length > 0 ? productReviews.length : Math.floor(Math.random() * (350 - 45 + 1)) + 45);
 
-  const container = document.getElementById('product-container');
-  container.innerHTML = `
-    <!-- Write Review Modal -->
-    <div class="review-modal" id="reviewModal">
-      <div class="review-modal-content">
-        <div class="review-modal-header">
-          <h3><i class="fa-solid fa-pen"></i> Write a Review</h3>
-          <button class="close-modal-btn" onclick="closeReviewModal()">×</button>
-        </div>
-        <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
-          <div class="review-modal-body">
-            <div class="form-group">
-              <label><i class="fa-solid fa-user"></i> Your Name *</label>
-              <input type="text" id="reviewerName" placeholder="Enter your name" required>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-location-dot"></i> City</label>
-              <input type="text" id="reviewerCity" placeholder="e.g. Mumbai">
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-star"></i> Rating *</label>
-              <select id="reviewRating" required>
-                <option value="">Select rating</option>
-                <option value="5">5 ★ (Excellent)</option>
-                <option value="4">4 ★ (Good)</option>
-                <option value="3">3 ★ (Average)</option>
-                <option value="2">2 ★ (Poor)</option>
-                <option value="1">1 ★ (Terrible)</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-comment"></i> Your Review *</label>
-              <textarea id="reviewComment" rows="4" placeholder="Share your experience with this product..." required></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label><i class="fa-solid fa-image"></i> Add Photos (Optional)</label>
-              <div class="image-upload-area">
-                <input type="file" id="reviewImageFile" accept="image/*" onchange="handleReviewImageUpload(this)" style="display: none;">
-                <button type="button" class="upload-btn" onclick="document.getElementById('reviewImageFile').click()">
-                  <i class="fa-solid fa-cloud-upload-alt"></i> Choose Image
-                </button>
-                <div class="image-preview" id="reviewImagePreview" style="display: none;">
-                  <img id="reviewImagePreviewImg" src="" alt="Preview">
-                  <button type="button" class="remove-image-btn" onclick="removeReviewImage()">×</button>
-                </div>
-              </div>
-              <small class="hint">Max 5MB. Images help other customers.</small>
-            </div>
-          </div>
-          
-          <div class="review-modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-          </div>
-        </form>
-      </div>
-    </div>
+      const ratingDist = generateRatingDistribution(productReviews);
 
-    <div class="product-grid">
-      <!-- GALLERY COLUMN -->
-      <div class="gallery-section">
-        <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
-        <div class="thumbnail-grid">
-          ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
-        </div>
-        <div class="rating-chart-card desktop-only-rating">
+      // Rating Chart HTML (used for mobile only)
+      const ratingChartHTML = `
+        <div class="rating-chart-card mobile-only-rating">
           <div class="rating-chart-header">
             <div>
               <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
@@ -3958,557 +3128,593 @@ function renderProduct(product) {
             </div>`).join('')}
           </div>
         </div>
+      `;
+
+      let reviewsHTML = '';
+
+      if (productReviews && productReviews.length > 0) {
+        reviewsHTML = `<div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
+          <span>Customer Reviews</span>
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
+            <button class="write-review-btn" onclick="toggleReviewModal()">
+              <i class="fa-solid fa-pen"></i> Write Review
+            </button>
+          </div>
+        </div>`;
         
-        <div class="desktop-reviews-section">
+        reviewsHTML += `<div class="reviews-common-frame">`;
+        reviewsHTML += `<div class="reviews-grid">`;
+        
+        reviewsHTML += productReviews.map(review => {
+          const rating = review.rating || 5;
+          const fullStars = Math.floor(rating);
+          const hasHalf = rating % 1 >= 0.5;
+          
+          let starsHTML = '';
+          for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"></path>
+                </svg>
+              `;
+            } else if (i === fullStars + 1 && hasHalf) {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
+                  <path d="m0 0h24v24h-24z" fill="none"></path>
+                  <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z"></path>
+                </svg>
+              `;
+            } else {
+              starsHTML += `
+                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+                  <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
+                  <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
+                </svg>
+              `;
+            }
+          }
+          
+          const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
+          
+          return `
+            <div class="review-item">
+              <div class="review-card">
+                <div class="review-media">
+                  <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
+                </div>
+                <div class="review-details">
+                  <div class="review-header">
+                    <div class="author-name-w-details">
+                      <div class="author-name">${review.reviewerName}</div>
+                    </div>
+                  </div>
+                  <div class="tydal-star-wrapper">
+                    ${starsHTML}
+                  </div>
+                  <div class="review-text">
+                    ${review.comment}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        reviewsHTML += `</div>`;
+        reviewsHTML += `</div>`;
+      } else {
+        reviewsHTML = `
+          <div class="reviews-header" style="font-size: 1.5rem; font-weight: 400; font-family: 'Proza Libre', sans-serif;">
+            <span>Customer Reviews</span>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+              <span>★ ${(product.rating || 4.5).toFixed(1)} (${reviewCount})</span>
+              <button class="write-review-btn" onclick="toggleReviewModal()">
+                <i class="fa-solid fa-pen"></i> Write Review
+              </button>
+            </div>
+          </div>
+          <div class="reviews-common-frame">
+            <div class="empty-state">
+              <i class="fa-regular fa-star"></i>
+              <h3>No reviews yet</h3>
+              <p>Be the first to review this product!</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // Generate product description HTML from blocks
+      let productDescriptionHTML = '<div class="product__description rte quick-add-hidden" style="margin: 2.5rem 0;">';
+
+      if (product.descriptionBlocks && Array.isArray(product.descriptionBlocks) && product.descriptionBlocks.length > 0) {
+        product.descriptionBlocks.forEach(block => {
+          if (block.type === 'text') {
+            productDescriptionHTML += `<p style="margin-bottom: 1.5rem; line-height: 1.6;">${block.content || ''}</p>`;
+          }
+          else if (block.type === 'heading') {
+            const level = block.level || 'h2';
+            productDescriptionHTML += `<${level} style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem; color: #000;">${block.content || ''}</${level}>`;
+          }
+          else if (block.type === 'image') {
+            if (block.url) {
+              productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
+            }
+          }
+          else if (block.type === 'video') {
+            const url = block.url || '';
+            const alignment = block.alignment || 'center';
+            const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
+            
+            if (url) {
+              if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                // Extract YouTube ID
+                let videoId = '';
+                if (url.includes('youtube.com/watch?v=')) {
+                  videoId = url.split('v=')[1]?.split('&')[0];
+                } else if (url.includes('youtu.be/')) {
+                  videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                }
+                
+                if (videoId) {
+                  productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000;"></iframe></p>`;
+                }
+              } else {
+                productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
+              }
+            }
+          }
+          else if (block.type === 'bullets') {
+            if (block.items && block.items.length > 0) {
+              productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+              block.items.forEach(item => {
+                if (item) {
+                  productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${item}</li>`;
+                }
+              });
+              productDescriptionHTML += `</ul>`;
+            }
+          }
+        });
+      } else {
+        // Fallback for older products or if no description blocks
+        productDescriptionHTML += `<p>${product.description || product.shortDesc || 'Premium quality product from MyEssantia.'}</p>`;
+        
+        if (product.specs && product.specs.length > 0) {
+          productDescriptionHTML += `<h3 style="font-family: 'Proza Libre', sans-serif; margin: 2rem 0 1rem;">✨ <strong>Key Features:</strong></h3>`;
+          productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
+          product.specs.forEach(spec => {
+            productDescriptionHTML += `<li style="margin-bottom: 0.5rem; display: flex; align-items: center;"><i class="fa-solid fa-check-circle" style="color: #d4af37; margin-right: 10px;"></i>${spec}</li>`;
+          });
+          productDescriptionHTML += `</ul>`;
+        }
+      }
+
+      productDescriptionHTML += '</div>';
+
+      // MOBILE REVIEWS - with rating chart included (only for mobile)
+      const mobileReviewsHTML = `
+        <div class="mobile-reviews">
+          ${ratingChartHTML}
           ${reviewsHTML}
         </div>
+      `;
+
+      const container = document.getElementById('product-container');
+      container.innerHTML = `
+        <!-- Write Review Modal -->
+        <div class="review-modal" id="reviewModal">
+          <div class="review-modal-content">
+            <div class="review-modal-header">
+              <h3><i class="fa-solid fa-pen"></i> Write a Review</h3>
+              <button class="close-modal-btn" onclick="closeReviewModal()">×</button>
+            </div>
+            <form id="reviewForm" onsubmit="event.preventDefault(); submitReview();">
+              <div class="review-modal-body">
+                <div class="form-group">
+                  <label><i class="fa-solid fa-user"></i> Your Name *</label>
+                  <input type="text" id="reviewerName" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-location-dot"></i> City</label>
+                  <input type="text" id="reviewerCity" placeholder="e.g. Mumbai">
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-star"></i> Rating *</label>
+                  <select id="reviewRating" required>
+                    <option value="">Select rating</option>
+                    <option value="5">5 ★ (Excellent)</option>
+                    <option value="4">4 ★ (Good)</option>
+                    <option value="3">3 ★ (Average)</option>
+                    <option value="2">2 ★ (Poor)</option>
+                    <option value="1">1 ★ (Terrible)</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-comment"></i> Your Review *</label>
+                  <textarea id="reviewComment" rows="4" placeholder="Share your experience with this product..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label><i class="fa-solid fa-image"></i> Add Photos (Optional)</label>
+                  <div class="image-upload-area">
+                    <input type="file" id="reviewImageFile" accept="image/*" onchange="handleReviewImageUpload(this)" style="display: none;">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('reviewImageFile').click()">
+                      <i class="fa-solid fa-cloud-upload-alt"></i> Choose Image
+                    </button>
+                    <div class="image-preview" id="reviewImagePreview" style="display: none;">
+                      <img id="reviewImagePreviewImg" src="" alt="Preview">
+                      <button type="button" class="remove-image-btn" onclick="removeReviewImage()">×</button>
+                    </div>
+                  </div>
+                  <small class="hint">Max 5MB. Images help other customers.</small>
+                </div>
+              </div>
+              
+              <div class="review-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="product-grid">
+          <!-- GALLERY COLUMN -->
+          <div class="gallery-section">
+            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+            <div class="thumbnail-grid">
+              ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
+            </div>
+            <!-- Rating Chart for DESKTOP - positioned in gallery column -->
+            <div class="rating-chart-card desktop-only-rating">
+              <div class="rating-chart-header">
+                <div>
+                  <span class="rating-main">${(product.rating || 4.5).toFixed(1)}</span>
+                  <span class="rating-outof">/5</span>
+                </div>
+                <div class="rating-stars-large">${getLargeStars(product.rating || 4.5)}</div>
+                <span class="rating-count">${reviewCount} reviews</span>
+              </div>
+              <div class="rating-bars">
+                ${[5,4,3,2,1].map(star => `
+                <div class="rating-bar-row">
+                  <span class="bar-label">${star} ★</span>
+                  <div class="bar-container">
+                    <div class="bar-fill" style="width: ${ratingDist[star]}%"></div>
+                  </div>
+                  <span class="bar-percent">${ratingDist[star]}%</span>
+                </div>`).join('')}
+              </div>
+            </div>
+            
+            <!-- DESKTOP REVIEWS - Only here, no duplicate below -->
+            <div class="desktop-reviews-section">
+              ${reviewsHTML}
+            </div>
+          </div>
+          
+          <!-- INFO COLUMN -->
+          <div class="product-info">
+            <div class="social-strip">
+              <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
+              <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
+            </div>
+            <div class="product-category">${product.category || 'Accessories'}</div>
+            <h1 class="product-title">${product.title}</h1>
+            <div class="rating-row">
+              <div class="stars">${getStars(product.rating)}</div>
+              <span>${(product.rating || 4.5).toFixed(1)}</span>
+              <span>(${reviewCount} reviews)</span>
+              <div class="share-wrapper">
+                <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
+                <div class="share-menu" id="shareMenu">
+                  <div class="share-grid">
+                    <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
+                    <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
+                    <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
+                  </div>
+                  <div class="copy-link">
+                    <input id="shareLink" value="${window.location.href}" readonly>
+                    <button class="copy-btn" onclick="copyLink()">Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="price-card">
+              <div class="price-header">
+                <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
+                <span class="original-price">₹${originalPrice.toFixed(2)}</span>
+    <span class="discount sale-badge"><i class="fa-solid fa-tag"></i>SALE</span></div>
+              <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
+              <div class="price-options">
+                <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
+                  <div class="option-label">Prepaid</div>
+                  <div class="option-price">₹${prepaidPrice}</div>
+                </div>
+                <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
+                  <div class="option-label">Cash on Delivery</div>
+                  <div class="option-price">₹${codPrice}</div>
+                </div>
+              </div>
+              
+              <div class="quantity-stock-row">
+                <div class="quantity-controls">
+                  <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
+                  <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
+                  <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
+                </div>
+                <div class="stock-badge">
+                  <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
+                  ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
+                </div>
+              </div>
+            </div>
+
+            <div class="delivery-card">
+              <div class="delivery-header">
+                <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
+                <span class="delivery-min">Min. ₹1,299</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (sellingPrice / 1299) * 100)}%"></div>
+              </div>
+              <div class="delivery-message" id="deliveryMessage">
+                <i class="fa-solid ${sellingPrice >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
+                <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
+              </div>
+             <div class="delivery-eta" style="display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;">
+      <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+        <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;"></i>
       </div>
-      
-      <!-- INFO COLUMN -->
-      <div class="product-info">
-        <div class="social-strip">
-          <span class="sold-badge"><i class="fa-solid fa-fire"></i> ${soldCount}+ sold</span>
-          <span class="live-badge"><i class="fa-solid fa-circle"></i> ${liveViewers} viewing now</span>
-        </div>
-        <div class="product-category">${product.category || 'Accessories'}</div>
-        <h1 class="product-title">${product.title}</h1>
-        <div class="rating-row">
-          <div class="stars">${getStars(product.rating)}</div>
-          <span>${(product.rating || 4.5).toFixed(1)}</span>
-          <span>(${reviewCount} reviews)</span>
-          <div class="share-wrapper">
-            <button class="share-btn" onclick="toggleShare(event)"><i class="fa-solid fa-share-alt"></i> Share</button>
-            <div class="share-menu" id="shareMenu">
-              <div class="share-grid">
-                <div class="share-option" onclick="shareOn('facebook')"><i class="fa-brands fa-facebook"></i><span>Facebook</span></div>
-                <div class="share-option" onclick="shareOn('twitter')"><i class="fa-brands fa-twitter"></i><span>Twitter</span></div>
-                <div class="share-option" onclick="shareOn('whatsapp')"><i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span></div>
-              </div>
-              <div class="copy-link">
-                <input id="shareLink" value="${window.location.href}" readonly>
-                <button class="copy-btn" onclick="copyLink()">Copy</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="price-card">
-          <div class="price-header">
-            <span class="current-price"><span class="inr-symbol">₹</span>${sellingPrice.toFixed(2)}</span>
-            <span class="original-price">₹${originalPrice.toFixed(2)}</span>
-            <span class="discount sale-badge"><i class="fa-solid fa-tag"></i>SALE</span>
-          </div>
-          <div class="tax-info"><i class="fa-solid fa-receipt"></i> Taxes included. Shipping calculated at checkout.</div>
-          <div class="price-options">
-            <div class="price-option prepaid selected" onclick="selectPaymentMethod('prepaid', event)">
-              <div class="option-label">Prepaid</div>
-              <div class="option-price">₹${prepaidPrice}</div>
-            </div>
-            <div class="price-option cod" onclick="selectPaymentMethod('cod', event)">
-              <div class="option-label">Cash on Delivery</div>
-              <div class="option-price">₹${codPrice}</div>
-            </div>
-          </div>
-          
-          <div class="quantity-stock-row">
-            <div class="quantity-controls">
-              <button class="qty-btn" onclick="updateQuantity(-1)" ${stock === 0 ? 'disabled' : ''}>−</button>
-              <input type="text" class="qty-input" id="productQuantity" value="1" readonly>
-              <button class="qty-btn" onclick="updateQuantity(1)" ${stock === 0 ? 'disabled' : ''}>+</button>
-            </div>
-            <div class="stock-badge">
-              <i class="fa-solid ${stock > 10 ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-              ${stock > 10 ? 'In Stock' : `Only ${stock} left`}
-            </div>
-          </div>
-        </div>
-
-        <div class="delivery-card">
-          <div class="delivery-header">
-            <span class="delivery-title"><i class="fa-solid fa-truck"></i> Free Delivery</span>
-            <span class="delivery-min">Min. ₹1,299</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="deliveryProgress" style="width: ${Math.min(100, (sellingPrice / 1299) * 100)}%"></div>
-          </div>
-          <div class="delivery-message" id="deliveryMessage">
-            <i class="fa-solid ${sellingPrice >= 1299 ? 'fa-circle-check' : 'fa-circle-info'}" style="color:#d4af37;"></i>
-            <span id="deliveryText">${sellingPrice >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - sellingPrice).toFixed(2)}</span> more`}</span>
-          </div>
-          <div class="delivery-eta">
-            <div style="background: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
-              <i class="fa-regular fa-calendar-check" style="color: #000; font-size: 1rem;"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
-              <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="feature-razor-card">
-          <div id="razorpayPopup" class="razorpay-popup">
-            <div class="popup-title">
-              <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
-            </div>
-            <div class="popup-desc">
-              Your purchase from MyEssantia is protected by Razorpay Money Back Promise
-            </div>
-            
-            <div class="popup-bullets">
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
-              </div>
-              <div style="display: flex; gap: 12px; margin-bottom: 16px;">
-                <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
-                <span><strong>100% free</strong> with no hidden costs</span>
-              </div>
-            </div>
-            
-            <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
-              Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
-            </p>
-            
-            <div class="popup-footer">
-              <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
-                Yes, got it
-              </button>
-              <a href="shipping.html" class="popup-terms-link">
-                Read detailed terms and conditions
-              </a>
-            </div>
-          </div>
-          
-          <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
-            <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
-            <div class="promise-content">
-              <h4>Razorpay Money Back Promise</h4>
-              <p>Click to view full guarantee</p>
-            </div>
-          </div>
-          
-          <div class="features-grid">
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
-              <div class="feature-text">
-                <h4>Free Shipping</h4>
-                <p>Above ₹1,299</p>
-              </div>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
-              <div class="feature-text">
-                <h4>Easy Returns</h4>
-                <p>7-Days</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="action-buttons">
-          <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-          </button>
-          <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
-            <i class="fa-solid fa-bolt"></i> Buy Now
-          </button>
-        </div>
-
-        ${productDescriptionHTML}
-        
-        ${mobileReviewsHTML}
+      <div>
+        <div style="font-weight: 800; font-size: 0.85rem; color: #000;">Delivery by</div>
+        <div style="font-size: 0.9rem; color: #000; font-weight: 700;" id="deliveryDates"></div>
       </div>
     </div>
-  `;
+            </div>
 
-  updateDeliveryBar(sellingPrice);
-  updateButtonStates();
-  
-  setTimeout(() => {
-    initStickyGallery();
-    window.updateCartCount();
-    updateCartSidebar(); // Ensure cart sidebar is updated
-  }, 200);
-  
-  const dates = getDeliveryDates();
-  const deliveryElement = document.getElementById('deliveryDates');
-  if (deliveryElement) deliveryElement.textContent = dates.display;
-}
+            <div class="feature-razor-card">
+              <div id="razorpayPopup" class="razorpay-popup">
+                <div class="popup-title">
+                  <i class="fa-solid fa-shield"></i> Razorpay Money Back Promise
+                </div>
+                <div class="popup-desc">
+                  Your purchase from MyEssantia is protected by Razorpay Money Back Promise
+                </div>
+                
+                <div class="popup-bullets">
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% refund</strong> on non-delivery or damaged/defective items</span>
+                  </div>
+                  <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <i class="fa-solid fa-circle-check" style="color: #d4af37; font-size: 1rem;"></i>
+                    <span><strong>100% free</strong> with no hidden costs</span>
+                  </div>
+                </div>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 16px; font-style: italic;">
+                  Razorpay offers Money Back Promise only on select businesses that pass detailed background checks.
+                </p>
+                
+                <div class="popup-footer">
+                  <button onclick="closeRazorpayPopup()" class="popup-gotit-btn">
+                    Yes, got it
+                  </button>
+                  <a href="shipping.html" class="popup-terms-link">
+                    Read detailed terms and conditions
+                  </a>
+                </div>
+              </div>
+              
+              <div class="razorpay-promise" onclick="toggleRazorpayPopup()">
+                <div class="promise-icon"><i class="fa-solid fa-shield"></i></div>
+                <div class="promise-content">
+                  <h4>Razorpay Money Back Promise</h4>
+                  <p>Click to view full guarantee</p>
+                </div>
+              </div>
+              
+              <div class="features-grid">
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                  <div class="feature-text">
+                    <h4>Free Shipping</h4>
+                    <p>Above ₹1,299</p>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                  <div class="feature-text">
+                    <h4>Easy Returns</h4>
+                    <p>7-Days</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-// ========== INITIALIZATION ==========
+            <div class="action-buttons">
+              <button class="btn btn-secondary" onclick="addToCart()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+              </button>
+              <button class="btn btn-primary" onclick="buyNow()" ${stock === 0 ? 'disabled' : ''}>
+                <i class="fa-solid fa-bolt"></i> Buy Now
+              </button>
+            </div>
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Product page initializing...');
-  
-  // Load header and footer
-  loadComponents();
-  
-  // Initialize cart from localStorage
-  window.cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
-  
-  // Load product
-  loadProduct();
-  
-  // Scroll to top button visibility
-  window.addEventListener('scroll', () => { 
-    const scrollTop = document.getElementById('scrollTop');
-    if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200); 
-  });
-  
-  // Close cart when clicking outside
-  document.addEventListener('click', (e) => {
-    const cartSidebar = document.getElementById('cart-sidebar');
-    const cartBtn = e.target.closest('.cart-btn');
+            <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
+            ${productDescriptionHTML}
+            
+            <!-- MOBILE REVIEWS SECTION (visible only on mobile) -->
+            ${mobileReviewsHTML}
+          </div>
+        </div>
+      `;
+
+      updateDeliveryBar(sellingPrice);
+      updateButtonStates();
+      setTimeout(() => {
+        initStickyGallery();
+      }, 200); // Small delay to ensure DOM is fully rendered
+      
+      const dates = getDeliveryDates();
+      const deliveryElement = document.getElementById('deliveryDates');
+      if (deliveryElement) deliveryElement.textContent = dates.display;
+    }
+
+    // Add this to your existing window scroll listener or create a new one
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.getElementById('scrollTop');
+      if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200);
+      
+      // Call sticky handler if it exists
+      if (typeof handleStickyScroll === 'function') {
+        handleStickyScroll();
+      }
+    });
+
+    window.changeImage = function(src, el) { 
+      const mainImage = document.getElementById('mainImage');
+      if (mainImage) mainImage.src = src; 
+      document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); 
+      el.classList.add('active'); 
+    };
+
+    window.updateQuantity = function(delta) { 
+      const inp = document.getElementById('productQuantity'); 
+      if (!inp) return;
+      let v = parseInt(inp.value) || 1; 
+      v += delta; 
+      if(v < 1) v = 1; 
+      if(currentProduct && v > currentProduct.stock) v = currentProduct.stock; 
+      inp.value = v; 
+      if(currentProduct) updateDeliveryBar(currentProduct.price * v); 
+    };
+
+    function updateDeliveryBar(t) { 
+      const p = document.getElementById('deliveryProgress'); 
+      const tx = document.getElementById('deliveryText'); 
+      if(!p || !tx) return; 
+      p.style.width = Math.min(100, (t/1299) * 100) + '%'; 
+      tx.innerHTML = t >= 1299 ? 'You get free delivery!' : `Add <span style="font-weight:800; color:#d4af37;">₹${(1299 - t).toFixed(2)}</span> more`; 
+    }
+
+    window.toggleShare = function(e) { 
+      e.stopPropagation(); 
+      const m = document.getElementById('shareMenu'); 
+      if (!m) return;
+      m.classList.toggle('show'); 
+      if(m.classList.contains('show')) {
+        setTimeout(() => document.addEventListener('click', function f(e) { 
+          if(!m.contains(e.target) && !e.target.closest('.share-btn')) { 
+            m.classList.remove('show'); 
+            document.removeEventListener('click', f); 
+          } 
+        }), 100); 
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => { 
+      console.log('Product page initializing...');
+      
+      // Load header and footer using common.js function
+      if (typeof window.loadComponents === 'function') {
+        window.loadComponents();
+      } else {
+        // Fallback if common.js not loaded
+        loadComponents();
+      }
+      
+      // Then load product
+      loadProduct(); 
+    });
+
+    window.copyLink = function() { 
+      const i = document.getElementById('shareLink'); 
+      if (!i) return;
+      i.select(); 
+      navigator.clipboard.writeText(i.value); 
+      const copyBtn = document.querySelector('.copy-btn');
+      if (copyBtn) {
+        copyBtn.textContent = 'Copied!'; 
+        setTimeout(() => copyBtn.textContent = 'Copy', 2000); 
+      }
+    };
+
+    window.shareOn = function(platform) {
+      const url = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(currentProduct?.title || 'Check this product');
+      let shareUrl = '';
+      
+      switch(platform) {
+        case 'facebook':
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+          break;
+        case 'twitter':
+          shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
+          break;
+        case 'whatsapp':
+          shareUrl = `https://wa.me/?text=${title}%20${url}`;
+          break;
+      }
+      
+      if (shareUrl) window.open(shareUrl, '_blank');
+    };
+
+    window.switchTab = function(t) { 
+      document.querySelectorAll('.tab-header').forEach(h => h.classList.remove('active')); 
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); 
+      const header = document.querySelector(`.tab-header[onclick="switchTab('${t}')"]`);
+      if (header) header.classList.add('active'); 
+      const content = document.getElementById(`tab-${t}`);
+      if (content) content.classList.add('active'); 
+    };
     
-    if (cartSidebar && cartSidebar.classList.contains('open') && !cartSidebar.contains(e.target) && !cartBtn) {
-      closeCart();
+    function getDeliveryDates() {
+      const today = new Date();
+      
+      const minDate = new Date(today);
+      minDate.setDate(today.getDate() + 5);
+      
+      const maxDate = new Date(today);
+      maxDate.setDate(today.getDate() + 7);
+      
+      const options = { day: 'numeric', month: 'short' };
+      const minDateStr = minDate.toLocaleDateString('en-IN', options);
+      const maxDateStr = maxDate.toLocaleDateString('en-IN', options);
+      
+      const minYear = minDate.getFullYear();
+      const maxYear = maxDate.getFullYear();
+      const currentYear = today.getFullYear();
+      
+      if (minYear !== currentYear || maxYear !== currentYear) {
+        const yearOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+        return {
+          min: minDate.toLocaleDateString('en-IN', yearOptions),
+          max: maxDate.toLocaleDateString('en-IN', yearOptions),
+          display: `${minDate.toLocaleDateString('en-IN', yearOptions)} - ${maxDate.toLocaleDateString('en-IN', yearOptions)}`
+        };
+      }
+      
+      return {
+        min: minDateStr,
+        max: maxDateStr,
+        display: `${minDateStr} - ${maxDateStr}`
+      };
     }
-  });
-});
 
-// ========== ADDITIONAL STYLES (MATCHING ACCESSORIES.HTML) ==========
-
-const additionalStyles = `
-  /* Cart Sidebar - Slides from Right */
-  .cart-sidebar {
-    position: fixed;
-    top: 0;
-    right: -450px;
-    width: 420px;
-    max-width: 90%;
-    height: 100vh;
-    background: white;
-    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
-    z-index: 1000;
-    transition: right 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    border-left: 3px solid #d4af37;
-  }
-  
-  .cart-sidebar.open {
-    right: 0;
-  }
-  
-  .cart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 25px;
-    border-bottom: 2px solid #000;
-    background: #000;
-    color: #d4af37;
-  }
-  
-  .cart-header h3 {
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin: 0;
-  }
-  
-  .close-cart {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #d4af37;
-    color: #000;
-    border: 2px solid #000;
-    font-size: 1.3rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  
-  .close-cart:hover {
-    transform: scale(1.1);
-    background: #000;
-    color: #d4af37;
-  }
-  
-  .cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background: #f9f9f9;
-  }
-  
-  .empty-cart-message {
-    text-align: center;
-    padding: 50px 20px;
-    color: #666;
-    font-size: 1rem;
-    background: white;
-    border-radius: 12px;
-    border: 2px dashed #d4af37;
-  }
-  
-  .cart-item {
-    display: flex;
-    gap: 15px;
-    padding: 15px;
-    background: white;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    border: 2px solid #000;
-    position: relative;
-    box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
-  }
-  
-  .cart-item img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #000;
-  }
-  
-  .cart-item-details {
-    flex: 1;
-  }
-  
-  .cart-item-details h4 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #000;
-  }
-  
-  .cart-item-price {
-    font-weight: 800;
-    color: #d4af37;
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-  }
-  
-  .cart-item-quantity {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #f5f5f5;
-    padding: 5px;
-    border-radius: 30px;
-    border: 1px solid #000;
-    width: fit-content;
-  }
-  
-  .cart-item-quantity .qty-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1px solid #000;
-    background: white;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  
-  .cart-item-quantity .qty-btn:hover {
-    background: #d4af37;
-    color: #000;
-  }
-  
-  .cart-item-quantity .qty-value {
-    font-weight: 700;
-    min-width: 25px;
-    text-align: center;
-  }
-  
-  .remove-item {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #ff4444;
-    color: white;
-    border: 1px solid #000;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-  
-  .remove-item:hover {
-    transform: scale(1.1);
-    background: #cc0000;
-  }
-  
-  .cart-footer {
-    padding: 20px 25px;
-    border-top: 2px solid #000;
-    background: white;
-  }
-  
-  .cart-total {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 800;
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #000;
-  }
-  
-  .cart-total .total-amount {
-    color: #d4af37;
-    font-size: 1.3rem;
-  }
-  
-  .checkout-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  /* Account Dropdown */
-  .account-dropdown {
-    position: absolute;
-    top: 70px;
-    right: 80px;
-    background: white;
-    border: 2px solid #000;
-    border-radius: 12px;
-    padding: 10px;
-    min-width: 220px;
-    box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
-    z-index: 1000;
-    display: none;
-  }
-  
-  .account-dropdown.show {
-    display: block;
-    animation: fadeIn 0.2s ease;
-  }
-  
-  .dropdown-item {
-    display: block;
-    padding: 12px 15px;
-    color: #000;
-    text-decoration: none;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    transition: background 0.2s;
-  }
-  
-  .dropdown-item i {
-    width: 22px;
-    color: #d4af37;
-    margin-right: 10px;
-  }
-  
-  .dropdown-item:hover {
-    background: #f5f5f5;
-  }
-  
-  .dropdown-divider {
-    height: 1px;
-    background: #d4af37;
-    margin: 8px 0;
-    opacity: 0.3;
-  }
-  
-  /* Mobile Menu */
-  .mobile-menu {
-    display: none;
-    position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    background: #111;
-    border-top: 2px solid #d4af37;
-    border-bottom: 2px solid #d4af37;
-    padding: 15px;
-    z-index: 999;
-    max-height: calc(100vh - 70px);
-    overflow-y: auto;
-  }
-  
-  .mobile-menu.show {
-    display: block;
-    animation: slideDown 0.3s ease;
-  }
-  
-  .mobile-menu a {
-    display: block;
-    color: white;
-    padding: 15px;
-    text-decoration: none;
-    font-size: 1.1rem;
-    border-bottom: 1px solid #333;
-    transition: all 0.2s;
-  }
-  
-  .mobile-menu a i {
-    width: 30px;
-    color: #d4af37;
-    margin-right: 10px;
-  }
-  
-  .mobile-menu a:hover {
-    background: #222;
-    padding-left: 20px;
-  }
-  
-  .mobile-menu a:last-child {
-    border-bottom: none;
-  }
-  
-  .mobile-menu-divider {
-    height: 2px;
-    background: #d4af37;
-    margin: 15px 0;
-    opacity: 0.5;
-  }
-  
-  @media (max-width: 768px) {
-    .mobile-menu-btn {
-      display: block !important;
-    }
-    nav {
-      display: none !important;
-    }
-    .account-dropdown {
-      right: 50px;
-    }
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`;
-
-// Add styles to document
-const styleElement = document.createElement('style');
-styleElement.textContent = additionalStyles;
-document.head.appendChild(styleElement);
+    window.addEventListener('scroll', () => { 
+      const scrollTop = document.getElementById('scrollTop');
+      if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 200); 
+    });
   </script>
 </body>
 </html>
