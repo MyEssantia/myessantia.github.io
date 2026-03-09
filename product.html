@@ -3440,7 +3440,7 @@
         <div class="product-grid">
           <!-- GALLERY COLUMN -->
           <div class="gallery-section">
-            <div class="main-image"><img src="${images[0]}" id="mainImage"></div>
+<div class="main-image" id="mainImage" style="background-image: url('${images[0]}')"></div>
             <div class="thumbnail-grid">
               ${images.map((img, i) => `<div class="thumbnail ${i === 0 ? 'active' : ''}" onclick="changeImage('${img}', this)"><img src="${img}"></div>`).join('')}
             </div>
