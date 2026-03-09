@@ -366,39 +366,138 @@
       text-decoration: line-through; 
     }
     
+  .card-add-btn {
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 6px;
+    background: #000; 
+    border: 2px solid #000; 
+    border-radius: 60px;
+    padding: 0.7rem 0.3rem; 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    color: #fff;
+    cursor: pointer; 
+    width: 100%; 
+    margin: 0.5rem 0 0; 
+    min-height: 44px;
+    transition: all 0.15s; 
+    text-transform: uppercase;
+    -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+    touch-action: manipulation; /* Optimize for touch */
+    user-select: none; /* Prevent text selection on double-click */
+    position: relative;
+    z-index: 20; /* Higher than product link */
+    outline: none;
+  }
+  
+  /* Active state for immediate tactile feedback */
+  .card-add-btn:active {
+    transform: scale(0.97);
+    background: #d4af37;
+    color: #000;
+    border-color: #d4af37;
+  }
+  
+  .card-add-btn:active i {
+    color: #000;
+  }
+  
+  /* Added state */
+  .card-add-btn.added {
+    background: #2e7d32;
+    border-color: #2e7d32;
+    color: white;
+    pointer-events: none;
+    transform: scale(1);
+  }
+  
+  .card-add-btn.added i {
+    color: white;
+  }
+  
+  /* Disabled state */
+  .card-add-btn:disabled {
+    opacity: 0.9;
+    cursor: wait;
+    transform: scale(1);
+  }
+  
+  /* Ensure product link doesn't interfere with button clicks */
+  .product-card {
+    position: relative;
+  }
+  
+  .product-card a {
+    position: relative;
+    z-index: 1;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Sort select optimization */
+  .sort-select {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    transition: all 0.15s;
+  }
+  
+  .sort-select:active {
+    transform: scale(0.98);
+    background: #1a1a1a;
+  }
+  
+  .sort-select select {
+    pointer-events: none; /* Allow click on parent only */
+  }
+  
+  /* Breadcrumb links optimization */
+  .breadcrumbs a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+  }
+  
+  .breadcrumbs a:active {
+    color: #d4af37;
+    transform: translateX(2px);
+  }
+  
+  /* Improve click area on mobile */
+  @media (max-width: 768px) {
     .card-add-btn {
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 6px;
-      background: #000; 
-      border: 2px solid #000; 
-      border-radius: 60px;
-      padding: 0.7rem 0.3rem; 
-      font-size: 0.85rem; 
-      font-weight: 600; 
-      color: #fff;
-      cursor: pointer; 
-      width: 100%; 
-      margin: 0.5rem 0 0; 
-      min-height: 44px;
-      transition: all 0.15s; 
-      text-transform: uppercase;
+      min-height: 48px;
+      font-size: 0.9rem;
+      padding: 0.8rem 0.3rem;
     }
-    .card-add-btn i { color: #d4af37; transition: color 0.15s; }
-    .card-add-btn:hover { background: #d4af37; color: #000; border-color: #d4af37; }
-    .card-add-btn:hover i { color: #000; }
     
-    /* Added state for add-to-cart feedback */
-    .card-add-btn.added {
-      background: #2e7d32;
-      border-color: #2e7d32;
-      color: white;
-      pointer-events: none;
+    .sort-select {
+      padding: 0.6rem 1.2rem;
     }
-    .card-add-btn.added i {
-      color: white;
+    
+    .sort-select select {
+      font-size: 0.9rem;
     }
+  }
+  
+  @media (max-width: 480px) {
+    .card-add-btn {
+      min-height: 44px;
+      font-size: 0.85rem;
+    }
+    
+    .breadcrumbs {
+      font-size: 0.7rem;
+    }
+  }
+
+  /* Grid loading state animation */
+  .product-grid {
+    transition: opacity 0.2s ease;
+  }
 
     /* ===== EMPTY STATE ===== */
     .empty-state {
@@ -561,87 +660,83 @@
       return hoursDiff < 24;
     }
 
- // ===== MAIN RENDERING FUNCTION =====
-function renderProducts() {
-  const gridContainer = document.getElementById('product-grid-container');
-  const sortSelect = document.getElementById('sort-select');
-  
-  if (!gridContainer) return;
+ // ===== OPTIMIZED RENDERING WITH BETTER PERFORMANCE =====
+  function renderProducts() {
+    const gridContainer = document.getElementById('product-grid-container');
+    const sortSelect = document.getElementById('sort-select');
+    
+    if (!gridContainer) return;
 
-  const newArrivals = getNewArrivals();
+    const newArrivals = getNewArrivals();
 
-  if (newArrivals.length === 0) {
-    gridContainer.innerHTML = `
-      <div class="empty-state">
-        <i class="fa-regular fa-clock"></i>
-        <h3>no new arrivals yet</h3>
-        <p>Check back soon for fresh products!</p>
-      </div>
-    `;
-    return;
-  }
-
-  function getSortedProducts() {
-    let sorted = [...newArrivals];
-    switch (sortSelect?.value) {
-      case 'price-low':
-        sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-        break;
-      case 'price-high':
-        sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-        break;
-      case 'rating':
-        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
-      case 'newest':
-      default:
-        sorted.sort((a, b) => {
-          const dateA = a.creationDate ? new Date(a.creationDate) : new Date(0);
-          const dateB = b.creationDate ? new Date(b.creationDate) : new Date(0);
-          return dateB - dateA;
-        });
-        break;
+    if (newArrivals.length === 0) {
+      gridContainer.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-regular fa-clock"></i>
+          <h3>no new arrivals yet</h3>
+          <p>Check back soon for fresh products!</p>
+        </div>
+      `;
+      return;
     }
-    return sorted;
-  }
 
-  function renderAllProducts() {
+    function getSortedProducts() {
+      let sorted = [...newArrivals];
+      switch (sortSelect?.value) {
+        case 'price-low':
+          sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+          break;
+        case 'price-high':
+          sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+          break;
+        case 'rating':
+          sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
+        case 'newest':
+        default:
+          sorted.sort((a, b) => {
+            const dateA = a.creationDate ? new Date(a.creationDate) : new Date(0);
+            const dateB = b.creationDate ? new Date(b.creationDate) : new Date(0);
+            return dateB - dateA;
+          });
+          break;
+      }
+      return sorted;
+    }
+
     const sortedProducts = getSortedProducts();
     
-    let gridHtml = '';
+    // Use document fragment for better performance
+    const fragment = document.createDocumentFragment();
+    const tempDiv = document.createElement('div');
+    
     sortedProducts.forEach(product => {
       // Get primary and secondary images from media array
       let mainImage = '';
       let secondImage = '';
       
-      // Check if product has media array (from admin panel)
       if (product.media && Array.isArray(product.media) && product.media.length > 0) {
-        // Primary image - use primaryImg if set, otherwise first media item
         if (product.primaryImg) {
           mainImage = product.primaryImg;
         } else {
           mainImage = product.media[0].url || 'https://via.placeholder.com/300';
         }
         
-        // Secondary image for hover - use second media item if available
         if (product.media.length >= 2) {
           secondImage = product.media[1].url;
         } else {
-          // If only one media item, duplicate primary for hover
           secondImage = mainImage;
         }
       } else {
-        // Fallback for older products without media array
         mainImage = product.images?.[0] || product.primaryImg || 'https://via.placeholder.com/300';
         secondImage = product.images?.[1] || product.secondaryImg || mainImage;
       }
       
-      // Check for sale (using originalPrice from admin panel)
       const hasSale = product.originalPrice && product.originalPrice > product.price;
       const isBrandNew = isNewProduct(product);
       const newBadgeText = isBrandNew ? 'just landed' : 'new';
       
-      gridHtml += `
+      tempDiv.innerHTML = `
         <div class="product-card" data-product-id="${product.id}">
           <a href="product.html?id=${product.id}" style="text-decoration:none; color:inherit; display:block;">
             <div class="image-frame">
@@ -660,30 +755,72 @@ function renderProducts() {
               <span class="current-price"><span class="inr-symbol">₹</span>${formatPrice(product.price)}</span>
             </div>
           </a>
-          <button class="card-add-btn" onclick="handleNewArrivalAdd('${product.id}', this); event.stopPropagation();">
+          <button class="card-add-btn" onclick="handleNewArrivalAdd('${product.id}', this); event.preventDefault(); event.stopPropagation(); return false;">
             <i class="fa-solid fa-cart-plus"></i> add
           </button>
         </div>
       `;
+      
+      while (tempDiv.firstChild) {
+        fragment.appendChild(tempDiv.firstChild);
+      }
     });
     
-    gridContainer.innerHTML = gridHtml;
+    // Clear and append in one operation
+    gridContainer.innerHTML = '';
+    gridContainer.appendChild(fragment);
   }
 
-  renderAllProducts();
-  
-  if (sortSelect) {
-    sortSelect.removeEventListener('change', renderAllProducts);
-    sortSelect.addEventListener('change', renderAllProducts);
-  }
-}
-
-    // ===== HANDLE ADD TO CART - MATCHING ACCESSORIES PAGE =====
-    window.handleNewArrivalAdd = function(productId, btn) {
-      // Show added effect
-      btn.classList.add('added');
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+     // ===== OPTIMIZED PRODUCT CHECK =====
+  (function initProductCheck() {
+    let attempts = 0;
+    const maxAttempts = 50;
+    
+    function checkProducts() {
+      if (window.products && window.products.length > 0) {
+        addTestSaleData();
+        setupSortHandler();
+        return true;
+      }
       
+      try {
+        const cached = localStorage.getItem('MyEssantia_products');
+        if (cached) {
+          window.products = JSON.parse(cached);
+          addTestSaleData();
+          setupSortHandler();
+          return true;
+        }
+      } catch (e) {
+        console.warn('Error parsing cached products');
+      }
+      
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkProducts, 100);
+      }
+    }
+    
+    checkProducts();
+  })();
+    
+      // ===== OPTIMIZED HANDLE NEW ARRIVAL ADD WITH IMMEDIATE RESPONSE =====
+  window.handleNewArrivalAdd = function(productId, btn) {
+    // Prevent multiple rapid clicks
+    if (btn.disabled) return;
+    
+    // Disable button immediately to prevent double-clicks
+    btn.disabled = true;
+    
+    // Store original HTML for later reset
+    const originalHTML = btn.innerHTML;
+    
+    // IMMEDIATE visual feedback - change button state right away
+    btn.classList.add('added');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> adding...';
+    
+    // Use requestAnimationFrame to ensure UI updates before heavy operations
+    requestAnimationFrame(() => {
       // Use the standard addToCart function from common.js
       if (typeof window.addToCart === 'function') {
         window.addToCart(productId);
@@ -691,19 +828,50 @@ function renderProducts() {
         console.warn('addToCart not available');
       }
       
-      // Open cart modal after a short delay
+      // Open cart modal immediately
+      if (typeof window.openCart === 'function') {
+        window.openCart();
+      }
+      
+      // Update button to "added" state
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+      
+      // Reset button after 1.5 seconds
       setTimeout(() => {
-        if (typeof window.openCart === 'function') {
-          window.openCart();
-        }
-        // Reset button after cart opens
-        setTimeout(() => {
-          btn.classList.remove('added');
-          btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
-        }, 500);
-      }, 200);
-    };
+        btn.classList.remove('added');
+        btn.innerHTML = originalHTML;
+        btn.disabled = false; // Re-enable button
+      }, 1500);
+    });
+  };
 
+     // ===== OPTIMIZED SORT HANDLER =====
+  function setupSortHandler() {
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+      sortSelect.removeEventListener('change', handleSortChange);
+      sortSelect.addEventListener('change', handleSortChange);
+    }
+  }
+
+  function handleSortChange() {
+    // Show loading state on grid
+    const grid = document.getElementById('product-grid-container');
+    if (grid) {
+      grid.style.opacity = '0.6';
+      grid.style.transition = 'opacity 0.2s';
+      
+      // Use requestAnimationFrame for smooth rendering
+      requestAnimationFrame(() => {
+        renderProducts();
+        // Restore opacity
+        grid.style.opacity = '1';
+      });
+    } else {
+      renderProducts();
+    }
+  }
+    
     // ===== ADD TEST SALE DATA =====
     function addTestSaleData() {
       if (window.products && window.products.length > 0) {
