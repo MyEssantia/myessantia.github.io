@@ -968,7 +968,7 @@ function renderCheckoutGrid() {
                 <input type="radio" name="shipping" value="standard" id="ship-standard" checked>
                 <div class="radio-content">
                   <span>Standard shipping (3–5 days) <span class="free-badge" id="freeBadge" style="display: none;">FREE</span></span>
-                  <span class="radio-price" id="standard-price">₹40</span>
+                  <span class="radio-price" id="standard-price">₹60</span>
                 </div>
               </label>
 
@@ -1225,11 +1225,11 @@ function renderCheckoutGrid() {
     function updateAll() {
       const subtotal = calculateSubtotal();
       
-      let shippingCost = 40;
-      let shippingText = '₹40';
+      let shippingCost = 60;
+      let shippingText = '₹60';
       const isExpress = expressRadio ? expressRadio.checked : false;
       
-      if (subtotal > 499) {
+      if (subtotal > 999) {
         if (standardRadio && standardRadio.checked) {
           shippingCost = 0;
           shippingText = 'FREE';
@@ -1240,11 +1240,11 @@ function renderCheckoutGrid() {
         if (standardPriceSpan) standardPriceSpan.innerText = 'FREE';
         if (freeBadge) freeBadge.style.display = 'inline-block';
       } else {
-        if (standardPriceSpan) standardPriceSpan.innerText = '₹40';
+        if (standardPriceSpan) standardPriceSpan.innerText = '₹60';
         if (freeBadge) freeBadge.style.display = 'none';
         if (standardRadio && standardRadio.checked) {
-          shippingCost = 40;
-          shippingText = '₹40';
+          shippingCost = 60;
+          shippingText = '₹60';
         } else if (isExpress) {
           shippingCost = 149;
           shippingText = '₹149';
@@ -1365,7 +1365,7 @@ function renderCheckoutGrid() {
         })),
         subtotal: calculateSubtotal(),
         discount: discount,
-        shipping: shippingSpan?.innerText === 'FREE' ? 0 : 40,
+        shipping: shippingSpan?.innerText === 'FREE' ? 0 : 60,
         total: parseFloat(totalSpan?.innerText.replace('₹', '').replace(/,/g, '')),
         shippingAddress: {
           firstName, lastName, address, city, pin, phone
