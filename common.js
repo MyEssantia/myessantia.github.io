@@ -868,6 +868,31 @@ function openCart() {
   }
 }
 
+// In common.js - add these if missing
+window.updateCartCount = function() {
+  const cart = JSON.parse(localStorage.getItem('MyEssantia_cart')) || [];
+  const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  
+  // Update cart count in header
+  const cartCountElements = document.querySelectorAll('.cart-count');
+  cartCountElements.forEach(el => {
+    el.textContent = totalItems;
+    el.style.display = totalItems > 0 ? 'flex' : 'none';
+  });
+};
+
+window.openCart = function() {
+  // Open cart sidebar or redirect to cart page
+  // If you have a cart sidebar:
+  const cartSidebar = document.getElementById('cartSidebar');
+  if (cartSidebar) {
+    cartSidebar.classList.add('open');
+  } else {
+    // Fallback: redirect to cart page
+    window.location.href = 'cart.html';
+  }
+};
+
 function openProfile() {
   console.log('Opening profile modal');
   
