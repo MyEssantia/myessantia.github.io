@@ -1058,30 +1058,36 @@ function updateProfileIcon() {
 
 // ===== INFINITE SCROLL STRIPS =====
 function initInfiniteScroll() {
-  // Top Bar Infinite Scroll
+  // Top Bar with debugging
   const topBarContent = document.querySelector('.top-bar-scroll-content');
   if (topBarContent) {
-    // Get all items and dots
+    console.log('Top bar found:', topBarContent);
+    
     const items = topBarContent.children;
+    console.log('Number of items:', items.length);
+    
     if (items.length === 0) return;
     
-    // Calculate total width of one set
     let totalWidth = 0;
     for (let i = 0; i < items.length; i++) {
+      console.log(`Item ${i} width:`, items[i].offsetWidth);
       totalWidth += items[i].offsetWidth;
     }
     
-    // Clone the entire set for seamless scrolling
-    topBarContent.innerHTML = topBarContent.innerHTML + topBarContent.innerHTML;
+    console.log('Total width of one set:', totalWidth);
+    
+    // Clone the content
+    const originalHTML = topBarContent.innerHTML;
+    topBarContent.innerHTML = originalHTML + originalHTML;
     
     let position = 0;
-    const speed = 0.5; // Scroll speed
+    const speed = 0.5;
     
     function scrollTopBar() {
       position -= speed;
       
-      // Reset position when first set completely scrolls out
       if (Math.abs(position) >= totalWidth) {
+        console.log('Resetting position');
         position = 0;
       }
       
@@ -1089,8 +1095,7 @@ function initInfiniteScroll() {
       requestAnimationFrame(scrollTopBar);
     }
     
-    // Start animation after a small delay to ensure layout is complete
-    setTimeout(scrollTopBar, 100);
+    setTimeout(scrollTopBar, 500);
   }
   
   // Value Strip Infinite Scroll
