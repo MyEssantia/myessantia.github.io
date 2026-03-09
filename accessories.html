@@ -628,9 +628,9 @@
               <span class="current-price"><span class="inr-symbol">₹</span>${window.formatPrice ? window.formatPrice(product.price) : product.price}</span>
             </div>
           </a>
-          <button class="card-add-btn" onclick="handleAccessoryAdd('${product.id}', this); event.stopPropagation();">
-            <i class="fa-solid fa-cart-plus"></i> add
-          </button>
+          <button class="card-add-btn" onclick="handleAccessoryAdd('${product.id}', this); event.preventDefault(); event.stopPropagation(); return false;">
+    <i class="fa-solid fa-cart-plus"></i> add
+  </button>
         </div>
       `;
     });
@@ -646,51 +646,66 @@
   }
 }
 
-    // Handle add to cart with button feedback and cart opening
-    window.handleAccessoryAdd = function(productId, btn) {
+  // Handle add to cart with immediate response
+  window.handleAccessoryAdd = function(productId, btn) {
+    // Prevent multiple rapid clicks
+    if (btn.disabled) return;
+    
+    // Disable button immediately to prevent double-clicks
+    btn.disabled = true;
+    
+    // IMMEDIATE visual feedback - change button state right away
+    const originalHTML = btn.innerHTML;
+    btn.classList.add('added');
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> adding...';
+    
+    // Use requestAnimationFrame to ensure UI updates before heavy operations
+    requestAnimationFrame(() => {
       // Use the master function from common.js
       if (typeof window.masterAddToCart === 'function') {
-        // Show added effect
-        btn.classList.add('added');
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
-        
-        // Call master function (it will add to cart, sync, etc.)
-        // We pass false to avoid double-opening cart, then open manually
+        // Call master function synchronously (it should be fast)
         window.masterAddToCart(productId, false);
         
-        // Open cart modal after a short delay
+        // Open cart modal immediately (don't wait)
+        if (typeof window.openCart === 'function') {
+          window.openCart();
+        }
+        
+        // Update button to "added" state
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        // Reset button after 1.5 seconds (longer for better UX)
         setTimeout(() => {
-          if (typeof window.openCart === 'function') {
-            window.openCart();
-          }
-          // Reset button after cart opens (optional, but keeps UI consistent)
-          setTimeout(() => {
-            btn.classList.remove('added');
-            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
-          }, 500);
-        }, 200);
+          btn.classList.remove('added');
+          btn.innerHTML = originalHTML;
+          btn.disabled = false; // Re-enable button
+        }, 1500);
       } else {
         // Fallback if master function not ready
         console.warn('masterAddToCart not available yet');
-        btn.classList.add('added');
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
         
         // Try to use standard addToCart
         if (typeof window.addToCart === 'function') {
           window.addToCart(productId);
         }
         
+        // Open cart immediately
+        if (typeof window.openCart === 'function') {
+          window.openCart();
+        }
+        
+        // Update button
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> added';
+        
+        // Reset button
         setTimeout(() => {
-          if (typeof window.openCart === 'function') {
-            window.openCart();
-          }
-          setTimeout(() => {
-            btn.classList.remove('added');
-            btn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> add';
-          }, 500);
-        }, 200);
+          btn.classList.remove('added');
+          btn.innerHTML = originalHTML;
+          btn.disabled = false;
+        }, 1500);
       }
-    };
+    });
+  };
 
     // ===== INITIALIZATION =====
     document.addEventListener('DOMContentLoaded', async () => {
