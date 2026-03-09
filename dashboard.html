@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>MyEssantia · admin · dashboard</title>
+  <title>MyEssantia · admin · login</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   
@@ -15,6 +15,7 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   
   <style>
     /* ===== GLOBAL & RESETS ===== */
@@ -37,6 +38,281 @@
       padding: 20px;
       position: relative;
     }
+
+    /* ===== LOGIN OVERLAY ===== */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .login-overlay.hidden {
+      display: none;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border-radius: 40px;
+      border: 3px solid #000;
+      box-shadow: 12px 12px 0 rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 420px;
+      overflow: hidden;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .login-header {
+      background: #000;
+      padding: 32px 24px;
+      text-align: center;
+      border-bottom: 4px solid #d4af37;
+    }
+
+    .login-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .login-header h2 strong {
+      color: #d4af37;
+    }
+
+    .login-header p {
+      color: #d4af37;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .login-icon {
+      width: 80px;
+      height: 80px;
+      background: #d4af37;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      border: 3px solid #000;
+    }
+
+    .login-icon i {
+      font-size: 2.5rem;
+      color: #000;
+    }
+
+    .login-form {
+      padding: 32px 24px;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: #000;
+    }
+
+    .input-group label i {
+      color: #d4af37;
+      margin-right: 8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i.input-icon {
+      position: absolute;
+      left: 16px;
+      color: #d4af37;
+      font-size: 1.2rem;
+      z-index: 2;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 16px 18px;
+      padding-left: 48px;
+      border: 2px solid #000;
+      border-radius: 20px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      background: #fcfaf7;
+      transition: all 0.2s;
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+    }
+
+    .input-wrapper input::placeholder {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      color: #d4af37;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 2;
+    }
+
+    .remember-forgot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #d4af37;
+    }
+
+    .remember-me span {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #000;
+    }
+
+    .forgot-link {
+      color: #d4af37;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 18px;
+      background: #000;
+      color: #d4af37;
+      border: 3px solid #d4af37;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      background: #d4af37;
+      color: #000;
+      border-color: #000;
+      transform: translateY(-2px);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .login-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #d4af37;
+      border-top: 3px solid #000;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+
+    .error-message {
+      background: #ff4444;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 20px;
+      border: 2px solid #000;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error-message i {
+      font-size: 1.1rem;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px solid #e0e0e0;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .login-footer i {
+      color: #d4af37;
+    }
+
+    /* Main content blur effect */
+    .admin-container.blurred {
+      filter: blur(8px);
+      pointer-events: none;
+      user-select: none;
+    }
+
     /* Stats Cards */
     .stats-grid {
       display: grid;
@@ -424,13 +700,13 @@
       background: #fcfaf7;
     }
 
-    /* Product Thumbnail */
-.product-thumb {
-  background-size: contain; /* instead of cover */
-  background-repeat: no-repeat;
-  background-color: #f5f5f5; /* adds a nice background for empty space */
-  background-position: center;
-}
+    /* Product Thumb */
+    .product-thumb {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: #f5f5f5;
+      background-position: center;
+    }
 
     .product-info {
       display: flex;
@@ -541,108 +817,108 @@
     }
 
     /* ============================= */
-/* MOBILE / DESKTOP SWITCH LOGIC */
-/* ============================= */
+    /* MOBILE / DESKTOP SWITCH LOGIC */
+    /* ============================= */
 
-/* Desktop default */
-.mobile-cards{
-  display:none;
-}
+    /* Desktop default */
+    .mobile-cards{
+      display:none;
+    }
 
-.table-wrapper{
-  display:block;
-}
+    .table-wrapper{
+      display:block;
+    }
 
-/* Mobile layout */
-@media (max-width:900px){
+    /* Mobile layout */
+    @media (max-width:900px){
 
-  .table-wrapper{
-    display:none;
-  }
+      .table-wrapper{
+        display:none;
+      }
 
-  .mobile-cards{
-    display:block;
-  }
+      .mobile-cards{
+        display:block;
+      }
 
-  .notification-card{
-    background:#fff;
-    border:2px solid #000;
-    border-radius:24px;
-    padding:16px;
-    margin-bottom:12px;
-    box-shadow:4px 4px 0 rgba(0,0,0,0.1);
-  }
+      .notification-card{
+        background:#fff;
+        border:2px solid #000;
+        border-radius:24px;
+        padding:16px;
+        margin-bottom:12px;
+        box-shadow:4px 4px 0 rgba(0,0,0,0.1);
+      }
 
-  .card-header{
-    display:flex;
-    gap:12px;
-    margin-bottom:12px;
-    padding-bottom:12px;
-    border-bottom:2px solid #d4af37;
-  }
+      .card-header{
+        display:flex;
+        gap:12px;
+        margin-bottom:12px;
+        padding-bottom:12px;
+        border-bottom:2px solid #d4af37;
+      }
 
-  .card-thumb{
-    width:60px;
-    height:60px;
-    border-radius:12px;
-    background-size:cover;
-    background-position:center;
-    border:2px solid #000;
-  }
+      .card-thumb{
+        width:60px;
+        height:60px;
+        border-radius:12px;
+        background-size:cover;
+        background-position:center;
+        border:2px solid #000;
+      }
 
-  .card-title{
-    flex:1;
-  }
+      .card-title{
+        flex:1;
+      }
 
-  .card-title h4{
-    font-weight:800;
-    font-size:1rem;
-    margin-bottom:4px;
-  }
+      .card-title h4{
+        font-weight:800;
+        font-size:1rem;
+        margin-bottom:4px;
+      }
 
-  .card-title .product-id{
-    font-size:0.65rem;
-    color:#666;
-  }
+      .card-title .product-id{
+        font-size:0.65rem;
+        color:#666;
+      }
 
-  .card-body{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin-bottom:12px;
-  }
+      .card-body{
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        margin-bottom:12px;
+      }
 
-  .card-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:0.85rem;
-  }
+      .card-row{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        font-size:0.85rem;
+      }
 
-  .card-row i{
-    color:#d4af37;
-    width:20px;
-  }
+      .card-row i{
+        color:#d4af37;
+        width:20px;
+      }
 
-  .card-footer{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding-top:8px;
-    border-top:2px solid #d4af37;
-  }
+      .card-footer{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding-top:8px;
+        border-top:2px solid #d4af37;
+      }
 
-  .card-actions{
-    display:flex;
-    gap:8px;
-  }
+      .card-actions{
+        display:flex;
+        gap:8px;
+      }
 
-  .card-actions .action-btn{
-    width:40px;
-    height:40px;
-  }
+      .card-actions .action-btn{
+        width:40px;
+        height:40px;
+      }
 
-}
+    }
 
     /* Timestamp */
     .timestamp {
@@ -680,81 +956,80 @@
       margin-bottom: 8px;
     }
 
-      .notification-card {
-        background: #fff;
-        border: 2px solid #000;
-        border-radius: 24px;
-        padding: 16px;
-        margin-bottom: 12px;
-        box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-      }
-      
-      .card-header {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 12px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #d4af37;
-      }
-      
-     .card-thumb {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: #f5f5f5;
-  background-position: center;
-}
-      
-      .card-title {
-        flex: 1;
-      }
-      
-      .card-title h4 {
-        font-weight: 800;
-        font-size: 1rem;
-        margin-bottom: 4px;
-      }
-      
-      .card-title .product-id {
-        font-size: 0.65rem;
-        color: #666;
-      }
-      
-      .card-body {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-      
-      .card-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.85rem;
-      }
-      
-      .card-row i {
-        color: #d4af37;
-        width: 20px;
-      }
-      
-      .card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 8px;
-        border-top: 2px solid #d4af37;
-      }
-      
-      .card-actions {
-        display: flex;
-        gap: 8px;
-      }
-      
-      .card-actions .action-btn {
-        width: 40px;
-        height: 40px;
-      }
+    .notification-card {
+      background: #fff;
+      border: 2px solid #000;
+      border-radius: 24px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #d4af37;
+    }
+    
+    .card-thumb {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: #f5f5f5;
+      background-position: center;
+    }
+    
+    .card-title {
+      flex: 1;
+    }
+    
+    .card-title h4 {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    
+    .card-title .product-id {
+      font-size: 0.65rem;
+      color: #666;
+    }
+    
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .card-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    
+    .card-row i {
+      color: #d4af37;
+      width: 20px;
+    }
+    
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 2px solid #d4af37;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .card-actions .action-btn {
+      width: 40px;
+      height: 40px;
     }
 
     /* Loading Spinner */
@@ -908,7 +1183,7 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, filter 0.3s ease;
     }
     
     .admin-container.menu-open {
@@ -1130,11 +1405,6 @@
       border-top: 6px solid #d4af37;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
 
     .loading-text {
@@ -2479,12 +2749,12 @@
       margin-bottom: 8px;
     }
 
-  .product-item-thumb {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-color: #f5f5f5;
-  background-position: center;
-}
+    .product-item-thumb {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: #f5f5f5;
+      background-position: center;
+    }
 
     .product-item-info {
       flex: 1;
@@ -2655,24 +2925,21 @@
       }
     }
 
+    @media (min-width:901px){
+      .products-list{
+        display:none;
+      }
+    }
 
-@media (min-width:901px){
-  .products-list{
-    display:none;
-  }
-}
     /* DESKTOP FORCE */
-@media (min-width:901px){
-
-  .table-wrapper{
-    display:block !important;
-  }
-
-  .mobile-cards{
-    display:none !important;
-  }
-
-}
+    @media (min-width:901px){
+      .table-wrapper{
+        display:block !important;
+      }
+      .mobile-cards{
+        display:none !important;
+      }
+    }
     
     @media (max-width: 480px) {
       .products-table {
@@ -2746,6 +3013,62 @@
 </head>
 <body>
 
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon">
+        <i class="fa-solid fa-crown"></i>
+      </div>
+      <h2><strong>MyEssantia</strong></h2>
+      <p>admin · master access</p>
+    </div>
+    
+    <div class="login-form">
+      <div id="loginError" class="error-message" style="display: none;">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="errorText"></span>
+      </div>
+      
+      <form id="loginForm" onsubmit="return handleLogin(event)">
+        <div class="input-group">
+          <label><i class="fa-solid fa-envelope"></i> email address</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" id="email" placeholder="admin@myessantia.com" required autocomplete="email">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label><i class="fa-solid fa-lock"></i> password</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+            <i class="fas fa-eye password-toggle" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+          </div>
+        </div>
+        
+        <div class="remember-forgot">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>remember me</span>
+          </label>
+          <a class="forgot-link" onclick="handleForgotPassword()">forgot password?</a>
+        </div>
+        
+        <button type="submit" class="login-btn" id="loginButton">
+          <span id="loginText">access dashboard</span>
+          <span id="loginSpinner" style="display: none;" class="login-spinner"></span>
+        </button>
+      </form>
+      
+      <div class="login-footer">
+        <p><i class="fa-regular fa-circle-check"></i> secure · encrypted access</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Sliding Menu -->
 <div class="sliding-menu" id="slidingMenu">
   <div class="menu-header">
@@ -2780,19 +3103,18 @@
       <div class="menu-item-badge" id="notifyBadge">0</div>
     </div>
 
-<!-- Reviews Menu Item (UPDATED) -->
-<div class="menu-item" onclick="loadPage('reviews')" id="menuReviews">
-  <div class="menu-item-icon">
-    <i class="fa-solid fa-star"></i>
+    <!-- Reviews Menu Item (UPDATED) -->
+    <div class="menu-item" onclick="loadPage('reviews')" id="menuReviews">
+      <div class="menu-item-icon">
+        <i class="fa-solid fa-star"></i>
+      </div>
+      <div class="menu-item-content">
+        <div class="menu-item-title">reviews</div>
+        <div class="menu-item-desc">manage product reviews</div>
+      </div>
+      <div class="menu-item-badge" id="reviewsBadge">0</div>
+    </div>
   </div>
-  <div class="menu-item-content">
-    <div class="menu-item-title">reviews</div>
-    <div class="menu-item-desc">manage product reviews</div>
-  </div>
-  <div class="menu-item-badge" id="reviewsBadge">0</div>
-</div>
-</div>
-
 
   <div class="menu-footer">
     <div class="live-indicator">
@@ -2824,7 +3146,7 @@
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 20px;">
-        <div class="admin-badge">
+        <div class="admin-badge" id="adminEmail">
           <i class="fa-solid fa-crown"></i> master admin
         </div>
         <div class="admin-info">
@@ -2832,8 +3154,8 @@
             <i class="fa-regular fa-user"></i>
           </div>
           <div class="admin-details">
-            <div class="name">admin</div>
-            <div class="email">product manager</div>
+            <div class="name" id="adminName">admin</div>
+            <div class="email" id="adminRole">product manager</div>
           </div>
         </div>
       </div>
@@ -2841,7 +3163,7 @@
 
     <!-- Dynamic Page Container -->
     <div id="page-container" class="page-container">
-      <!-- Dashboard content will be loaded here by default -->
+      <!-- Dashboard content will be loaded here after login -->
     </div>
   </div>
 
@@ -2860,6 +3182,246 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
+
+// ========== AUTH STATE OBSERVER ==========
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    // User is signed in
+    console.log('User logged in:', user.email);
+    hideLoginOverlay();
+    updateAdminInfo(user);
+    
+    // Check if user is admin (you can add additional admin validation here)
+    checkAdminStatus(user).then(isAdmin => {
+      if (!isAdmin) {
+        // Logout if not admin
+        auth.signOut();
+        showLoginError('Access denied. Admin privileges required.');
+      } else {
+        // Load dashboard
+        loadPage('dashboard');
+      }
+    });
+  } else {
+    // User is signed out
+    console.log('User logged out');
+    showLoginOverlay();
+    document.getElementById('admin-content').classList.add('blurred');
+  }
+});
+
+// ========== ADMIN CHECK FUNCTION ==========
+async function checkAdminStatus(user) {
+  try {
+    // You can implement different admin validation methods:
+    
+    // Method 1: Check specific admin email addresses
+    const adminEmails = [
+      'admin@myessantia.com',
+      'master@myessantia.com',
+      'your-email@gmail.com' // Add your email here
+    ];
+    
+    if (adminEmails.includes(user.email)) {
+      return true;
+    }
+    
+    // Method 2: Check Firestore for admin role
+    const adminDoc = await db.collection('admins').doc(user.uid).get();
+    if (adminDoc.exists && adminDoc.data().role === 'admin') {
+      return true;
+    }
+    
+    // Method 3: Check custom claims (requires Firebase Functions)
+    const token = await user.getIdTokenResult();
+    if (token.claims.admin || token.claims.role === 'admin') {
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+}
+
+// ========== LOGIN FUNCTIONS ==========
+function showLoginOverlay() {
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('admin-content').classList.add('blurred');
+  document.getElementById('email').focus();
+}
+
+function hideLoginOverlay() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('admin-content').classList.remove('blurred');
+}
+
+function showLoginError(message) {
+  const errorDiv = document.getElementById('loginError');
+  const errorText = document.getElementById('errorText');
+  errorText.textContent = message;
+  errorDiv.style.display = 'flex';
+  
+  // Hide after 5 seconds
+  setTimeout(() => {
+    errorDiv.style.display = 'none';
+  }, 5000);
+}
+
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('password');
+  const toggleIcon = document.getElementById('togglePassword');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.classList.remove('fa-eye');
+    toggleIcon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.classList.remove('fa-eye-slash');
+    toggleIcon.classList.add('fa-eye');
+  }
+}
+
+function setLoading(isLoading) {
+  const loginButton = document.getElementById('loginButton');
+  const loginText = document.getElementById('loginText');
+  const loginSpinner = document.getElementById('loginSpinner');
+  
+  if (isLoading) {
+    loginButton.disabled = true;
+    loginText.style.opacity = '0.7';
+    loginSpinner.style.display = 'inline-block';
+  } else {
+    loginButton.disabled = false;
+    loginText.style.opacity = '1';
+    loginSpinner.style.display = 'none';
+  }
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+  
+  if (!email || !password) {
+    showLoginError('Please enter email and password');
+    return false;
+  }
+  
+  setLoading(true);
+  
+  try {
+    // Set persistence based on remember me
+    const persistence = rememberMe 
+      ? firebase.auth.Auth.Persistence.LOCAL 
+      : firebase.auth.Auth.Persistence.SESSION;
+    
+    await auth.setPersistence(persistence);
+    
+    // Sign in
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    
+    // Check if user is admin
+    const isAdmin = await checkAdminStatus(userCredential.user);
+    
+    if (!isAdmin) {
+      await auth.signOut();
+      showLoginError('Access denied. This account does not have admin privileges.');
+    } else {
+      // Login successful
+      console.log('Login successful');
+    }
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    
+    // Handle specific error codes
+    switch (error.code) {
+      case 'auth/invalid-email':
+        showLoginError('Invalid email address format');
+        break;
+      case 'auth/user-disabled':
+        showLoginError('This account has been disabled');
+        break;
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        showLoginError('Invalid email or password');
+        break;
+      case 'auth/too-many-requests':
+        showLoginError('Too many failed attempts. Please try again later');
+        break;
+      default:
+        showLoginError('Login failed. Please try again');
+    }
+  } finally {
+    setLoading(false);
+  }
+  
+  return false;
+}
+
+function updateAdminInfo(user) {
+  const adminEmailSpan = document.getElementById('adminEmail');
+  const adminNameSpan = document.getElementById('adminName');
+  
+  if (adminEmailSpan) {
+    adminEmailSpan.innerHTML = `<i class="fa-solid fa-crown"></i> ${user.email}`;
+  }
+  
+  if (adminNameSpan) {
+    // Use display name if available, otherwise use email prefix
+    const displayName = user.displayName || user.email.split('@')[0];
+    adminNameSpan.textContent = displayName;
+  }
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('email').value.trim();
+  
+  if (!email) {
+    showLoginError('Please enter your email address');
+    return;
+  }
+  
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showNotification('Password reset email sent! Check your inbox.', 'success');
+  } catch (error) {
+    console.error('Password reset error:', error);
+    showLoginError('Failed to send reset email. Please try again.');
+  }
+}
+
+// ========== LOGOUT FUNCTION ==========
+function logout() {
+  auth.signOut()
+    .then(() => {
+      console.log('Logged out successfully');
+      showNotification('Logged out successfully', 'success');
+    })
+    .catch((error) => {
+      console.error('Logout error:', error);
+      showNotification('Failed to logout', 'error');
+    });
+}
+
+// Add logout button to header (optional)
+function addLogoutButton() {
+  const headerRight = document.querySelector('.header > div:last-child');
+  if (headerRight) {
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'quick-action-btn';
+    logoutBtn.style.marginLeft = '10px';
+    logoutBtn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> logout';
+    logoutBtn.onclick = logout;
+    headerRight.appendChild(logoutBtn);
+  }
+}
 
 // ========== GLOBAL VARIABLES ==========
 let products = [];
@@ -2906,6 +3468,12 @@ document.addEventListener('click', function(event) {
 
 // ========== PAGE LOADING FUNCTIONS ==========
 async function loadPage(page) {
+  // Check if user is authenticated
+  if (!auth.currentUser) {
+    showLoginOverlay();
+    return;
+  }
+  
   // Update active menu item
   menuDashboard.classList.remove('active');
   menuNotify.classList.remove('active');
@@ -5537,8 +6105,15 @@ window.importProducts = function() {
   input.click();
 };
 
+// Initialize login overlay on page load
 document.addEventListener('DOMContentLoaded', () => {
-  loadPage('dashboard');
+  // Add logout button to header
+  setTimeout(() => {
+    addLogoutButton();
+  }, 1000);
+  
+  // Don't load any page until authenticated
+  // The auth state observer will handle loading
 });
 
 // Make rich description functions globally available
@@ -5554,6 +6129,27 @@ window.moveBlockUp = moveBlockUp;
 window.moveBlockDown = moveBlockDown;
 window.removeBlock = removeBlock;
 window.removeBulletItem = removeBulletItem;
+window.logout = logout;
+
+// Handle Enter key in login form
+document.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && document.getElementById('loginOverlay') && !document.getElementById('loginOverlay').classList.contains('hidden')) {
+    handleLogin(e);
+  }
+});
+
+// Auto-focus email field when overlay appears
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    if (mutation.attributeName === 'class') {
+      if (!document.getElementById('loginOverlay').classList.contains('hidden')) {
+        document.getElementById('email').focus();
+      }
+    }
+  });
+});
+
+observer.observe(document.getElementById('loginOverlay'), { attributes: true });
 </script>
 </body>
 </html>
