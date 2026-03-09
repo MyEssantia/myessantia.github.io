@@ -2871,7 +2871,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const storage = firebase.storage();
 
 // ========== GLOBAL VARIABLES ==========
 let products = [];
@@ -4286,129 +4285,38 @@ if (pagination) pagination.style.display =
   loadNotifyRequests();
 }
 
-// ========== DASHBOARD FUNCTIONS WITH STORAGE INTEGRATION ==========
-
-// Upload file to Firebase Storage
-async function uploadMediaFile(file) {
+// ========== DASHBOARD FIREBASE FUNCTIONS ==========
+async function loadProducts() {
   try {
-    // Create a unique filename with timestamp
-    const timestamp = Date.now();
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-    const filename = `products/${timestamp}_${safeFileName}`;
-    
-    // Get Firebase Storage reference
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(filename);
-    
-    // Upload the file with progress tracking
-    const uploadTask = await fileRef.put(file);
-    
-    // Get the download URL
-    const downloadUrl = await fileRef.getDownloadURL();
-    
-    return {
-      url: downloadUrl,
-      type: file.type.startsWith('video/') ? 'video' : 'image',
-      filename: filename,
-      uploaded: true
-    };
+    const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderProducts();
+    updateStats();
+    startNewInMonitor();
   } catch (error) {
-    console.error('Error uploading file:', error);
-    showNotification('Failed to upload file: ' + error.message, 'error');
-    throw error;
+    console.error('Error loading products:', error);
+    showNotification('failed to load products', 'error');
   }
 }
 
-// Handle file upload from input
-window.handleFileUpload = function(files) {
-  if (!files || files.length === 0) return;
+db.collection('notifications')
+  .onSnapshot((snapshot) => {
+    const pendingCount = snapshot.docs.filter(doc => {
+      const data = doc.data();
+      return data.status === 'pending' || !data.status;
+    }).length;
+    notifyBadge.textContent = pendingCount;
+  });
   
-  if (productMedia.length + files.length > 8) {
-    showNotification('maximum 8 media files allowed', 'error');
-    return;
-  }
+db.collection('reviews')
+  .onSnapshot((snapshot) => {
+    const reviewsBadge = document.getElementById('reviewsBadge');
+    if (reviewsBadge) reviewsBadge.textContent = snapshot.size;
+  });
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    
-    // Check file size (max 10MB for images, 50MB for videos)
-    const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      showNotification(`File too large (max ${maxSize/(1024*1024)}MB)`, 'error');
-      continue;
-    }
-    
-    // Create temporary local URL for preview
-    const localUrl = URL.createObjectURL(file);
-    
-    const mediaItem = {
-      url: localUrl, // temporary local URL for preview
-      type: file.type.startsWith('video/') ? 'video' : 'image',
-      file: file, // store the actual file for later upload
-      uploaded: false,
-      isUrl: false
-    };
-    
-    productMedia.push(mediaItem);
-  }
-
-  if (productMedia.length > 0 && selectedMediaIndex === 0) {
-    selectedMediaIndex = 0;
-  }
-
-  renderMediaGrid();
-  showNotification(`${files.length} file(s) added! Click Save to upload permanently.`, 'success');
-};
-
-// Add media from URL
-window.addMediaFromUrl = function() {
-  const urlInput = document.getElementById('media-url-input');
-  if (!urlInput) return;
-  
-  const url = urlInput.value.trim();
-  
-  if (!url) {
-    showNotification('please enter a url', 'error');
-    return;
-  }
-
-  try {
-    new URL(url);
-  } catch {
-    showNotification('please enter a valid url', 'error');
-    return;
-  }
-
-  if (productMedia.length >= 8) {
-    showNotification('maximum 8 media files allowed', 'error');
-    return;
-  }
-
-  const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || 
-                 url.includes('youtube.com') || 
-                 url.includes('youtu.be') || 
-                 url.includes('vimeo.com') ||
-                 url.includes('player.vimeo');
-  
-  const mediaItem = {
-    url: url,
-    type: isVideo ? 'video' : 'image',
-    isUrl: true,
-    uploaded: true // URLs are already accessible
-  };
-
-  productMedia.push(mediaItem);
-  
-  if (productMedia.length === 1) {
-    selectedMediaIndex = 0;
-  }
-  
-  urlInput.value = '';
-  renderMediaGrid();
-  showNotification('media added successfully!', 'success');
-};
-
-// Render media grid
 function renderMediaGrid() {
   const mediaGrid = document.getElementById('media-grid');
   if (!mediaGrid) return;
@@ -4427,7 +4335,6 @@ function renderMediaGrid() {
           `<img src="${media.url}" alt="media">`
         }
         <span class="media-type-badge">${isVideo ? 'VID' : 'IMG'}</span>
-        ${!media.uploaded ? '<span class="media-type-badge" style="background: #ffbb33;">PENDING</span>' : ''}
         <span class="media-remove-btn" onclick="removeMedia(${i}); event.stopPropagation();">
           <i class="fa-solid fa-times"></i>
         </span>
@@ -4452,14 +4359,82 @@ window.selectMedia = function(index) {
   renderMediaGrid();
 };
 
-window.removeMedia = function(index) {
-  const media = productMedia[index];
+window.addMediaFromUrl = function() {
+  const urlInput = document.getElementById('media-url-input');
+  if (!urlInput) return;
   
-  // Revoke object URL if it's a blob URL
-  if (media.url && media.url.startsWith('blob:')) {
-    URL.revokeObjectURL(media.url);
+  const url = urlInput.value.trim();
+  
+  if (!url) {
+    showNotification('please enter a url', 'error');
+    return;
+  }
+
+  try {
+    new URL(url);
+  } catch {
+    showNotification('please enter a valid url', 'error');
+    return;
+  }
+
+  const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || 
+                 url.includes('youtube.com') || 
+                 url.includes('youtu.be') || 
+                 url.includes('vimeo.com') ||
+                 url.includes('player.vimeo');
+  
+  const mediaItem = {
+    url: url,
+    type: isVideo ? 'video' : 'image'
+  };
+
+  if (productMedia.length >= 8) {
+    showNotification('maximum 8 media files allowed', 'error');
+    return;
+  }
+
+  productMedia.push(mediaItem);
+  
+  if (productMedia.length === 1) {
+    selectedMediaIndex = 0;
   }
   
+  urlInput.value = '';
+  renderMediaGrid();
+  showNotification('media added successfully!', 'success');
+};
+
+window.handleFileUpload = function(files) {
+  if (!files) return;
+  
+  if (productMedia.length + files.length > 8) {
+    showNotification('maximum 8 media files allowed', 'error');
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith('video/');
+    
+    const mediaItem = {
+      url: url,
+      type: isVideo ? 'video' : 'image',
+      file: file
+    };
+
+    productMedia.push(mediaItem);
+  }
+
+  if (productMedia.length > 0 && selectedMediaIndex === 0 && productMedia.length === files.length) {
+    selectedMediaIndex = 0;
+  }
+
+  renderMediaGrid();
+  showNotification(`${files.length} file(s) added successfully!`, 'success');
+};
+
+window.removeMedia = function(index) {
   productMedia.splice(index, 1);
   
   if (selectedMediaIndex >= productMedia.length) {
@@ -4469,7 +4444,6 @@ window.removeMedia = function(index) {
   renderMediaGrid();
 };
 
-// Update high demand chip
 function updateHighDemandChip() {
   const highDemandChip = document.getElementById('high-demand-chip');
   const productHighDemand = document.getElementById('product-high-demand');
@@ -4491,7 +4465,6 @@ window.toggleHighDemand = function() {
   }
 };
 
-// Save product with uploaded media
 async function saveProduct(productData) {
   try {
     if (productData.id) {
@@ -4899,7 +4872,7 @@ function loadDescriptionBlocks(blocks) {
   updatePreview();
 }
 
-// ========== ENHANCED PRODUCT SAVE FUNCTION WITH STORAGE UPLOAD ==========
+// ========== ENHANCED PRODUCT SAVE FUNCTION WITH NULL CHECKS ==========
 async function handleProductSubmit(e) {
   e.preventDefault();
 
@@ -4920,8 +4893,22 @@ async function handleProductSubmit(e) {
   const productHighDemand = document.getElementById('product-high-demand');
 
   // Validate required fields
-  if (!productTitle || !productTitle.value) {
+  if (!productTitle) {
+    showNotification('Product title field not found', 'error');
+    return;
+  }
+  if (!productTitle.value) {
     showNotification('Please enter product title', 'error');
+    return;
+  }
+
+  if (!productCategory) {
+    showNotification('Product category field not found', 'error');
+    return;
+  }
+
+  if (!productPrice) {
+    showNotification('Product price field not found', 'error');
     return;
   }
 
@@ -4930,164 +4917,114 @@ async function handleProductSubmit(e) {
     showNotification('Please enter a valid price', 'error');
     return;
   }
+  
+  const originalPriceInput = productOriginalPrice ? parseFloat(productOriginalPrice.value) || 0 : 0;
+  
+  const originalPrice = calculateOriginalPrice(sellingPrice, originalPriceInput);
+  const prepaidPrice = calculatePrepaidPrice(sellingPrice);
+  const codPrice = calculateCodPrice(sellingPrice);
+  
+  const rating = productRating ? parseFloat(productRating.value) || 4.5 : 4.5;
+  const reviewCount = productReviewCount ? parseInt(productReviewCount.value) || 0 : 0;
+  const stock = productStock ? parseInt(productStock.value) || 10 : 10;
+  const brand = productBrand ? productBrand.value || 'MyEssantia' : 'MyEssantia';
+  
+  const showOnHomeChecked = showOnHome ? showOnHome.checked : false;
+  const showOnAccessoriesChecked = showOnAccessories ? showOnAccessories.checked : false;
+  const showOnEssentialsChecked = showOnEssentials ? showOnEssentials.checked : false;
+  const highDemandChecked = productHighDemand ? productHighDemand.checked : false;
 
-  // Show loading state
-  const saveBtn = document.getElementById('save-product-btn');
-  const originalBtnText = saveBtn.innerHTML;
-  saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
-  saveBtn.disabled = true;
-
-  try {
-    // Upload any pending files to Firebase Storage
-    const uploadedMedia = [];
-    
-    for (const media of productMedia) {
-      if (media.file && !media.uploaded) {
-        // This is a local file that needs to be uploaded
-        try {
-          const uploaded = await uploadMediaFile(media.file);
-          uploadedMedia.push({
-            url: uploaded.url,
-            type: uploaded.type
-          });
-        } catch (uploadError) {
-          console.error('Error uploading file:', uploadError);
-          showNotification('Failed to upload one or more files', 'error');
-          saveBtn.innerHTML = originalBtnText;
-          saveBtn.disabled = false;
-          return;
-        }
-      } else if (media.url) {
-        // This is either a URL or already uploaded file
-        uploadedMedia.push({
-          url: media.url,
-          type: media.type
+  // Collect description blocks
+  const descriptionBlocks = [];
+  const blocks = document.querySelectorAll('#description-blocks-container .description-block');
+  
+  blocks.forEach(block => {
+    if (block.classList.contains('text-block')) {
+      const content = block.querySelector('.block-content')?.value;
+      if (content && content.trim()) {
+        descriptionBlocks.push({
+          type: 'text',
+          content: content.trim()
         });
       }
     }
-
-    const originalPriceInput = productOriginalPrice ? parseFloat(productOriginalPrice.value) || 0 : 0;
-    const originalPrice = calculateOriginalPrice(sellingPrice, originalPriceInput);
-    const prepaidPrice = calculatePrepaidPrice(sellingPrice);
-    const codPrice = calculateCodPrice(sellingPrice);
-    
-    const rating = productRating ? parseFloat(productRating.value) || 4.5 : 4.5;
-    const reviewCount = productReviewCount ? parseInt(productReviewCount.value) || 0 : 0;
-    const stock = productStock ? parseInt(productStock.value) || 10 : 10;
-    const brand = productBrand ? productBrand.value || 'MyEssantia' : 'MyEssantia';
-    
-    const showOnHomeChecked = showOnHome ? showOnHome.checked : false;
-    const showOnAccessoriesChecked = showOnAccessories ? showOnAccessories.checked : false;
-    const showOnEssentialsChecked = showOnEssentials ? showOnEssentials.checked : false;
-    const highDemandChecked = productHighDemand ? productHighDemand.checked : false;
-
-    // Collect description blocks
-    const descriptionBlocks = [];
-    const blocks = document.querySelectorAll('#description-blocks-container .description-block');
-    
-    blocks.forEach(block => {
-      if (block.classList.contains('text-block')) {
-        const content = block.querySelector('.block-content')?.value;
-        if (content && content.trim()) {
-          descriptionBlocks.push({
-            type: 'text',
-            content: content.trim()
-          });
-        }
-      }
-      else if (block.classList.contains('heading-block')) {
-        const content = block.querySelector('.block-content')?.value;
-        const level = block.querySelector('.heading-level')?.value;
-        if (content && content.trim()) {
-          descriptionBlocks.push({
-            type: 'heading',
-            content: content.trim(),
-            level: level
-          });
-        }
-      }
-      else if (block.classList.contains('image-block')) {
-        const url = block.querySelector('.block-content')?.value;
-        if (url && url.trim()) {
-          descriptionBlocks.push({
-            type: 'image',
-            url: url.trim()
-          });
-        }
-      }
-      else if (block.classList.contains('video-block')) {
-        const url = block.querySelector('.block-content')?.value;
-        const alignment = block.querySelector('.video-alignment')?.value;
-        if (url && url.trim()) {
-          descriptionBlocks.push({
-            type: 'video',
-            url: url.trim(),
-            alignment: alignment
-          });
-        }
-      }
-      else if (block.classList.contains('bullet-block')) {
-        const bullets = block.querySelectorAll('.bullet-text');
-        const items = [];
-        bullets.forEach(bullet => {
-          const text = bullet.value;
-          if (text && text.trim()) items.push(text.trim());
+    else if (block.classList.contains('heading-block')) {
+      const content = block.querySelector('.block-content')?.value;
+      const level = block.querySelector('.heading-level')?.value;
+      if (content && content.trim()) {
+        descriptionBlocks.push({
+          type: 'heading',
+          content: content.trim(),
+          level: level
         });
-        if (items.length > 0) {
-          descriptionBlocks.push({
-            type: 'bullets',
-            items: items
-          });
-        }
       }
-    });
-
-    const productData = {
-      title: productTitle.value,
-      category: productCategory.value,
-      price: sellingPrice,
-      originalPrice: originalPrice,
-      prepaidPrice: prepaidPrice,
-      codPrice: codPrice,
-      rating: rating,
-      reviewCount: reviewCount,
-      stock: stock,
-      brand: brand,
-      media: uploadedMedia,
-      primaryImg: uploadedMedia[selectedMediaIndex]?.url || '',
-      shortDesc: productShortDesc ? productShortDesc.value : '',
-      descriptionBlocks: descriptionBlocks,
-      showOnHome: showOnHomeChecked,
-      showOnAccessories: showOnAccessoriesChecked,
-      showOnEssentials: showOnEssentialsChecked,
-      showOnNew: true,
-      highDemand: highDemandChecked
-    };
-
-    if (productId && productId.value) {
-      productData.id = productId.value;
     }
-
-    await saveProduct(productData);
-    
-    // Clear local object URLs to prevent memory leaks
-    productMedia.forEach(media => {
-      if (media.url && media.url.startsWith('blob:')) {
-        URL.revokeObjectURL(media.url);
+    else if (block.classList.contains('image-block')) {
+      const url = block.querySelector('.block-content')?.value;
+      if (url && url.trim()) {
+        descriptionBlocks.push({
+          type: 'image',
+          url: url.trim()
+        });
       }
-    });
-    
-  } catch (error) {
-    console.error('Error saving product:', error);
-    showNotification(`Failed to save product: ${error.message}`, 'error');
-  } finally {
-    // Restore button state
-    saveBtn.innerHTML = originalBtnText;
-    saveBtn.disabled = false;
+    }
+    else if (block.classList.contains('video-block')) {
+      const url = block.querySelector('.block-content')?.value;
+      const alignment = block.querySelector('.video-alignment')?.value;
+      if (url && url.trim()) {
+        descriptionBlocks.push({
+          type: 'video',
+          url: url.trim(),
+          alignment: alignment
+        });
+      }
+    }
+    else if (block.classList.contains('bullet-block')) {
+      const bullets = block.querySelectorAll('.bullet-text');
+      const items = [];
+      bullets.forEach(bullet => {
+        const text = bullet.value;
+        if (text && text.trim()) items.push(text.trim());
+      });
+      if (items.length > 0) {
+        descriptionBlocks.push({
+          type: 'bullets',
+          items: items
+        });
+      }
+    }
+  });
+
+  const productData = {
+    title: productTitle.value,
+    category: productCategory.value,
+    price: sellingPrice,
+    originalPrice: originalPrice,
+    prepaidPrice: prepaidPrice,
+    codPrice: codPrice,
+    rating: rating,
+    reviewCount: reviewCount,
+    stock: stock,
+    brand: brand,
+    media: productMedia.map(m => ({ url: m.url, type: m.type })),
+    primaryImg: productMedia[selectedMediaIndex]?.url || '',
+    shortDesc: productShortDesc ? productShortDesc.value : '',
+    descriptionBlocks: descriptionBlocks,
+    showOnHome: showOnHomeChecked,
+    showOnAccessories: showOnAccessoriesChecked,
+    showOnEssentials: showOnEssentialsChecked,
+    showOnNew: true,
+    highDemand: highDemandChecked
+  };
+
+  if (productId && productId.value) {
+    productData.id = productId.value;
   }
+
+  await saveProduct(productData);
 }
 
-// ========== ENHANCED EDIT PRODUCT FUNCTION ==========
+// ========== ENHANCED EDIT PRODUCT FUNCTION WITH NULL CHECKS ==========
 window.editProduct = async function(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
@@ -5122,12 +5059,7 @@ window.editProduct = async function(id) {
   if (productBrand) productBrand.value = product.brand || 'MyEssantia';
   if (productShortDesc) productShortDesc.value = product.shortDesc || '';
 
-  // Set media - these are already uploaded, so mark them as uploaded
-  productMedia = product.media ? product.media.map(m => ({
-    url: m.url,
-    type: m.type,
-    uploaded: true // Mark as already uploaded
-  })) : [];
+  productMedia = product.media ? [...product.media] : [];
   
   if (product.primaryImg && productMedia.length > 0) {
     selectedMediaIndex = productMedia.findIndex(m => m.url === product.primaryImg);
@@ -5383,14 +5315,7 @@ function renderProducts(productsToRender = products) {
 }
 
 function resetForm() {
-  // Clear object URLs to prevent memory leaks
-  productMedia.forEach(media => {
-    if (media.url && media.url.startsWith('blob:')) {
-      URL.revokeObjectURL(media.url);
-    }
-  });
-  
-  // Get all form elements
+  // Get all form elements with null checks
   const productForm = document.getElementById('product-form');
   const productId = document.getElementById('product-id');
   const productCreationDate = document.getElementById('product-creation-date');
@@ -5429,22 +5354,6 @@ function resetForm() {
   updatePricePreviews();
   
   if (formTitle) formTitle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> add new product';
-}
-
-async function loadProducts() {
-  try {
-    const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
-    products = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    renderProducts();
-    updateStats();
-    startNewInMonitor();
-  } catch (error) {
-    console.error('Error loading products:', error);
-    showNotification('failed to load products', 'error');
-  }
 }
 
 function initializeDashboard() {
@@ -5639,22 +5548,6 @@ window.importProducts = function() {
   input.click();
 };
 
-// Real-time listeners for badges
-db.collection('notifications')
-  .onSnapshot((snapshot) => {
-    const pendingCount = snapshot.docs.filter(doc => {
-      const data = doc.data();
-      return data.status === 'pending' || !data.status;
-    }).length;
-    notifyBadge.textContent = pendingCount;
-  });
-  
-db.collection('reviews')
-  .onSnapshot((snapshot) => {
-    const reviewsBadge = document.getElementById('reviewsBadge');
-    if (reviewsBadge) reviewsBadge.textContent = snapshot.size;
-  });
-
 document.addEventListener('DOMContentLoaded', () => {
   loadPage('dashboard');
 });
@@ -5673,6 +5566,5 @@ window.moveBlockDown = moveBlockDown;
 window.removeBlock = removeBlock;
 window.removeBulletItem = removeBulletItem;
 </script>
- 
 </body>
 </html>
