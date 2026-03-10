@@ -2951,85 +2951,81 @@
       }, 3000);
     }
 
-// In your product page HTML, replace the existing addToCart and buyNow functions with:
+    // Use the global addToCart from common.js
+    window.addToCart = function() {
+      if (!currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('cart');
+        return;
+      }
+      
+      // Use the global addToCart function from common.js
+      if (typeof window.addToCart === 'function' && window.addToCart !== arguments.callee) {
+        // Call the global function with the product ID
+        window.addToCart(currentProduct.id);
+      } else {
+        // Fallback if global function not available
+        const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
+        
+        if (currentProduct.stock <= 0) {
+          showNotification('Sorry, this product is out of stock!');
+          return;
+        }
 
-window.addToCart = function() {
-  if (!currentProduct) return;
-  
-  if (currentProduct.highDemand) {
-    showHighDemandPopup('cart');
-    return;
-  }
-  
-  // Get quantity from input
-  const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
-  
-  if (currentProduct.stock <= 0) {
-    showNotification('Sorry, this product is out of stock!');
-    return;
-  }
+        if (quantity > currentProduct.stock) {
+          showNotification(`Only ${currentProduct.stock} items available!`);
+          return;
+        }
 
-  if (quantity > currentProduct.stock) {
-    showNotification(`Only ${currentProduct.stock} items available!`);
-    return;
-  }
+        const productToAdd = {
+          id: currentProduct.id,
+          title: currentProduct.title,
+          price: currentProduct.price,
+          image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
+          quantity: quantity
+        };
 
-  // Check if we need to update quantity in cart
-  const existingItemIndex = window.cart.findIndex(item => item.id === currentProduct.id);
-  
-  if (existingItemIndex >= 0) {
-    // Item exists, update quantity
-    window.cart[existingItemIndex].quantity += quantity;
-  } else {
-    // New item, add to cart
-    const productToAdd = {
-      id: currentProduct.id,
-      title: currentProduct.title,
-      price: currentProduct.price,
-      image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
-      quantity: quantity
+        const existingItemIndex = window.cart.findIndex(item => item.id === productToAdd.id);
+        
+        if (existingItemIndex >= 0) {
+          window.cart[existingItemIndex].quantity += quantity;
+        } else {
+          window.cart.push(productToAdd);
+        }
+        
+        localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+        
+        if (typeof window.updateCartCount === 'function') {
+          window.updateCartCount();
+        }
+        
+        showNotification(`${productToAdd.title} added to cart!`);
+        
+        setTimeout(() => {
+          if (typeof window.openCart === 'function') {
+            window.openCart();
+          }
+        }, 300);
+      }
     };
-    window.cart.push(productToAdd);
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-  
-  // Update cart count if function exists
-  if (typeof window.updateCartCount === 'function') {
-    window.updateCartCount();
-  }
-  
-  // Show success message
-  showNotification(`${currentProduct.title} added to cart!`);
-  
-  // Open cart after a short delay
-  setTimeout(() => {
-    if (typeof window.openCart === 'function') {
-      window.openCart();
-    } else {
-      console.log('openCart function not available');
-    }
-  }, 300);
-};
 
-window.buyNow = function() {
-  if (!currentProduct) return;
-  
-  if (currentProduct.highDemand) {
-    showHighDemandPopup('buy');
-    return;
-  }
-  
-  // Add to cart first
-  window.addToCart();
-  
-  // Then redirect to checkout
-  setTimeout(() => {
-    window.location.href = 'checkout.html';
-  }, 500);
-};
-    
+    window.buyNow = function() {
+      if (!currentProduct) return;
+      
+      if (currentProduct.highDemand) {
+        showHighDemandPopup('buy');
+        return;
+      }
+      
+      // Add to cart first
+      window.addToCart();
+      
+      // Then redirect to checkout
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 500);
+    };
 
     function updateButtonStates() {
       const addToCartBtn = document.querySelector('.btn-secondary');
