@@ -491,22 +491,28 @@
 
 .product__description video {
   max-width: 100%;
-  max-height: 450px !important;    /* Increased from 250px to 450px */
-  width: 100%;                     /* Changed from auto to 100% for better responsiveness */
+  max-height: 600px !important;    /* Increased height for portrait */
+  width: auto;
   height: auto;
+  max-width: 338px !important;      /* 9:16 ratio - 338px width for 600px height */
   border-radius: 12px;
-  margin: 1.5rem auto !important;  /* Increased margin */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
+  margin: 1.5rem auto !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
+  object-fit: contain;              /* Ensures full video is visible */
+  background: #000;                 /* Black background for letterboxing */
 }
 
 .product__description iframe {
   max-width: 100%;
-  max-height: 450px !important;    /* Increased from 250px to 450px */
-  height: 450px !important;        /* Fixed height instead of auto */
-  aspect-ratio: 16/9;
-  margin: 1.5rem auto !important;  /* Increased margin */
-  border-radius: 12px;             /* Added border radius */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
+  max-height: 600px !important;
+  height: 600px !important;
+  width: 338px !important;          /* Fixed width for 9:16 ratio */
+  aspect-ratio: 9/16;               /* Forces 9:16 aspect ratio */
+  margin: 1.5rem auto !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
 }
 
     .product__description blockquote {
