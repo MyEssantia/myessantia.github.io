@@ -2616,63 +2616,62 @@
       return Math.floor(Math.random() * (35 - 8 + 1)) + 8; 
     }
 
-    async function loadProductReviews(productId) {
-      try {
-        console.log('Loading reviews for product:', productId);
-        
-        if (!productId) {
-          console.log('No product ID provided');
-          return [];
-        }
-        
-        const snapshot = await db.collection('reviews')
-          .where('productId', '==', productId)
-          .get();
-        
-        console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
-        
-        if (snapshot.empty) {
-          console.log('No reviews found for this product');
-          return [];
-        }
-        
-        const reviews = snapshot.docs.map(doc => {
-          const data = doc.data();
-          
-          let reviewDate = new Date();
-          if (data.timestamp) {
-            if (data.timestamp.toDate) {
-              reviewDate = data.timestamp.toDate();
-            } else if (data.timestamp.seconds) {
-              reviewDate = new Date(data.timestamp.seconds * 1000);
-            } else {
-              reviewDate = new Date(data.timestamp);
-            }
-          }
-          
-          return {
-            id: doc.id,
-            reviewerName: data.reviewerName || data.name || 'Anonymous',
-            city: data.city || 'India',
-            rating: data.rating || 5,
-            comment: data.comment || data.review || '',
-            verified: data.verified || false,
-            imageUrl: data.imageUrl || data.image || null,
-            timestamp: reviewDate
-          };
-        });
-        
-        reviews.sort((a, b) => b.timestamp - a.timestamp);
-        
-        console.log('Processed reviews:', reviews);
-        return reviews;
-        
-      } catch (error) {
-        console.error('Error loading reviews:', error);
-        return [];
-      }
+async function loadProductReviews(productId) {
+  try {
+    console.log('Loading reviews for product:', productId);
+    
+    if (!productId) {
+      console.log('No product ID provided');
+      return [];
     }
-
+    
+    const snapshot = await db.collection('reviews')
+      .where('productId', '==', productId)
+      .get();
+    
+    console.log(`Found ${snapshot.docs.length} reviews for product ${productId}`);
+    
+    if (snapshot.empty) {
+      console.log('No reviews found for this product');
+      return [];
+    }
+    
+    const reviews = snapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      let reviewDate = new Date();
+      if (data.timestamp) {
+        if (data.timestamp.toDate) {
+          reviewDate = data.timestamp.toDate();
+        } else if (data.timestamp.seconds) {
+          reviewDate = new Date(data.timestamp.seconds * 1000);
+        } else {
+          reviewDate = new Date(data.timestamp);
+        }
+      }
+      
+      return {
+        id: doc.id,
+        reviewerName: data.reviewerName || data.name || 'Anonymous',
+        city: data.city || 'India',
+        rating: parseFloat(data.rating) || 5, // Parse as float to handle decimals
+        comment: data.comment || data.review || '',
+        verified: false, // Always set to false to remove verified badge
+        imageUrl: data.imageUrl || data.image || null,
+        timestamp: reviewDate
+      };
+    });
+    
+    reviews.sort((a, b) => b.timestamp - a.timestamp);
+    
+    console.log('Processed reviews:', reviews);
+    return reviews;
+    
+  } catch (error) {
+    console.error('Error loading reviews:', error);
+    return [];
+  }
+}
     async function submitReview(reviewData) {
       try {
         await db.collection('reviews').add({
@@ -2687,47 +2686,48 @@
       }
     }
 
-    function generateRatingDistribution(reviews) {
-      let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-      
-      if (reviews.length === 0) {
-        const baseRating = currentProduct?.rating || 4.5;
-        if (baseRating >= 4.5) {
-          distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
-        } else if (baseRating >= 4.0) {
-          distribution = { 5: 55, 4: 25, 3: 12, 2: 5, 1: 3 };
-        } else if (baseRating >= 3.5) {
-          distribution = { 5: 35, 4: 30, 3: 20, 2: 10, 1: 5 };
-        } else {
-          distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
-        }
-      } else {
-        reviews.forEach(review => {
-          const rating = Math.round(review.rating);
-          if (rating >= 1 && rating <= 5) {
-            distribution[rating]++;
-          }
-        });
-        
-        const total = reviews.length;
-        if (total > 0) {
-          distribution = {
-            5: Math.round((distribution[5] / total) * 100),
-            4: Math.round((distribution[4] / total) * 100),
-            3: Math.round((distribution[3] / total) * 100),
-            2: Math.round((distribution[2] / total) * 100),
-            1: Math.round((distribution[1] / total) * 100)
-          };
-        }
-      }
-      
-      const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
-      if (sum !== 100 && sum > 0) {
-        distribution[5] += (100 - sum);
-      }
-      
-      return distribution;
+function generateRatingDistribution(reviews) {
+  let distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  
+  if (reviews.length === 0) {
+    const baseRating = currentProduct?.rating || 4.5;
+    if (baseRating >= 4.5) {
+      distribution = { 5: 75, 4: 15, 3: 6, 2: 3, 1: 1 };
+    } else if (baseRating >= 4.0) {
+      distribution = { 5: 55, 4: 25, 3: 12, 2: 5, 1: 3 };
+    } else if (baseRating >= 3.5) {
+      distribution = { 5: 35, 4: 30, 3: 20, 2: 10, 1: 5 };
+    } else {
+      distribution = { 5: 20, 4: 25, 3: 25, 2: 18, 1: 12 };
     }
+  } else {
+    // For decimal ratings, round to nearest whole number for distribution
+    reviews.forEach(review => {
+      const rating = Math.round(parseFloat(review.rating)); // Round to nearest whole number
+      if (rating >= 1 && rating <= 5) {
+        distribution[rating]++;
+      }
+    });
+    
+    const total = reviews.length;
+    if (total > 0) {
+      distribution = {
+        5: Math.round((distribution[5] / total) * 100),
+        4: Math.round((distribution[4] / total) * 100),
+        3: Math.round((distribution[3] / total) * 100),
+        2: Math.round((distribution[2] / total) * 100),
+        1: Math.round((distribution[1] / total) * 100)
+      };
+    }
+  }
+  
+  const sum = distribution[5] + distribution[4] + distribution[3] + distribution[2] + distribution[1];
+  if (sum !== 100 && sum > 0) {
+    distribution[5] += (100 - sum);
+  }
+  
+  return distribution;
+}
 
     function getStars(r) { 
       r = parseFloat(r) || 4.5; 
@@ -3247,63 +3247,60 @@ window.buyNow = function() {
         reviewsHTML += `<div class="reviews-common-frame">`;
         reviewsHTML += `<div class="reviews-grid">`;
         
-        reviewsHTML += productReviews.map(review => {
-          const rating = review.rating || 5;
-          const fullStars = Math.floor(rating);
-          const hasHalf = rating % 1 >= 0.5;
-          
-          let starsHTML = '';
-          for (let i = 1; i <= 5; i++) {
-            if (i <= fullStars) {
-              starsHTML += `
-                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-                  <path d="m0 0h24v24h-24z" fill="none"></path>
-                  <path d="m0 0h24v24h-24z" fill="none"></path>
-                  <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z"></path>
-                </svg>
-              `;
-            } else if (i === fullStars + 1 && hasHalf) {
-              starsHTML += `
-                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
-                  <path d="m0 0h24v24h-24z" fill="none"></path>
-                  <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z"></path>
-                </svg>
-              `;
-            } else {
-              starsHTML += `
-                <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
-                  <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
-                  <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
-                </svg>
-              `;
-            }
-          }
-          
-          const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
-          
-          return `
-            <div class="review-item">
-              <div class="review-card">
-                <div class="review-media">
-                  <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
-                </div>
-                <div class="review-details">
-                  <div class="review-header">
-                    <div class="author-name-w-details">
-                      <div class="author-name">${review.reviewerName}</div>
-                    </div>
-                  </div>
-                  <div class="tydal-star-wrapper">
-                    ${starsHTML}
-                  </div>
-                  <div class="review-text">
-                    ${review.comment}
-                  </div>
-                </div>
-              </div>
+     reviewsHTML += productReviews.map(review => {
+  const rating = parseFloat(review.rating) || 5;
+  const fullStars = Math.floor(rating);
+  const hasHalf = rating % 1 >= 0.5;
+  
+  let starsHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      starsHTML += `
+        <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+          <path d="m12 17.27 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0l-1.89 4.45-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08z" fill="#F1C645"></path>
+        </svg>
+      `;
+    } else if (i === fullStars + 1 && hasHalf) {
+      starsHTML += `
+        <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.56 17.12 16.37">
+          <path d="m19.65 9.04-4.84-.42-1.89-4.45c-.34-.81-1.5-.81-1.84 0l-1.89 4.46-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.73 1.54 1.49 1.08l4.15-2.5 4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.73 3.67-3.18c.67-.58.32-1.68-.56-1.75zm-7.65 6.36-3.76 2.27 1-4.28-3.32-2.88 4.38-.38 1.7-4.03 1.71 4.04 4.38.38-3.32 2.88 1 4.28z" fill="#F1C645"></path>
+        </svg>
+      `;
+    } else {
+      starsHTML += `
+        <svg class="star" enable-background="new 0 0 24 24" viewBox="3.44 3.57 17.11 16.36">
+          <path d="m22 9.24-7.19-.62-2.81-6.77v16.92l6.19 3.74-1.64-7.03 5.45-4.73z" fill="#F1C645"></path>
+          <path d="M12 2.5L9.19 9.01 2 9.24l5.45 4.73L5.82 20.9 12 17.15" fill="#F1C645"></path>
+        </svg>
+      `;
+    }
+  }
+  
+  const imageUrl = review.imageUrl || 'https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e';
+  
+  return `
+    <div class="review-item">
+      <div class="review-card">
+        <div class="review-media">
+          <img src="${imageUrl}" alt="Product review image" onerror="this.src='https://d1327z4fntq4ap.cloudfront.net/00k6827oetc2yh1kg544bpu8rb3e'">
+        </div>
+        <div class="review-details">
+          <div class="review-header">
+            <div class="author-name-w-details">
+              <div class="author-name">${review.reviewerName}</div>
             </div>
-          `;
-        }).join('');
+          </div>
+          <div class="tydal-star-wrapper">
+            ${starsHTML}
+          </div>
+          <div class="review-text">
+            ${review.comment}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}).join('');
         
         reviewsHTML += `</div>`;
         reviewsHTML += `</div>`;
