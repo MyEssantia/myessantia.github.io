@@ -3690,9 +3690,14 @@ function renderProduct(product) {
           </button>
         </div>
 
-         <div style="background: linear-gradient(145deg, #fff9e6, #fff); border: 2px solid #d4af37; border-radius: 60px; padding: 14px 20px; margin: 8px 0 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); text-align: center; font-size: 0.95rem; font-weight: 600; color: #000; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-          <i class="fa-solid fa-tag" style="color: #d4af37; font-size: 1rem;"></i>
-          <span>Pay Online & Get 15% Off - Use code <u style="text-decoration-thickness: 2px; text-decoration-color: #d4af37; font-weight: 800;">ESSANTIA15</u></span>
+      <div style="background: linear-gradient(145deg, #fff9e6, #fff); border: 2px solid #d4af37; border-radius: 60px; padding: 12px 20px; margin: 8px 0 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+            <i class="fa-solid fa-tag" style="color: #d4af37; font-size: 1rem;"></i>
+            <span style="font-size: 0.95rem; font-weight: 600; color: #000;">Pay Online & Get 15% Off - Use code <u style="text-decoration-thickness: 2px; text-decoration-color: #d4af37; font-weight: 800;" id="promoCode">ESSANTIA15</u></span>
+          </div>
+          <button onclick="copyPromoCode()" style="background: #000; border: 2px solid #d4af37; color: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" onmouseover="this.style.background='#d4af37'; this.style.color='#000'" onmouseout="this.style.background='#000'; this.style.color='#d4af37'" id="copyPromoBtn">
+            <i class="fa-regular fa-copy" style="font-size: 1rem;"></i>
+          </button>
         </div>
 
         <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
@@ -3743,6 +3748,29 @@ function renderProduct(product) {
       inp.value = v; 
       if(currentProduct) updateDeliveryBar(currentProduct.price * v); 
     };
+
+    window.copyPromoCode = function() {
+  const promoCode = document.getElementById('promoCode')?.textContent || 'ESSANTIA15';
+  navigator.clipboard.writeText(promoCode).then(() => {
+    const copyBtn = document.getElementById('copyPromoBtn');
+    const originalHTML = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<i class="fa-solid fa-check" style="font-size: 1rem;"></i>';
+    copyBtn.style.background = '#d4af37';
+    copyBtn.style.color = '#000';
+    
+    setTimeout(() => {
+      copyBtn.innerHTML = originalHTML;
+      copyBtn.style.background = '#000';
+      copyBtn.style.color = '#d4af37';
+    }, 2000);
+    
+    // Optional: Show a small notification
+    showNotification('Promo code copied!', 'success');
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+    showNotification('Failed to copy code', 'error');
+  });
+};
 
     function updateDeliveryBar(t) { 
       const p = document.getElementById('deliveryProgress'); 
