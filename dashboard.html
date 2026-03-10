@@ -5064,10 +5064,10 @@ window.deleteProduct = function(id) {
   }
 };
 
-function calculatePrice(sellingPrice) {
+function calculatePrepaidPrice(sellingPrice) {
   const discount = sellingPrice * 0.15;
-  const  = sellingPrice - discount;
-  return Math.round();
+  const prepaid = sellingPrice - discount;
+  return Math.round(prepaid);
 }
 
 function calculateCodPrice(sellingPrice) {
