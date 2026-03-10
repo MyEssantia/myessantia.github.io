@@ -3690,15 +3690,17 @@ function renderProduct(product) {
           </button>
         </div>
 
-      <div style="background: linear-gradient(145deg, #fff9e6, #fff); border: 2px solid #d4af37; border-radius: 60px; padding: 12px 20px; margin: 8px 0 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
-            <i class="fa-solid fa-tag" style="color: #d4af37; font-size: 1rem;"></i>
-            <span style="font-size: 0.95rem; font-weight: 600; color: #000;">Pay Online & Get 15% Off - Use code <u style="text-decoration-thickness: 2px; text-decoration-color: #d4af37; font-weight: 800;" id="promoCode">ESSANTIA15</u></span>
+      <!-- PROMO DISPLAY SECTION - Smaller compact version -->
+        <div style="background: linear-gradient(145deg, #fff9e6, #fff); border: 2px solid #d4af37; border-radius: 40px; padding: 8px 16px; margin: 6px 0 12px; box-shadow: 3px 3px 0 rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-tag" style="color: #d4af37; font-size: 0.8rem;"></i>
+            <span style="font-size: 0.8rem; font-weight: 500; color: #000;">Pay Online & Get 15% Off · Use <u style="text-decoration-thickness: 2px; text-decoration-color: #d4af37; font-weight: 700;" id="promoCode">ESSANTIA15</u></span>
           </div>
-          <button onclick="copyPromoCode()" style="background: #000; border: 2px solid #d4af37; color: #d4af37; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" onmouseover="this.style.background='#d4af37'; this.style.color='#000'" onmouseout="this.style.background='#000'; this.style.color='#d4af37'" id="copyPromoBtn">
-            <i class="fa-regular fa-copy" style="font-size: 1rem;"></i>
+          <button onclick="copyPromoCode()" style="background: #000; border: 2px solid #d4af37; color: #d4af37; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; padding: 0;" onmouseover="this.style.background='#d4af37'; this.style.color='#000'" onmouseout="this.style.background='#000'; this.style.color='#d4af37'" id="copyPromoBtn">
+            <i class="fa-regular fa-copy" style="font-size: 0.7rem;"></i>
           </button>
         </div>
+
 
         <!-- PRODUCT DESCRIPTION - Rich HTML from admin blocks -->
         ${productDescriptionHTML}
