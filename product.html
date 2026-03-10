@@ -2974,14 +2974,43 @@ window.addToCart = function() {
     return;
   }
 
-  // Call the global addToCart function from common.js
-  if (typeof window.globalAddToCart === 'function') {
-    window.globalAddToCart(currentProduct.id, quantity);
+  // Check if we need to update quantity in cart
+  const existingItemIndex = window.cart.findIndex(item => item.id === currentProduct.id);
+  
+  if (existingItemIndex >= 0) {
+    // Item exists, update quantity
+    window.cart[existingItemIndex].quantity += quantity;
   } else {
-    // Fallback if global function not available
-    console.error('Global addToCart function not found');
-    showNotification('Error adding to cart. Please try again.', 'error');
+    // New item, add to cart
+    const productToAdd = {
+      id: currentProduct.id,
+      title: currentProduct.title,
+      price: currentProduct.price,
+      image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
+      quantity: quantity
+    };
+    window.cart.push(productToAdd);
   }
+  
+  // Save to localStorage
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
+  
+  // Update cart count if function exists
+  if (typeof window.updateCartCount === 'function') {
+    window.updateCartCount();
+  }
+  
+  // Show success message
+  showNotification(`${currentProduct.title} added to cart!`);
+  
+  // Open cart after a short delay
+  setTimeout(() => {
+    if (typeof window.openCart === 'function') {
+      window.openCart();
+    } else {
+      console.log('openCart function not available');
+    }
+  }, 300);
 };
 
 window.buyNow = function() {
@@ -2997,7 +3026,7 @@ window.buyNow = function() {
   
   // Then redirect to checkout
   setTimeout(() => {
-    window.location.href = 'checkout.html'; // or wherever your checkout is
+    window.location.href = 'checkout.html';
   }, 500);
 };
     
