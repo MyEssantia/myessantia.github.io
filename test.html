@@ -236,6 +236,79 @@
       }
     }
 
+    /* Hide video controls completely */
+.product__description video {
+  pointer-events: none;  /* Prevents any interaction with the video */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide all controls */
+.product__description video::-webkit-media-controls {
+  display: none !important;
+}
+
+.product__description video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+
+.product__description video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+.product__description video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+
+.product__description video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+/* Firefox */
+.product__description video::-moz-media-controls {
+  display: none !important;
+}
+
+/* Remove download button specifically */
+.product__description video::-internal-media-controls-download-button {
+  display: none !important;
+}
+
+.product__description video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+/* Hide the context menu on right-click */
+.product__description video {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Container for autoplay videos */
+.product__description .autoplay-video {
+  position: relative;
+  cursor: default;
+}
+
+/* Optional overlay to prevent right-click */
+.product__description .autoplay-video::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 2;
+  pointer-events: none; /* Change to 'auto' if you want to block clicks entirely */
+}
+
     /* ===== BREADCRUMB FIXES ===== */
     .breadcrumb {
       display: flex; 
@@ -479,31 +552,41 @@
       font-size: 0.95rem !important;
     }
 
-    .product__description img {
-      max-width: 100%;
-      max-height: 300px !important;
-      width: auto;
-      height: auto;
-      border-radius: 8px;
-      margin: 0.8rem 0 !important;
-    }
+   .product__description img {
+  max-width: 100%;
+  max-height: 500px !important;  /* Increased from 300px to 500px */
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  margin: 1.5rem 0 !important;    /* Increased margin for better spacing */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional: adds subtle shadow */
+}
 
-    .product__description video {
-      max-width: 100%;
-      max-height: 250px !important;
-      width: auto;
-      height: auto;
-      border-radius: 8px;
-      margin: 0.8rem auto !important;
-    }
+.product__description video {
+  max-width: 100%;
+  max-height: 600px !important;    /* Increased height for portrait */
+  width: auto;
+  height: auto;
+  max-width: 338px !important;      /* 9:16 ratio - 338px width for 600px height */
+  border-radius: 12px;
+  margin: 1.5rem auto !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
+  object-fit: contain;              /* Ensures full video is visible */
+  background: #000;                 /* Black background for letterboxing */
+}
 
-    .product__description iframe {
-      max-width: 100%;
-      max-height: 250px !important;
-      height: auto !important;
-      aspect-ratio: 16/9;
-      margin: 0.8rem auto !important;
-    }
+.product__description iframe {
+  max-width: 100%;
+  max-height: 600px !important;
+  height: 600px !important;
+  width: 338px !important;          /* Fixed width for 9:16 ratio */
+  aspect-ratio: 9/16;               /* Forces 9:16 aspect ratio */
+  margin: 1.5rem auto !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
+}
 
     .product__description blockquote {
       margin: 1rem 0 !important;
@@ -2940,7 +3023,7 @@
       
       // Then redirect to checkout
       setTimeout(() => {
-        window.location.href = 'checkout.html';
+        window.location.href = 'index.html';
       }, 500);
     };
 
@@ -3252,29 +3335,44 @@
               productDescriptionHTML += `<p style="text-align: center;"><img src="${block.url}" alt="Product image" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; margin: 1rem 0;"></p>`;
             }
           }
-          else if (block.type === 'video') {
-            const url = block.url || '';
-            const alignment = block.alignment || 'center';
-            const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
-            
-            if (url) {
-              if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                // Extract YouTube ID
-                let videoId = '';
-                if (url.includes('youtube.com/watch?v=')) {
-                  videoId = url.split('v=')[1]?.split('&')[0];
-                } else if (url.includes('youtu.be/')) {
-                  videoId = url.split('youtu.be/')[1]?.split('?')[0];
-                }
-                
-                if (videoId) {
-                  productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000;"></iframe></p>`;
-                }
-              } else {
-                productDescriptionHTML += `<p style="text-align: ${alignment};"><video width="100%" height="auto" style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" controls playsinline loop muted><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></p>`;
-              }
-            }
-          }
+  else if (block.type === 'video') {
+  const url = block.url || '';
+  const alignment = block.alignment || 'center';
+  const alignStyle = alignment === 'center' ? 'margin: 0 auto;' : alignment === 'right' ? 'margin-left: auto;' : 'margin-right: auto;';
+  
+  if (url) {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      // Extract YouTube ID
+      let videoId = '';
+      if (url.includes('youtube.com/watch?v=')) {
+        videoId = url.split('v=')[1]?.split('&')[0];
+      } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      }
+      
+      if (videoId) {
+        productDescriptionHTML += `<p style="text-align: ${alignment};"><iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&showinfo=0&rel=0" frameborder="0" allow="autoplay; fullscreen" style="max-width: 560px; ${alignStyle} border-radius: 12px; border: 2px solid #000; pointer-events: none;"></iframe></p>`;
+      }
+    } else {
+      productDescriptionHTML += `<p style="text-align: ${alignment};" class="video-container-9x16 autoplay-video">
+        <video 
+          width="100%" 
+          height="auto" 
+          style="max-width: 360px; border-radius: 10px; display: block; ${alignStyle}" 
+          autoplay 
+          loop 
+          muted 
+          playsinline
+          disablePictureInPicture
+          controlslist="nodownload nofullscreen noremoteplayback"
+          oncontextmenu="return false;">
+          <source src="${url}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </p>`;
+    }
+  }
+}
           else if (block.type === 'bullets') {
             if (block.items && block.items.length > 0) {
               productDescriptionHTML += `<ul style="margin-bottom: 1.5rem; list-style: none; padding-left: 0;">`;
