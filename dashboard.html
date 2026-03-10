@@ -5071,8 +5071,7 @@ function calculatePrice(sellingPrice) {
 }
 
 function calculateCodPrice(sellingPrice) {
-  const prepaidPrice = calculatePrepaidPrice(sellingPrice);
-  return Math.round(prepaidPrice + 100);
+  return Math.round(sellingPrice + 100);
 }
 
 function calculateOriginalPrice(sellingPrice, originalPrice) {
