@@ -2951,9 +2951,10 @@
       }, 3000);
     }
 
-  // Make sure these functions are properly defined and not overridden
+// ===== FIXED CART FUNCTIONS =====
 window.addToCart = function() {
-  console.log('Add to cart called', currentProduct);
+  console.log('🛒 Add to cart called', currentProduct);
+  
   if (!currentProduct) {
     showNotification('Product not loaded', 'error');
     return;
@@ -2964,7 +2965,7 @@ window.addToCart = function() {
     return;
   }
   
-  // Get quantity from input
+  // Get quantity
   const quantityInput = document.getElementById('productQuantity');
   const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
   
@@ -2987,41 +2988,42 @@ window.addToCart = function() {
     quantity: quantity
   };
 
-  // Use the global cart functions
-  if (typeof window.addToCartGlobal === 'function') {
-    window.addToCartGlobal(productToAdd);
+  console.log('Adding product:', productToAdd);
+
+  // Get existing cart from localStorage
+  let cart = JSON.parse(localStorage.getItem('MyEssantia_cart') || '[]');
+  console.log('Current cart:', cart);
+  
+  // Check if product already exists
+  const existingItemIndex = cart.findIndex(item => item.id === productToAdd.id);
+  
+  if (existingItemIndex >= 0) {
+    // Update quantity
+    cart[existingItemIndex].quantity += quantity;
   } else {
-    // Fallback - direct cart manipulation
-    let cart = JSON.parse(localStorage.getItem('MyEssantia_cart') || '[]');
-    
-    const existingItemIndex = cart.findIndex(item => item.id === productToAdd.id);
-    
-    if (existingItemIndex >= 0) {
-      cart[existingItemIndex].quantity += quantity;
-    } else {
-      cart.push(productToAdd);
-    }
-    
-    localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
-    
-    // Update cart count if function exists
-    if (typeof window.updateCartCount === 'function') {
-      window.updateCartCount();
-    }
+    // Add new item
+    cart.push(productToAdd);
   }
   
+  // Save to localStorage
+  localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
+  console.log('Updated cart:', cart);
+  
+  // Update cart count in header
+  updateCartCountDisplay(cart);
+  
+  // Show success notification
   showNotification(`${productToAdd.title} added to cart!`, 'success');
   
-  // Optional: open cart drawer after adding
+  // Open cart drawer after adding
   setTimeout(() => {
-    if (typeof window.openCart === 'function') {
-      window.openCart();
-    }
+    openCartDrawer();
   }, 500);
 };
 
 window.buyNow = function() {
-  console.log('Buy now called', currentProduct);
+  console.log('⚡ Buy now called', currentProduct);
+  
   if (!currentProduct) {
     showNotification('Product not loaded', 'error');
     return;
@@ -3035,10 +3037,10 @@ window.buyNow = function() {
   // First add to cart
   window.addToCart();
   
-  // Then redirect to checkout after a short delay
+  // Then redirect to checkout
   setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 500);
+    window.location.href = 'checkout.html';
+  }, 800);
 };
 
     function updateButtonStates() {
