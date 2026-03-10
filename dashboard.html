@@ -4889,7 +4889,7 @@ function renderMediaGrid() {
       <div class="media-item ${isSelected ? 'selected' : ''}" onclick="selectMedia(${i})">
         ${isVideo ? 
           `<video src="${media.url}"></video>` : 
-          `<img src="${media.url}" alt="media">`
+          `<img src="${media.url}" alt="media" onerror="this.src='https://via.placeholder.com/300/f0f0f0/999999?text=Invalid+URL'">`
         }
         <span class="media-type-badge">${isVideo ? 'VID' : 'IMG'}</span>
         <span class="media-remove-btn" onclick="removeMedia(${i}); event.stopPropagation();">
@@ -4910,7 +4910,7 @@ function renderMediaGrid() {
   
   mediaGrid.innerHTML = html;
 }
-
+  
 window.selectMedia = function(index) {
   selectedMediaIndex = index;
   renderMediaGrid();
@@ -4934,6 +4934,7 @@ window.addMediaFromUrl = function() {
     return;
   }
 
+  // Check if it's a video by extension
   const isVideo = url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)$/i) || 
                  url.includes('youtube.com') || 
                  url.includes('youtu.be') || 
@@ -4952,6 +4953,7 @@ window.addMediaFromUrl = function() {
 
   productMedia.push(mediaItem);
   
+  // Auto-select the first media as primary
   if (productMedia.length === 1) {
     selectedMediaIndex = 0;
   }
@@ -5429,7 +5431,6 @@ function loadDescriptionBlocks(blocks) {
   updatePreview();
 }
 
-// ========== ENHANCED PRODUCT SAVE FUNCTION WITH NULL CHECKS ==========
 async function handleProductSubmit(e) {
   e.preventDefault();
 
@@ -5552,6 +5553,12 @@ async function handleProductSubmit(e) {
     }
   });
 
+  // IMPORTANT: Clean up media URLs - ensure they're properly formatted
+  const cleanedMedia = productMedia.map(m => ({ 
+    url: m.url, 
+    type: m.type 
+  }));
+
   const productData = {
     title: productTitle.value,
     category: productCategory.value,
@@ -5563,8 +5570,9 @@ async function handleProductSubmit(e) {
     reviewCount: reviewCount,
     stock: stock,
     brand: brand,
-    media: productMedia.map(m => ({ url: m.url, type: m.type })),
-    primaryImg: productMedia[selectedMediaIndex]?.url || '',
+    media: cleanedMedia,
+    // Set primaryImg to the selected media URL, or first media if none selected
+    primaryImg: cleanedMedia[selectedMediaIndex]?.url || (cleanedMedia[0]?.url) || '',
     shortDesc: productShortDesc ? productShortDesc.value : '',
     descriptionBlocks: descriptionBlocks,
     showOnHome: showOnHomeChecked,
@@ -5580,8 +5588,7 @@ async function handleProductSubmit(e) {
 
   await saveProduct(productData);
 }
-
-// ========== ENHANCED EDIT PRODUCT FUNCTION WITH NULL CHECKS ==========
+  
 window.editProduct = async function(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
@@ -5616,8 +5623,10 @@ window.editProduct = async function(id) {
   if (productBrand) productBrand.value = product.brand || 'MyEssantia';
   if (productShortDesc) productShortDesc.value = product.shortDesc || '';
 
+  // Load media from product
   productMedia = product.media ? [...product.media] : [];
   
+  // Set selected media index
   if (product.primaryImg && productMedia.length > 0) {
     selectedMediaIndex = productMedia.findIndex(m => m.url === product.primaryImg);
     if (selectedMediaIndex === -1) selectedMediaIndex = 0;
