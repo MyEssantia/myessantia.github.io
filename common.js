@@ -501,9 +501,13 @@ function setupCartButtonListener() {
   });
 }
 
-// ========== MAIN ADD TO CART FUNCTION (SINGLE SOURCE OF TRUTH) ==========
+
+// In common.js, replace:
 window.addToCart = async function(productId, button = null) {
-  console.log('Adding to cart:', productId);
+
+// With:
+window.globalAddToCart = async function(productId, quantity = 1, button = null) {
+  console.log('Adding to cart:', productId, 'Quantity:', quantity);
   
   // If button not provided, try to get it from the event
   if (!button && event) {
@@ -524,11 +528,11 @@ window.addToCart = async function(productId, button = null) {
   const existingItem = cart.find(item => item.id === productId);
 
   if (existingItem) {
-    if (existingItem.quantity >= product.stock) {
+    if (existingItem.quantity + quantity > product.stock) {
       alert('Sorry, not enough stock available!');
       return;
     }
-    existingItem.quantity += 1;
+    existingItem.quantity += quantity;
     console.log('Updated quantity:', existingItem);
   } else {
     const newItem = {
@@ -537,7 +541,7 @@ window.addToCart = async function(productId, button = null) {
       category: product.category,
       price: product.price,
       primaryImg: product.primaryImg || (product.images && product.images[0]),
-      quantity: 1
+      quantity: quantity
     };
     cart.push(newItem);
     console.log('New item added:', newItem);
@@ -582,14 +586,18 @@ window.addToCart = async function(productId, button = null) {
   }
 };
 
-// Legacy support for onclick="addToCart('id')" - still works!
+// Keep a legacy wrapper for backward compatibility
 window.addToCartLegacy = function(productId) {
-  window.addToCart(productId, event?.target?.closest('button'));
+  window.globalAddToCart(productId, 1, event?.target?.closest('button'));
 };
-
+  
 // Buy Now function
+// In common.js, update the buyNow function:
 window.buyNow = function(productId) {
-  window.addToCart(productId, event?.target?.closest('button'));
+  window.globalAddToCart(productId, 1, event?.target?.closest('button'));
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500);
 };
 
 // ========== CART FUNCTIONS ==========
