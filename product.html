@@ -2951,81 +2951,95 @@
       }, 3000);
     }
 
-    // Use the global addToCart from common.js
-    window.addToCart = function() {
-      if (!currentProduct) return;
-      
-      if (currentProduct.highDemand) {
-        showHighDemandPopup('cart');
-        return;
-      }
-      
-      // Use the global addToCart function from common.js
-      if (typeof window.addToCart === 'function' && window.addToCart !== arguments.callee) {
-        // Call the global function with the product ID
-        window.addToCart(currentProduct.id);
-      } else {
-        // Fallback if global function not available
-        const quantity = parseInt(document.getElementById('productQuantity')?.value) || 1;
-        
-        if (currentProduct.stock <= 0) {
-          showNotification('Sorry, this product is out of stock!');
-          return;
-        }
+  // Make sure these functions are properly defined and not overridden
+window.addToCart = function() {
+  console.log('Add to cart called', currentProduct);
+  if (!currentProduct) {
+    showNotification('Product not loaded', 'error');
+    return;
+  }
+  
+  if (currentProduct.highDemand) {
+    showHighDemandPopup('cart');
+    return;
+  }
+  
+  // Get quantity from input
+  const quantityInput = document.getElementById('productQuantity');
+  const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+  
+  if (currentProduct.stock <= 0) {
+    showNotification('Sorry, this product is out of stock!', 'error');
+    return;
+  }
 
-        if (quantity > currentProduct.stock) {
-          showNotification(`Only ${currentProduct.stock} items available!`);
-          return;
-        }
+  if (quantity > currentProduct.stock) {
+    showNotification(`Only ${currentProduct.stock} items available!`, 'error');
+    return;
+  }
 
-        const productToAdd = {
-          id: currentProduct.id,
-          title: currentProduct.title,
-          price: currentProduct.price,
-          image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
-          quantity: quantity
-        };
+  // Create product object
+  const productToAdd = {
+    id: currentProduct.id,
+    title: currentProduct.title,
+    price: currentProduct.price,
+    image: currentProduct.primaryImg || (currentProduct.images && currentProduct.images[0]) || 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600',
+    quantity: quantity
+  };
 
-        const existingItemIndex = window.cart.findIndex(item => item.id === productToAdd.id);
-        
-        if (existingItemIndex >= 0) {
-          window.cart[existingItemIndex].quantity += quantity;
-        } else {
-          window.cart.push(productToAdd);
-        }
-        
-        localStorage.setItem('MyEssantia_cart', JSON.stringify(window.cart));
-        
-        if (typeof window.updateCartCount === 'function') {
-          window.updateCartCount();
-        }
-        
-        showNotification(`${productToAdd.title} added to cart!`);
-        
-        setTimeout(() => {
-          if (typeof window.openCart === 'function') {
-            window.openCart();
-          }
-        }, 300);
-      }
-    };
+  // Use the global cart functions
+  if (typeof window.addToCartGlobal === 'function') {
+    window.addToCartGlobal(productToAdd);
+  } else {
+    // Fallback - direct cart manipulation
+    let cart = JSON.parse(localStorage.getItem('MyEssantia_cart') || '[]');
+    
+    const existingItemIndex = cart.findIndex(item => item.id === productToAdd.id);
+    
+    if (existingItemIndex >= 0) {
+      cart[existingItemIndex].quantity += quantity;
+    } else {
+      cart.push(productToAdd);
+    }
+    
+    localStorage.setItem('MyEssantia_cart', JSON.stringify(cart));
+    
+    // Update cart count if function exists
+    if (typeof window.updateCartCount === 'function') {
+      window.updateCartCount();
+    }
+  }
+  
+  showNotification(`${productToAdd.title} added to cart!`, 'success');
+  
+  // Optional: open cart drawer after adding
+  setTimeout(() => {
+    if (typeof window.openCart === 'function') {
+      window.openCart();
+    }
+  }, 500);
+};
 
-    window.buyNow = function() {
-      if (!currentProduct) return;
-      
-      if (currentProduct.highDemand) {
-        showHighDemandPopup('buy');
-        return;
-      }
-      
-      // Add to cart first
-      window.addToCart();
-      
-      // Then redirect to checkout
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 500);
-    };
+window.buyNow = function() {
+  console.log('Buy now called', currentProduct);
+  if (!currentProduct) {
+    showNotification('Product not loaded', 'error');
+    return;
+  }
+  
+  if (currentProduct.highDemand) {
+    showHighDemandPopup('buy');
+    return;
+  }
+  
+  // First add to cart
+  window.addToCart();
+  
+  // Then redirect to checkout after a short delay
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500);
+};
 
     function updateButtonStates() {
       const addToCartBtn = document.querySelector('.btn-secondary');
