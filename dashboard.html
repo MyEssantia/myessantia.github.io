@@ -5070,8 +5070,8 @@ function calculatePrepaidPrice(sellingPrice) {
   return Math.round(prepaid);
 }
 
-function calculateCodPrice(prepaidPrice) {
-  return Math.round(prepaidPrice + 100);
+function calculateCodPrice(sellingPrice) {
+  return Math.round(sellingPrice + 100);
 }
 
 function calculateOriginalPrice(sellingPrice, originalPrice) {
@@ -5087,7 +5087,7 @@ function updatePricePreviews() {
   
   if (sellingPrice > 0) {
     const prepaid = calculatePrepaidPrice(sellingPrice);
-    const cod = calculateCodPrice(prepaid); // Changed from sellingPrice to prepaid
+    const cod = calculateCodPrice(sellingPrice);
     
     document.getElementById('prepaid-preview').textContent = `₹${prepaid}`;
     document.getElementById('cod-preview').textContent = `₹${cod}`;
@@ -5096,7 +5096,7 @@ function updatePricePreviews() {
     document.getElementById('cod-preview').textContent = '₹0';
   }
 }
-  
+
 // ========== RICH DESCRIPTION BLOCK FUNCTIONS ==========
 function addTextBlock() {
   const template = document.getElementById('text-block-template');
@@ -5479,7 +5479,7 @@ async function handleProductSubmit(e) {
   
   const originalPrice = calculateOriginalPrice(sellingPrice, originalPriceInput);
   const prepaidPrice = calculatePrepaidPrice(sellingPrice);
-const codPrice = calculateCodPrice(prepaidPrice);
+  const codPrice = calculateCodPrice(sellingPrice);
   
   const rating = productRating ? parseFloat(productRating.value) || 4.5 : 4.5;
   const reviewCount = productReviewCount ? parseInt(productReviewCount.value) || 0 : 0;
@@ -5718,8 +5718,8 @@ function renderProducts(productsToRender = products) {
     if (product.stock <= 5) stockClass = 'low';
     else if (product.stock <= 15) stockClass = 'medium';
     
-   const prepaidPrice = product.prepaidPrice || calculatePrepaidPrice(product.price);
-const codPrice = product.codPrice || calculateCodPrice(prepaidPrice);
+    const prepaidPrice = product.prepaidPrice || calculatePrepaidPrice(product.price);
+    const codPrice = product.codPrice || calculateCodPrice(product.price);
     const originalPrice = product.originalPrice || calculateOriginalPrice(product.price);
     
     desktopHTML += `<tr>
