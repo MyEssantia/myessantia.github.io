@@ -5933,7 +5933,6 @@ function initializeDashboard() {
   const container = document.getElementById('description-blocks-container');
   if (container) {
     container.innerHTML = '';
-    
     // Add a default text block
     setTimeout(() => {
       addTextBlock();
@@ -6060,6 +6059,7 @@ function updateNewInStatus() {
     renderProducts();
     updateStats();
   }
+}
 
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
