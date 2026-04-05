@@ -3,1722 +3,1281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>MyEssantia · admin · login</title>
-  
+  <title>MyEssantia · admin</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Montserrat:wght@300..900&display=swap" rel="stylesheet">
-  
+
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { 
-      font-family: 'Inter', 'Montserrat', sans-serif; 
-      background: #fcfaf7; 
-      color: #1e1e1e; 
-      overflow-x: hidden;
+    body {
+      font-family: 'Inter', 'Montserrat', sans-serif;
+      background: #fcfaf7;
+      color: #1e1e1e;
       line-height: 1.5;
+      overflow-x: hidden;
       padding: 20px;
-      position: relative;
     }
-
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-    }
-
-    .login-overlay.hidden { display: none; }
-
-    .login-card {
-      background: #ffffff;
-      border-radius: 40px;
-      border: 3px solid #000;
-      box-shadow: 12px 12px 0 rgba(0,0,0,0.3);
-      width: 90%;
-      max-width: 420px;
-      overflow: hidden;
-      animation: slideUp 0.5s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .login-header {
-      background: #000;
-      padding: 32px 24px;
-      text-align: center;
-      border-bottom: 4px solid #d4af37;
-    }
-
-    .login-header h2 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #fff;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .login-header h2 strong { color: #d4af37; }
-
-    .login-header p {
-      color: #d4af37;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .login-icon {
-      width: 80px;
-      height: 80px;
-      background: #d4af37;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      border: 3px solid #000;
-    }
-
-    .login-icon i {
-      font-size: 2.5rem;
-      color: #000;
-    }
-
-    .login-form { padding: 32px 24px; }
-
-    .input-group { margin-bottom: 24px; }
-
-    .input-group label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      color: #000;
-    }
-
-    .input-group label i {
-      color: #d4af37;
-      margin-right: 8px;
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .input-wrapper i.input-icon {
-      position: absolute;
-      left: 16px;
-      color: #d4af37;
-      font-size: 1.2rem;
-      z-index: 2;
-    }
-
-    .input-wrapper input {
-      width: 100%;
-      padding: 16px 18px;
-      padding-left: 48px;
-      border: 2px solid #000;
-      border-radius: 20px;
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      background: #fcfaf7;
-      transition: all 0.2s;
-    }
-
-    .input-wrapper input:focus {
-      outline: none;
-      border-color: #d4af37;
-      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
-    }
-
-    .input-wrapper input::placeholder {
-      color: #999;
-      font-size: 0.9rem;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 16px;
-      color: #d4af37;
-      cursor: pointer;
-      font-size: 1.2rem;
-      z-index: 2;
-    }
-
-    .remember-forgot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-
-    .remember-me {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .remember-me input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #d4af37;
-    }
-
-    .remember-me span {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #000;
-    }
-
-    .forgot-link {
-      color: #d4af37;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-decoration: none;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .forgot-link:hover { text-decoration: underline; }
-
-    .login-btn {
-      width: 100%;
-      padding: 18px;
-      background: #000;
-      color: #d4af37;
-      border: 3px solid #d4af37;
-      border-radius: 60px;
-      font-weight: 800;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      transition: all 0.2s;
-    }
-
-    .login-btn:hover:not(:disabled) {
-      background: #d4af37;
-      color: #000;
-      border-color: #000;
-      transform: translateY(-2px);
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
-    }
-
-    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .login-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #d4af37;
-      border-top: 3px solid #000;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 8px;
-    }
-
-    .error-message {
-      background: #ff4444;
-      color: #fff;
-      padding: 12px 16px;
-      border-radius: 20px;
-      border: 2px solid #000;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .error-message i { font-size: 1.1rem; }
-
-    .login-footer {
-      text-align: center;
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 2px solid #e0e0e0;
-      font-size: 0.8rem;
-      color: #666;
-    }
-
-    .login-footer i { color: #d4af37; }
-
-    .admin-container.blurred {
-      filter: blur(8px);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 2000;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .loading-overlay.show { display: flex; }
-
-    .loading-spinner {
-      width: 60px;
-      height: 60px;
-      border: 6px solid #fcfaf7;
-      border-top: 6px solid #d4af37;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    .loading-text {
-      color: #fff;
-      font-size: 1.2rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .menu-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      color: #d4af37;
-      border: 3px solid #d4af37;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .menu-icon:hover {
-      transform: scale(1.05);
-      background: #d4af37;
-      color: #000;
-      border-color: #000;
-    }
-
-    .sliding-menu {
-      position: fixed;
-      top: 0;
-      left: -320px;
-      width: 300px;
-      height: 100vh;
-      background: #ffffff;
-      border-right: 3px solid #000;
-      box-shadow: 10px 0 0 rgba(0,0,0,0.2);
-      z-index: 1000;
-      transition: left 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    .sliding-menu.open { left: 0; }
-
-    .menu-header {
-      background: #000;
-      padding: 30px 24px;
-      border-bottom: 4px solid #d4af37;
-    }
-
-    .menu-header h2 {
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .menu-header h2 i { color: #d4af37; }
-
-    .menu-header p {
-      color: #d4af37;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 4px;
-    }
-
-    .menu-items {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border: 2px solid #000;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: #fcfaf7;
-    }
-
-    .menu-item:hover {
-      transform: translateX(5px);
-      border-color: #d4af37;
-      box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-    }
-
-    .menu-item.active {
-      background: #000;
-      border-color: #d4af37;
-    }
-
-    .menu-item.active .menu-item-icon,
-    .menu-item.active .menu-item-title,
-    .menu-item.active .menu-item-desc {
-      color: #d4af37;
-    }
-
-    .menu-item-icon {
-      width: 40px;
-      height: 40px;
-      background: #000;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #d4af37;
-      font-size: 1.2rem;
-      border: 2px solid #d4af37;
-    }
-
-    .menu-item.active .menu-item-icon {
-      background: #d4af37;
-      color: #000;
-      border-color: #000;
-    }
-
-    .menu-item-content { flex: 1; }
-
-    .menu-item-title {
-      font-weight: 800;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      color: #000;
-    }
-
-    .menu-item-desc {
-      font-size: 0.65rem;
-      color: #666;
-      text-transform: uppercase;
-    }
-
-    .menu-item-badge {
-      background: #d4af37;
-      color: #000;
-      padding: 4px 10px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      border: 2px solid #000;
-      min-width: 30px;
-      text-align: center;
-    }
-
-    .menu-footer {
-      padding: 20px;
-      border-top: 2px solid #000;
-      background: #fcfaf7;
-    }
-
-    .menu-footer .live-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px;
-      background: #000;
-      border-radius: 30px;
-      color: #d4af37;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .menu-footer .live-dot {
-      width: 10px;
-      height: 10px;
-      background: #d4af37;
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.7; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .menu-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      display: none;
-    }
-
-    .menu-overlay.show { display: block; }
-
-    .header {
-      background: #ffffff;
-      padding: 24px 32px;
-      border-radius: 40px;
-      border: 2px solid #000;
-      box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .brand h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #000;
-    }
-
-    .brand h1 strong { color: #d4af37; font-weight: 900; }
-
-    .brand span {
-      font-size: 0.9rem;
-      color: #666;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .admin-badge {
-      background: #000;
-      color: #d4af37;
-      padding: 8px 24px;
-      border-radius: 60px;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 2px solid #d4af37;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-    }
-
-    .admin-info {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .admin-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      color: #d4af37;
-      border: 3px solid #d4af37;
-      overflow: hidden;
-    }
-
-    .admin-details { display: none; }
-
-    @media (min-width: 768px) {
-      .admin-details { display: block; }
-      .admin-details .name { font-weight: 800; color: #000; }
-      .admin-details .email { font-size: 0.8rem; color: #666; text-transform: uppercase; }
-    }
-
-    .admin-container { 
-      width: 100%; 
-      max-width: 1600px; 
-      margin: 0 auto; 
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      transition: transform 0.3s ease, filter 0.3s ease;
-    }
-
+    .admin-container { max-width: 1600px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; transition: transform 0.3s ease, filter 0.3s ease; }
+    .admin-container.blurred { filter: blur(8px); pointer-events: none; user-select: none; }
     .admin-container.menu-open { transform: translateX(300px); }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 16px 32px;
-      border-radius: 60px;
-      color: #fff;
-      font-weight: 700;
-      z-index: 9999;
-      animation: slideInRight 0.3s ease;
-      border: 2px solid #000;
-      text-transform: uppercase;
-    }
-
+    .login-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.84); backdrop-filter: blur(12px); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+    .login-overlay.hidden { display: none; }
+    .login-card { width: min(420px, 92vw); background: #fff; border: 3px solid #000; border-radius: 36px; overflow: hidden; box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.28); }
+    .login-header { background: #000; color: #fff; padding: 30px 24px; text-align: center; border-bottom: 4px solid #d4af37; }
+    .login-icon { width: 78px; height: 78px; margin: 0 auto 14px; border-radius: 50%; border: 3px solid #000; background: #d4af37; color: #000; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+    .login-header h2 { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; text-transform: uppercase; }
+    .login-header h2 strong { color: #d4af37; }
+    .login-header p { color: #d4af37; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; margin-top: 6px; }
+    .login-form { padding: 28px 24px; }
+    .input-group { margin-bottom: 18px; }
+    .input-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .input-wrapper .input-icon { position: absolute; left: 16px; color: #d4af37; font-size: 1rem; }
+    .input-wrapper input { width: 100%; padding: 14px 16px 14px 46px; border: 2px solid #000; border-radius: 18px; font-size: 0.95rem; background: #fcfaf7; }
+    .input-wrapper input:focus, .search-box input:focus, .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #d4af37; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2); }
+    .password-toggle { position: absolute; right: 14px; cursor: pointer; color: #d4af37; }
+    .remember-forgot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+    .remember-me { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
+    .forgot-link { color: #d4af37; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; }
+    .login-btn, .export-btn, .template-btn, .quick-action-btn, .btn { border-radius: 999px; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: all 0.2s ease; font-family: inherit; }
+    .login-btn { width: 100%; border: 3px solid #d4af37; background: #000; color: #d4af37; padding: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; }
+    .login-btn:hover:not(:disabled), .export-btn:hover, .template-btn:hover, .quick-action-btn:hover, .btn-primary:hover { background: #d4af37; color: #000; border-color: #000; transform: translateY(-1px); }
+    .login-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .login-spinner, .spinner { width: 20px; height: 20px; border-radius: 50%; border: 3px solid currentColor; border-top-color: transparent; animation: spin 1s linear infinite; }
+    .error-message { display: none; align-items: center; gap: 8px; margin-bottom: 16px; padding: 12px 14px; border-radius: 18px; border: 2px solid #000; background: #ff4444; color: #fff; font-size: 0.85rem; font-weight: 600; }
+    .header, .filters-bar, .stat-card, .reviews-table, .table-container { background: #fff; border: 2px solid #000; box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.18); }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 36px; padding: 18px 22px; flex-wrap: wrap; }
+    .header-left, .header-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .menu-icon, .admin-avatar { width: 48px; height: 48px; border-radius: 50%; border: 3px solid #d4af37; background: #000; color: #d4af37; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; }
+    .brand h1 { font-size: 1.8rem; font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; line-height: 1.1; }
+    .brand h1 strong { color: #d4af37; }
+    .brand span { font-size: 0.8rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .admin-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 999px; border: 2px solid #d4af37; background: #000; color: #d4af37; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; }
+    .admin-details .name { font-weight: 800; }
+    .admin-details .email { font-size: 0.78rem; color: #666; text-transform: uppercase; }
+    .sliding-menu { position: fixed; top: 0; left: -320px; width: 300px; height: 100vh; background: #fff; border-right: 3px solid #000; z-index: 1200; transition: left 0.3s ease; display: flex; flex-direction: column; }
+    .sliding-menu.open { left: 0; }
+    .menu-header { background: #000; color: #fff; padding: 28px 22px; border-bottom: 4px solid #d4af37; }
+    .menu-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1.9rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+    .menu-header h2 i, .menu-header p { color: #d4af37; }
+    .menu-header p { margin-top: 4px; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 1px; }
+    .menu-items { padding: 18px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex: 1; }
+    .menu-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 2px solid #000; border-radius: 26px; background: #fcfaf7; cursor: pointer; transition: all 0.2s ease; }
+    .menu-item:hover { transform: translateX(4px); border-color: #d4af37; }
+    .menu-item.active { background: #000; border-color: #d4af37; color: #d4af37; }
+    .menu-item-icon { width: 40px; height: 40px; border-radius: 50%; background: #000; color: #d4af37; border: 2px solid #d4af37; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .menu-item.active .menu-item-icon { background: #d4af37; color: #000; border-color: #000; }
+    .menu-item-title { font-weight: 800; text-transform: uppercase; font-size: 1rem; }
+    .menu-item-desc { font-size: 0.64rem; color: #666; text-transform: uppercase; }
+    .menu-item.active .menu-item-desc { color: #d4af37; }
+    .menu-item-badge { min-width: 28px; text-align: center; padding: 4px 8px; border-radius: 999px; border: 2px solid #000; background: #d4af37; color: #000; font-size: 0.7rem; font-weight: 800; }
+    .menu-footer { padding: 18px; border-top: 2px solid #000; background: #fcfaf7; }
+    .live-indicator { display: inline-flex; align-items: center; gap: 8px; width: 100%; padding: 12px; border-radius: 20px; background: #000; color: #d4af37; text-transform: uppercase; font-size: 0.76rem; font-weight: 800; }
+    .live-dot { width: 10px; height: 10px; border-radius: 50%; background: #d4af37; animation: pulse 1.5s infinite ease-in-out; }
+    .menu-overlay, .loading-overlay { position: fixed; inset: 0; display: none; }
+    .menu-overlay.show { display: block; background: rgba(0, 0, 0, 0.45); z-index: 1100; }
+    .loading-overlay { z-index: 2000; background: rgba(0, 0, 0, 0.65); align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
+    .loading-overlay.show { display: flex; }
+    .loading-spinner.large { width: 60px; height: 60px; border-width: 6px; }
+    .page-container { width: 100%; }
+    .filters-bar { padding: 18px 20px; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .search-box { display: flex; align-items: center; gap: 10px; min-width: 240px; flex: 1; max-width: 420px; background: #fcfaf7; border: 2px solid #000; border-radius: 999px; padding: 8px 18px; }
+    .search-box i { color: #d4af37; }
+    .search-box input { width: 100%; border: 0; background: transparent; font-size: 0.95rem; }
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-tab { padding: 9px 18px; border: 2px solid #000; border-radius: 999px; background: #fff; color: #000; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+    .filter-tab.active, .filter-tab:hover { background: #000; color: #d4af37; border-color: #d4af37; }
+    .export-btn, .template-btn, .quick-action-btn, .btn { border: 2px solid #000; background: #000; color: #d4af37; padding: 10px 18px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .stat-card { border-radius: 28px; padding: 18px; display: flex; align-items: center; gap: 14px; }
+    .stat-icon { width: 54px; height: 54px; border-radius: 50%; background: #000; color: #d4af37; border: 3px solid #d4af37; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+    .stat-info h3 { font-family: 'Montserrat', sans-serif; font-size: 1.7rem; font-weight: 800; line-height: 1.1; }
+    .stat-info p { font-size: 0.72rem; font-weight: 700; color: #666; text-transform: uppercase; }
+    .reviews-table, .table-container { border-radius: 32px; overflow: hidden; }
+    .table-header { background: #000; color: #fff; padding: 18px 20px; border-bottom: 4px solid #d4af37; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .table-header h2, .table-header h3 { font-family: 'Montserrat', sans-serif; font-size: 1.45rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+    .table-header h2 i, .table-header h3 i { color: #d4af37; background: #fff; padding: 8px; border-radius: 50%; font-size: 0.95rem; }
+    .table-wrapper { overflow-x: auto; padding: 0 16px 16px; }
+    table { width: 100%; border-collapse: collapse; min-width: 960px; }
+    th { text-align: left; background: #fcfaf7; color: #000; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 14px 12px; border-bottom: 3px solid #d4af37; }
+    td { padding: 12px; border-bottom: 2px solid #e5e1d8; vertical-align: middle; font-size: 0.9rem; }
+    tr:hover td { background: #fcfaf7; }
+    .status-badge, .page-badge, .verified-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 2px solid #000; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
+    .status-badge.received, .status-badge.pending { background: #ffbb33; color: #000; }
+    .status-badge.processing { background: #2196f3; color: #fff; }
+    .status-badge.completed, .status-badge.notified { background: #4caf50; color: #fff; }
+    .status-badge.cancelled, .status-badge.expired { background: #666; color: #fff; }
+    .action-btns, .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .action-btn { width: 34px; height: 34px; border: 2px solid #000; border-radius: 50%; background: #fff; color: #000; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; font-size: 0.8rem; }
+    .action-btn:hover:not(:disabled) { background: #000; color: #d4af37; border-color: #d4af37; }
+    .action-btn.email-btn { background: #d4af37; color: #000; }
+    .action-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .timestamp { display: flex; flex-direction: column; gap: 1px; font-size: 0.74rem; color: #666; }
+    .timestamp .date { color: #000; font-weight: 700; }
+    .empty-state { text-align: center; padding: 48px 20px; color: #666; }
+    .empty-state i { font-size: 3.2rem; color: #d4af37; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 1.7rem; font-family: 'Montserrat', sans-serif; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 8px; }
+    .notification { position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 14px 24px; border-radius: 999px; border: 2px solid #000; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; animation: slideInRight 0.3s ease; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18); }
     .notification.success { background: #000; color: #d4af37; border-color: #d4af37; }
-    .notification.error { background: #ff4444; color: #fff; border-color: #000; }
-    .notification.info { background: #2196F3; color: #fff; border-color: #000; }
-    .notification.warning { background: #ffbb33; color: #000; border-color: #000; }
-
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .page-container {
-      width: 100%;
-    }
-
-    @media (max-width: 640px) {
+    .notification.error { background: #ff4444; color: #fff; }
+    .notification.info { background: #2196f3; color: #fff; }
+    .notification.warning { background: #ffbb33; color: #000; }
+    .mobile-cards { display: none; padding: 16px; }
+    .notification-card { background: #fff; border: 2px solid #000; border-radius: 22px; padding: 14px; margin-bottom: 12px; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1); }
+    .card-header { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 2px solid #d4af37; }
+    .card-title h4 { font-size: 0.96rem; font-weight: 800; margin-bottom: 2px; }
+    .card-body { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .card-row { display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem; }
+    .card-row i { color: #d4af37; width: 18px; margin-top: 2px; text-align: center; flex-shrink: 0; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 10px; border-top: 2px solid #d4af37; flex-wrap: wrap; }
+    .request-images { display: flex; gap: 6px; flex-wrap: wrap; }
+    .request-thumb { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; border: 2px solid #000; cursor: pointer; background: #fff; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 18px; }
+    .page-btn { width: 36px; height: 36px; border: 2px solid #000; border-radius: 50%; background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; }
+    .page-btn.active { background: #000; color: #d4af37; border-color: #d4af37; }
+    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .page-numbers { display: flex; gap: 4px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.7; } }
+    @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @media (max-width: 900px) {
+      body { padding: 14px; }
+      .admin-container.menu-open { transform: translateX(0); }
+      .sliding-menu { width: 286px; left: -306px; }
+      .table-wrapper { display: none; }
+      .mobile-cards { display: block; }
       .header { padding: 16px; }
-      .brand h1 { font-size: 1.4rem; }
-      .brand span { font-size: 0.7rem; }
-      .admin-badge { padding: 4px 12px; font-size: 0.7rem; }
-      .admin-avatar { width: 40px; height: 40px; font-size: 1.2rem; }
-      .menu-icon { width: 40px; height: 40px; font-size: 1.2rem; }
+      .brand h1 { font-size: 1.35rem; }
+      .admin-details { display: none; }
+      .filters-bar { padding: 16px; }
+      .search-box { max-width: 100%; }
+      .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon"><i class="fa-solid fa-crown"></i></div>
+        <h2><strong>MyEssantia</strong></h2>
+        <p>admin · master access</p>
+      </div>
+      <div class="login-form">
+        <div id="loginError" class="error-message">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="errorText"></span>
+        </div>
 
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="login-icon">
-        <i class="fa-solid fa-crown"></i>
-      </div>
-      <h2><strong>MyEssantia</strong></h2>
-      <p>admin · master access</p>
-    </div>
-    
-    <div class="login-form">
-      <div id="loginError" class="error-message" style="display: none;">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        <span id="errorText"></span>
-      </div>
-      
-      <form id="loginForm" onsubmit="return handleLogin(event)">
-        <div class="input-group">
-          <label><i class="fa-solid fa-envelope"></i> email address</label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope input-icon"></i>
-            <input type="email" id="email" placeholder="admin@myessantia.com" required autocomplete="email">
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <div class="input-group">
+            <label><i class="fa-solid fa-envelope"></i> email address</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="email" placeholder="admin@myessantia.com" required autocomplete="email">
+            </div>
           </div>
-        </div>
-        
-        <div class="input-group">
-          <label><i class="fa-solid fa-lock"></i> password</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock input-icon"></i>
-            <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-            <i class="fas fa-eye password-toggle" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+
+          <div class="input-group">
+            <label><i class="fa-solid fa-lock"></i> password</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+              <i class="fa-solid fa-eye password-toggle" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+            </div>
           </div>
+
+          <div class="remember-forgot">
+            <label class="remember-me">
+              <input type="checkbox" id="rememberMe" checked>
+              <span>remember me</span>
+            </label>
+            <a class="forgot-link" onclick="handleForgotPassword()">forgot password?</a>
+          </div>
+
+          <button type="submit" class="login-btn" id="loginButton">
+            <span id="loginText">access dashboard</span>
+            <span id="loginSpinner" style="display:none;" class="login-spinner"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="sliding-menu" id="slidingMenu">
+    <div class="menu-header">
+      <h2><i class="fa-solid fa-bars"></i> menu</h2>
+      <p>navigate · manage</p>
+    </div>
+
+    <div class="menu-items">
+      <div class="menu-item active" onclick="loadPage('dashboard')" id="menuDashboard">
+        <div class="menu-item-icon"><i class="fa-solid fa-house"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">dashboard</div>
+          <div class="menu-item-desc">product management</div>
         </div>
-        
-        <div class="remember-forgot">
-          <label class="remember-me">
-            <input type="checkbox" id="rememberMe" checked>
-            <span>remember me</span>
-          </label>
-          <a class="forgot-link" onclick="handleForgotPassword()">forgot password?</a>
+        <div class="menu-item-badge"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+
+      <div class="menu-item" onclick="loadPage('notify')" id="menuNotify">
+        <div class="menu-item-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">notify</div>
+          <div class="menu-item-desc">notification requests</div>
         </div>
-        
-        <button type="submit" class="login-btn" id="loginButton">
-          <span id="loginText">access dashboard</span>
-          <span id="loginSpinner" style="display: none;" class="login-spinner"></span>
-        </button>
-      </form>
-      
-      <div class="login-footer">
-        <p><i class="fa-regular fa-circle-check"></i> secure · encrypted access</p>
+        <div class="menu-item-badge" id="notifyBadge">0</div>
       </div>
-    </div>
-  </div>
-</div>
 
-<div class="sliding-menu" id="slidingMenu">
-  <div class="menu-header">
-    <h2><i class="fa-solid fa-bars"></i> menu</h2>
-    <p>navigate · manage</p>
-  </div>
-  
-  <div class="menu-items">
-    <div class="menu-item active" onclick="loadPage('dashboard')" id="menuDashboard">
-      <div class="menu-item-icon">
-        <i class="fa-solid fa-house"></i>
-      </div>
-      <div class="menu-item-content">
-        <div class="menu-item-title">dashboard</div>
-        <div class="menu-item-desc">product management</div>
-      </div>
-      <div class="menu-item-badge">
-        <i class="fa-solid fa-chevron-right"></i>
-      </div>
-    </div>
-    
-    <div class="menu-item" onclick="loadPage('notify')" id="menuNotify">
-      <div class="menu-item-icon">
-        <i class="fa-solid fa-bell"></i>
-      </div>
-      <div class="menu-item-content">
-        <div class="menu-item-title">notify</div>
-        <div class="menu-item-desc">notification requests</div>
-      </div>
-      <div class="menu-item-badge" id="notifyBadge">0</div>
-    </div>
-
-    <div class="menu-item" onclick="loadPage('reviews')" id="menuReviews">
-      <div class="menu-item-icon">
-        <i class="fa-solid fa-star"></i>
-      </div>
-      <div class="menu-item-content">
-        <div class="menu-item-title">reviews</div>
-        <div class="menu-item-desc">manage product reviews</div>
-      </div>
-      <div class="menu-item-badge" id="reviewsBadge">0</div>
-    </div>
-
-<!-- Add these two menu items inside .menu-items -->
-<div class="menu-item" onclick="loadPage('request')" id="menuRequest">
-  <div class="menu-item-icon">
-    <i class="fa-solid fa-envelope-open-text"></i>
-  </div>
-  <div class="menu-item-content">
-    <div class="menu-item-title">request</div>
-    <div class="menu-item-desc">user enquiries</div>
-  </div>
-  <div class="menu-item-badge" id="requestBadge">0</div>
-</div>
-
-<div class="menu-item" onclick="loadPage('orders')" id="menuOrders">
-  <div class="menu-item-icon">
-    <i class="fa-solid fa-box-open"></i>
-  </div>
-  <div class="menu-item-content">
-    <div class="menu-item-title">orders</div>
-    <div class="menu-item-desc">all placed orders</div>
-  </div>
-  <div class="menu-item-badge" id="ordersBadge">0</div>
-</div>
-  </div>
-
-  <div class="menu-footer">
-    <div class="live-indicator">
-      <span class="live-dot"></span>
-      <span>live · realtime updates</span>
-    </div>
-  </div>
-</div>
-
-<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">loading page...</div>
-</div>
-
-<div class="admin-container" id="admin-content">
-  <div class="header">
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <div class="menu-icon" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars"></i>
-      </div>
-      <div class="brand">
-        <h1><strong>MyEssantia</strong> · admin</h1>
-        <span id="pageTitle">dashboard</span>
-      </div>
-    </div>
-    <div style="display: flex; align-items: center; gap: 20px;">
-      <div class="admin-badge" id="adminEmail">
-        <i class="fa-solid fa-crown"></i> master admin
-      </div>
-      <div class="admin-info">
-        <div class="admin-avatar">
-          <i class="fa-regular fa-user"></i>
+      <div class="menu-item" onclick="loadPage('reviews')" id="menuReviews">
+        <div class="menu-item-icon"><i class="fa-solid fa-star"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">reviews</div>
+          <div class="menu-item-desc">manage product reviews</div>
         </div>
+        <div class="menu-item-badge" id="reviewsBadge">0</div>
+      </div>
+
+      <div class="menu-item" onclick="loadPage('request')" id="menuRequest">
+        <div class="menu-item-icon"><i class="fa-regular fa-message"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">request</div>
+          <div class="menu-item-desc">user enquiries</div>
+        </div>
+        <div class="menu-item-badge" id="requestBadge">0</div>
+      </div>
+
+      <div class="menu-item" onclick="loadPage('orders')" id="menuOrders">
+        <div class="menu-item-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">orders</div>
+          <div class="menu-item-desc">all customer orders</div>
+        </div>
+        <div class="menu-item-badge" id="ordersBadge">0</div>
+      </div>
+    </div>
+
+    <div class="menu-footer">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span>live · realtime updates</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner loading-spinner large"></div>
+    <div>loading page...</div>
+  </div>
+
+  <div class="admin-container" id="admin-content">
+    <div class="header">
+      <div class="header-left">
+        <div class="menu-icon" onclick="toggleMenu()">
+          <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="brand">
+          <h1><strong>MyEssantia</strong> · admin</h1>
+          <span id="pageTitle">dashboard</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="admin-badge" id="adminEmail">
+          <i class="fa-solid fa-crown"></i> master admin
+        </div>
+        <div class="admin-avatar"><i class="fa-regular fa-user"></i></div>
         <div class="admin-details">
           <div class="name" id="adminName">admin</div>
           <div class="email" id="adminRole">product manager</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="page-container" class="page-container"></div>
-</div>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
-  authDomain: "myessantia.firebaseapp.com",
-  projectId: "myessantia",
-  storageBucket: "myessantia.firebasestorage.app",
-  messagingSenderId: "701726517205",
-  appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
-  measurementId: "G-SZF11SHZBH"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-let products = [];
-let productMedia = [];
-let selectedMediaIndex = 0;
-let newInCheckInterval = null;
-let allRequests = [];
-let currentPage = 'dashboard';
-
-window.allNotifyRequests = [];
-window.filteredNotifyRequests = [];
-window.currentNotifyFilter = 'all';
-window.currentNotifyPage = 1;
-window.notifyItemsPerPage = 10;
-window.notifyProducts = {};
-
-const slidingMenu = document.getElementById('slidingMenu');
-const menuOverlay = document.getElementById('menuOverlay');
-const adminContent = document.getElementById('admin-content');
-const menuDashboard = document.getElementById('menuDashboard');
-const menuNotify = document.getElementById('menuNotify');
-const menuReviews = document.getElementById('menuReviews');
-const menuRequest = document.getElementById('menuRequest');
-const menuOrders = document.getElementById('menuOrders');
-const notifyBadge = document.getElementById('notifyBadge');
-const reviewsBadge = document.getElementById('reviewsBadge');
-const requestBadge = document.getElementById('requestBadge');
-const ordersBadge = document.getElementById('ordersBadge');
-const loadingOverlay = document.getElementById('loadingOverlay');
-const pageContainer = document.getElementById('page-container');
-const pageTitle = document.getElementById('pageTitle');
-
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log('User logged in:', user.email);
-    hideLoginOverlay();
-    updateAdminInfo(user);
-
-    checkAdminStatus(user).then(isAdmin => {
-      if (!isAdmin) {
-        auth.signOut();
-        showLoginError('Access denied. Admin privileges required.');
-      } else {
-        loadPage('dashboard');
-      }
-    });
-  } else {
-    console.log('User logged out');
-    showLoginOverlay();
-    document.getElementById('admin-content').classList.add('blurred');
-  }
-});
-
-async function checkAdminStatus(user) {
-  try {
-    const adminEmails = [
-      'admin@myessantia.com',
-      'master@myessantia.com',
-      'your-email@gmail.com'
-    ];
-
-    if (adminEmails.includes(user.email)) {
-      return true;
-    }
-
-    const adminDoc = await db.collection('admins').doc(user.uid).get();
-    if (adminDoc.exists && adminDoc.data().role === 'admin') {
-      return true;
-    }
-
-    const token = await user.getIdTokenResult();
-    if (token.claims.admin || token.claims.role === 'admin') {
-      return true;
-    }
-
-    return false;
-  } catch (error) {
-    console.error('Error checking admin status:', error);
-    return false;
-  }
-}
-
-function showLoginOverlay() {
-  document.getElementById('loginOverlay').classList.remove('hidden');
-  document.getElementById('admin-content').classList.add('blurred');
-  document.getElementById('email').focus();
-}
-
-function hideLoginOverlay() {
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('admin-content').classList.remove('blurred');
-}
-
-function showLoginError(message) {
-  const errorDiv = document.getElementById('loginError');
-  const errorText = document.getElementById('errorText');
-  errorText.textContent = message;
-  errorDiv.style.display = 'flex';
-
-  setTimeout(() => {
-    errorDiv.style.display = 'none';
-  }, 5000);
-}
-
-function togglePasswordVisibility() {
-  const passwordInput = document.getElementById('password');
-  const toggleIcon = document.getElementById('togglePassword');
-
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    toggleIcon.classList.remove('fa-eye');
-    toggleIcon.classList.add('fa-eye-slash');
-  } else {
-    passwordInput.type = 'password';
-    toggleIcon.classList.remove('fa-eye-slash');
-    toggleIcon.classList.add('fa-eye');
-  }
-}
-
-function setLoading(isLoading) {
-  const loginButton = document.getElementById('loginButton');
-  const loginText = document.getElementById('loginText');
-  const loginSpinner = document.getElementById('loginSpinner');
-
-  if (isLoading) {
-    loginButton.disabled = true;
-    loginText.style.opacity = '0.7';
-    loginSpinner.style.display = 'inline-block';
-  } else {
-    loginButton.disabled = false;
-    loginText.style.opacity = '1';
-    loginSpinner.style.display = 'none';
-  }
-}
-
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const rememberMe = document.getElementById('rememberMe').checked;
-
-  if (!email || !password) {
-    showLoginError('Please enter email and password');
-    return false;
-  }
-
-  setLoading(true);
-
-  try {
-    const persistence = rememberMe
-      ? firebase.auth.Auth.Persistence.LOCAL
-      : firebase.auth.Auth.Persistence.SESSION;
-
-    await auth.setPersistence(persistence);
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    const isAdmin = await checkAdminStatus(userCredential.user);
-
-    if (!isAdmin) {
-      await auth.signOut();
-      showLoginError('Access denied. This account does not have admin privileges.');
-    }
-  } catch (error) {
-    console.error('Login error:', error);
-
-    switch (error.code) {
-      case 'auth/invalid-email':
-        showLoginError('Invalid email address format');
-        break;
-      case 'auth/user-disabled':
-        showLoginError('This account has been disabled');
-        break;
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-        showLoginError('Invalid email or password');
-        break;
-      case 'auth/too-many-requests':
-        showLoginError('Too many failed attempts. Please try again later');
-        break;
-      default:
-        showLoginError('Login failed. Please try again');
-    }
-  } finally {
-    setLoading(false);
-  }
-
-  return false;
-}
-
-function updateAdminInfo(user) {
-  const adminEmailSpan = document.getElementById('adminEmail');
-  const adminNameSpan = document.getElementById('adminName');
-
-  if (adminEmailSpan) {
-    adminEmailSpan.innerHTML = `<i class="fa-solid fa-crown"></i> ${user.email}`;
-  }
-
-  if (adminNameSpan) {
-    const displayName = user.displayName || user.email.split('@')[0];
-    adminNameSpan.textContent = displayName;
-  }
-}
-
-async function handleForgotPassword() {
-  const email = document.getElementById('email').value.trim();
-
-  if (!email) {
-    showLoginError('Please enter your email address');
-    return;
-  }
-
-  try {
-    await auth.sendPasswordResetEmail(email);
-    showNotification('Password reset email sent! Check your inbox.', 'success');
-  } catch (error) {
-    console.error('Password reset error:', error);
-    showLoginError('Failed to send reset email. Please try again.');
-  }
-}
-
-function logout() {
-  auth.signOut()
-    .then(() => {
-      console.log('Logged out successfully');
-      showNotification('Logged out successfully', 'success');
-    })
-    .catch((error) => {
-      console.error('Logout error:', error);
-      showNotification('Failed to logout', 'error');
-    });
-}
-
-function addLogoutButton() {
-  const headerRight = document.querySelector('.header > div:last-child');
-  if (headerRight && !document.getElementById('logout-admin-btn')) {
-    const logoutBtn = document.createElement('button');
-    logoutBtn.id = 'logout-admin-btn';
-    logoutBtn.className = 'quick-action-btn';
-    logoutBtn.style.marginLeft = '10px';
-    logoutBtn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> logout';
-    logoutBtn.onclick = logout;
-    headerRight.appendChild(logoutBtn);
-  }
-}
-
-function toggleMenu() {
-  slidingMenu.classList.toggle('open');
-  menuOverlay.classList.toggle('show');
-  adminContent.classList.toggle('menu-open');
-}
-
-document.addEventListener('click', function(event) {
-  if (!event.target.closest('.sliding-menu') && !event.target.closest('.menu-icon')) {
-    slidingMenu.classList.remove('open');
-    menuOverlay.classList.remove('show');
-    adminContent.classList.remove('menu-open');
-  }
-});
-
-async function loadPage(page) {
-  if (!auth.currentUser) {
-    showLoginOverlay();
-    return;
-  }
-
-  currentPage = page;
-
-  menuDashboard.classList.remove('active');
-  menuNotify.classList.remove('active');
-  menuReviews.classList.remove('active');
-  if (menuRequest) menuRequest.classList.remove('active');
-  if (menuOrders) menuOrders.classList.remove('active');
-
-  if (page === 'dashboard') {
-    menuDashboard.classList.add('active');
-    pageTitle.textContent = 'dashboard';
-  } else if (page === 'notify') {
-    menuNotify.classList.add('active');
-    pageTitle.textContent = 'notifications';
-  } else if (page === 'reviews') {
-    menuReviews.classList.add('active');
-    pageTitle.textContent = 'reviews';
-  } else if (page === 'request') {
-    menuRequest.classList.add('active');
-    pageTitle.textContent = 'requests';
-  } else if (page === 'orders') {
-    menuOrders.classList.add('active');
-    pageTitle.textContent = 'orders';
-  }
-
-  loadingOverlay.classList.add('show');
-  toggleMenu();
-
-  try {
-    if (page === 'dashboard') {
-      await loadDashboardPage();
-    } else if (page === 'notify') {
-      await loadNotifyPage();
-    } else if (page === 'reviews') {
-      await loadReviewsPage();
-    } else if (page === 'request') {
-      await loadRequestPage();
-    } else if (page === 'orders') {
-      await loadOrdersPage();
-    }
-  } catch (error) {
-    console.error('Error loading page:', error);
-    showNotification('Failed to load page: ' + error.message, 'error');
-  } finally {
-    loadingOverlay.classList.remove('show');
-  }
-}
-
-async function loadRequestPage() {
-  const response = await fetch('request.html');
-  if (!response.ok) throw new Error(`Failed to load request.html: ${response.status}`);
-  pageContainer.innerHTML = await response.text();
-  initializeRequestPage();
-}
-
-async function loadOrdersPage() {
-  const response = await fetch('orders.html');
-  if (!response.ok) throw new Error(`Failed to load orders.html: ${response.status}`);
-  pageContainer.innerHTML = await response.text();
-  initializeOrdersPage();
-}
-
-async function loadDashboardPage() {
-  try {
-    const response = await fetch('dashhome.html');
-    if (!response.ok) throw new Error(`Failed to load dashhome.html: ${response.status}`);
-    const html = await response.text();
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const dashboardContent = document.createElement('div');
-
-    const statsGrid = doc.querySelector('.stats-grid');
-    if (statsGrid) dashboardContent.appendChild(statsGrid.cloneNode(true));
-
-    const productForm = doc.querySelector('.product-form');
-    if (productForm) dashboardContent.appendChild(productForm.cloneNode(true));
-
-    const productsTable = doc.querySelector('.products-table');
-    if (productsTable) dashboardContent.appendChild(productsTable.cloneNode(true));
-
-    const templates = doc.querySelectorAll('template');
-    templates.forEach(template => dashboardContent.appendChild(template.cloneNode(true)));
-
-    pageContainer.innerHTML = '';
-    pageContainer.appendChild(dashboardContent);
-
-    setTimeout(() => {
-      if (typeof initializeDashboard === 'function') initializeDashboard();
-    }, 100);
-  } catch (error) {
-    console.error('Error loading dashboard page:', error);
-    pageContainer.innerHTML = `
-      <div class="empty-state" style="padding: 60px 20px;">
-        <i class="fa-solid fa-exclamation-triangle" style="font-size: 4rem; color: #ff4444; margin-bottom: 16px;"></i>
-        <h3 style="font-size: 2rem; font-weight: 800; margin-bottom: 8px;">Failed to Load Dashboard</h3>
-        <p style="font-size: 1rem; color: #666;">${error.message}</p>
-        <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 20px;">
-          <i class="fa-solid fa-rotate-right"></i> Retry
+        <button class="quick-action-btn" onclick="logout()">
+          <i class="fa-solid fa-right-from-bracket"></i> logout
         </button>
       </div>
-    `;
-  }
-}
-
-async function loadNotifyPage() {
-  const response = await fetch('notify.html');
-  const html = await response.text();
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const notifyContent = document.createElement('div');
-
-  const statsGrid = doc.querySelector('.stats-grid');
-  if (statsGrid) notifyContent.appendChild(statsGrid.cloneNode(true));
-
-  const templatePanel = doc.querySelector('.email-template-panel');
-  if (templatePanel) notifyContent.appendChild(templatePanel.cloneNode(true));
-
-  const filtersBar = doc.querySelector('.filters-bar');
-  if (filtersBar) notifyContent.appendChild(filtersBar.cloneNode(true));
-
-  const tableContainer = doc.querySelector('.table-container');
-  if (tableContainer) {
-    const clonedContainer = tableContainer.cloneNode(true);
-    const tbody = clonedContainer.querySelector('#table-body');
-    if (tbody) tbody.innerHTML = '';
-    const mobileCards = clonedContainer.querySelector('#mobile-cards');
-    if (mobileCards) mobileCards.innerHTML = '';
-    notifyContent.appendChild(clonedContainer);
-  }
-
-  pageContainer.innerHTML = '';
-  pageContainer.appendChild(notifyContent);
-  initializeNotify();
-}
-
-async function loadReviewsPage() {
-  const response = await fetch('review.html');
-  const html = await response.text();
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const reviewsContent = document.createElement('div');
-
-  const sections = [
-    '.filters-bar',
-    '.stats-grid',
-    '.review-form',
-    '.rating-override-panel',
-    '.reviews-table'
-  ];
-
-  sections.forEach(selector => {
-    const element = doc.querySelector(selector);
-    if (element) reviewsContent.appendChild(element.cloneNode(true));
-  });
-
-  const loadingEl = doc.querySelector('#reviews-loading');
-  if (loadingEl) reviewsContent.appendChild(loadingEl.cloneNode(true));
-
-  pageContainer.innerHTML = '';
-  pageContainer.appendChild(reviewsContent);
-  initializeReviewsPage();
-}
-
-  function initializeRequestPage() {
-  window.requestItems = [];
-  window.filteredRequestItems = [];
-  window.currentRequestFilter = 'all';
-  window.currentRequestPage = 1;
-  window.requestItemsPerPage = 10;
-
-  document.querySelectorAll('.request-page .request-filter-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.request-page .request-filter-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      window.currentRequestFilter = this.dataset.filter;
-      window.currentRequestPage = 1;
-      applyRequestFilter();
-      renderRequestItems();
-    });
-  });
-
-  const searchInput = document.getElementById('search-requests-page');
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      applyRequestFilter();
-      renderRequestItems();
-    });
-  }
-
-  loadRequestItems();
-}
-
-async function loadRequestItems() {
-  const loadingEl = document.getElementById('requests-loading');
-  if (loadingEl) loadingEl.style.display = 'flex';
-
-  try {
-    const snapshot = await db.collection('enquiries').orderBy('timestamp', 'desc').get();
-    window.requestItems = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      requestDate: doc.data().timestamp?.toDate ? doc.data().timestamp.toDate() : new Date(doc.data().timestamp || Date.now())
-    }));
-
-    applyRequestFilter();
-    updateRequestStats();
-    renderRequestItems();
-  } catch (error) {
-    console.error('Error loading requests:', error);
-    showNotification('Failed to load requests', 'error');
-  } finally {
-    if (loadingEl) loadingEl.style.display = 'none';
-  }
-}
-
-function applyRequestFilter() {
-  const term = (document.getElementById('search-requests-page')?.value || '').toLowerCase();
-
-  window.filteredRequestItems = window.requestItems.filter(item => {
-    let statusMatch = true;
-
-    if (window.currentRequestFilter === 'received') statusMatch = (item.status || 'received').toLowerCase() === 'received';
-    if (window.currentRequestFilter === 'processing') statusMatch = (item.status || '').toLowerCase() === 'processing';
-    if (window.currentRequestFilter === 'completed') statusMatch = (item.status || '').toLowerCase() === 'completed';
-    if (window.currentRequestFilter === 'with-image') statusMatch = Array.isArray(item.images) && item.images.length > 0;
-
-    const searchMatch =
-      !term ||
-      (item.name || '').toLowerCase().includes(term) ||
-      (item.email || '').toLowerCase().includes(term) ||
-      (item.phone || '').toLowerCase().includes(term) ||
-      (item.message || '').toLowerCase().includes(term);
-
-    return statusMatch && searchMatch;
-  });
-}
-
-function updateRequestStats() {
-  document.getElementById('total-requests-count').textContent = window.requestItems.length;
-  document.getElementById('received-requests-count').textContent = window.requestItems.filter(i => (i.status || 'received').toLowerCase() === 'received').length;
-  document.getElementById('processing-requests-count').textContent = window.requestItems.filter(i => (i.status || '').toLowerCase() === 'processing').length;
-  document.getElementById('request-images-count').textContent = window.requestItems.filter(i => Array.isArray(i.images) && i.images.length > 0).length;
-}
-
-function renderRequestItems() {
-  const tbody = document.getElementById('requests-table-body');
-  const cards = document.getElementById('requests-mobile-cards');
-  const empty = document.getElementById('requests-empty-state');
-  const pagination = document.getElementById('requests-pagination');
-  if (!tbody || !cards) return;
-
-  if (!window.filteredRequestItems.length) {
-    if (empty) empty.style.display = 'block';
-    tbody.innerHTML = '';
-    cards.innerHTML = '';
-    if (pagination) pagination.style.display = 'none';
-    return;
-  }
-
-  if (empty) empty.style.display = 'none';
-
-  const start = (window.currentRequestPage - 1) * window.requestItemsPerPage;
-  const end = start + window.requestItemsPerPage;
-  const pageItems = window.filteredRequestItems.slice(start, end);
-
-  tbody.innerHTML = pageItems.map(item => `
-    <tr>
-      <td><strong>${item.name || '-'}</strong></td>
-      <td>${item.email || '-'}</td>
-      <td>${item.phone || '-'}</td>
-      <td>${(item.message || '').slice(0, 90)}${(item.message || '').length > 90 ? '...' : ''}</td>
-      <td>${Array.isArray(item.images) ? item.images.length : 0}</td>
-      <td><span class="request-status-badge ${(item.status || 'received').toLowerCase()}">${item.status || 'received'}</span></td>
-      <td>${item.requestDate.toLocaleDateString('en-IN')}</td>
-      <td>
-        <div class="request-action-btns">
-          <button onclick="updateRequestStatus('${item.id}', 'processing')"><i class="fa-solid fa-gear"></i></button>
-          <button onclick="updateRequestStatus('${item.id}', 'completed')"><i class="fa-solid fa-check"></i></button>
-          <button onclick="deleteRequestItem('${item.id}')"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  cards.innerHTML = pageItems.map(item => `
-    <div class="request-card">
-      <div class="request-card-head">
-        <div>
-          <h4>${item.name || '-'}</h4>
-          <p>${item.email || '-'}</p>
-        </div>
-        <span class="request-status-badge ${(item.status || 'received').toLowerCase()}">${item.status || 'received'}</span>
-      </div>
-      <div class="request-card-body">
-        <div><i class="fa-solid fa-phone"></i> ${item.phone || '-'}</div>
-        <div><i class="fa-solid fa-image"></i> ${(Array.isArray(item.images) ? item.images.length : 0)} image(s)</div>
-        <div><i class="fa-solid fa-calendar"></i> ${item.requestDate.toLocaleDateString('en-IN')}</div>
-        <div><i class="fa-solid fa-message"></i> ${(item.message || '').slice(0, 120)}</div>
-      </div>
-      <div class="request-card-actions">
-        <button onclick="updateRequestStatus('${item.id}', 'processing')">processing</button>
-        <button onclick="updateRequestStatus('${item.id}', 'completed')">complete</button>
-        <button onclick="deleteRequestItem('${item.id}')">delete</button>
-      </div>
     </div>
-  `).join('');
 
-  updateRequestPagination();
-}
+    <div id="page-container" class="page-container"></div>
+  </div>
 
-function updateRequestPagination() {
-  const totalPages = Math.ceil(window.filteredRequestItems.length / window.requestItemsPerPage);
-  const pagination = document.getElementById('requests-pagination');
-  const prevBtn = document.getElementById('prev-request-page');
-  const nextBtn = document.getElementById('next-request-page');
-  const pageNumbers = document.getElementById('request-page-numbers');
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk",
+      authDomain: "myessantia.firebaseapp.com",
+      projectId: "myessantia",
+      storageBucket: "myessantia.firebasestorage.app",
+      messagingSenderId: "701726517205",
+      appId: "1:701726517205:web:f6ab79efdffeab6dbbbf5c",
+      measurementId: "G-SZF11SHZBH"
+    };
 
-  if (totalPages <= 1) {
-    if (pagination) pagination.style.display = 'none';
-    return;
-  }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
 
-  pagination.style.display = 'flex';
-  prevBtn.disabled = window.currentRequestPage === 1;
-  nextBtn.disabled = window.currentRequestPage === totalPages;
+    let currentPage = 'dashboard';
 
-  let html = '';
-  for (let i = Math.max(1, window.currentRequestPage - 2); i <= Math.min(totalPages, window.currentRequestPage + 2); i++) {
-    html += `<button class="page-btn ${i === window.currentRequestPage ? 'active' : ''}" onclick="goToRequestPage(${i})">${i}</button>`;
-  }
-  pageNumbers.innerHTML = html;
-}
+    window.allAdminRequests = [];
+    window.filteredAdminRequests = [];
+    window.currentAdminRequestFilter = 'all';
+    window.currentAdminRequestPage = 1;
+    window.adminRequestsPerPage = 10;
 
-window.changeRequestPage = function(direction) {
-  const totalPages = Math.ceil(window.filteredRequestItems.length / window.requestItemsPerPage);
-  if (direction === 'prev' && window.currentRequestPage > 1) window.currentRequestPage--;
-  if (direction === 'next' && window.currentRequestPage < totalPages) window.currentRequestPage++;
-  renderRequestItems();
-};
+    window.allOrdersAdmin = [];
+    window.filteredOrdersAdmin = [];
+    window.currentOrdersFilter = 'all';
+    window.currentOrdersPage = 1;
+    window.ordersPerPage = 10;
 
-window.goToRequestPage = function(page) {
-  window.currentRequestPage = page;
-  renderRequestItems();
-};
+    const slidingMenu = document.getElementById('slidingMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const adminContent = document.getElementById('admin-content');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const pageContainer = document.getElementById('page-container');
+    const pageTitle = document.getElementById('pageTitle');
 
-window.updateRequestStatus = async function(id, status) {
-  try {
-    await db.collection('enquiries').doc(id).update({
-      status,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    const menuMap = {
+      dashboard: document.getElementById('menuDashboard'),
+      notify: document.getElementById('menuNotify'),
+      reviews: document.getElementById('menuReviews'),
+      request: document.getElementById('menuRequest'),
+      orders: document.getElementById('menuOrders')
+    };
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        showLoginOverlay();
+        adminContent.classList.add('blurred');
+        return;
+      }
+
+      hideLoginOverlay();
+      updateAdminInfo(user);
+      const isAdmin = await checkAdminStatus(user);
+
+      if (!isAdmin) {
+        await auth.signOut();
+        showLoginError('Access denied. Admin privileges required.');
+        return;
+      }
+
+      adminContent.classList.remove('blurred');
+      startLiveBadges();
+      loadPage(currentPage || 'dashboard');
     });
-    showNotification('Request updated', 'success');
-    loadRequestItems();
-  } catch (error) {
-    console.error(error);
-    showNotification('Failed to update request', 'error');
-  }
-};
 
-window.deleteRequestItem = async function(id) {
-  if (!confirm('Delete this request?')) return;
-  try {
-    await db.collection('enquiries').doc(id).delete();
-    showNotification('Request deleted', 'success');
-    loadRequestItems();
-  } catch (error) {
-    console.error(error);
-    showNotification('Failed to delete request', 'error');
-  }
-};
+    async function checkAdminStatus(user) {
+      try {
+        const adminEmails = [
+          'admin@myessantia.com',
+          'master@myessantia.com',
+          'your-email@gmail.com'
+        ];
 
-function initializeOrdersPage() {
-  window.orderItems = [];
-  window.filteredOrderItems = [];
-  window.currentOrderFilter = 'all';
-  window.currentOrderPage = 1;
-  window.orderItemsPerPage = 10;
+        if (adminEmails.includes(user.email)) return true;
 
-  document.querySelectorAll('.orders-page .order-filter-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.orders-page .order-filter-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      window.currentOrderFilter = this.dataset.filter;
-      window.currentOrderPage = 1;
-      applyOrderFilter();
-      renderOrderItems();
-    });
-  });
+        const adminDoc = await db.collection('admins').doc(user.uid).get();
+        if (adminDoc.exists && adminDoc.data().role === 'admin') return true;
 
-  const searchInput = document.getElementById('search-orders-page');
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      applyOrderFilter();
-      renderOrderItems();
-    });
-  }
+        const token = await user.getIdTokenResult();
+        if (token.claims.admin || token.claims.role === 'admin') return true;
 
-  loadOrderItems();
-}
-
-async function loadOrderItems() {
-  const loadingEl = document.getElementById('orders-loading');
-  if (loadingEl) loadingEl.style.display = 'flex';
-
-  try {
-    const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
-    window.orderItems = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      orderDate: doc.data().createdAt?.toDate ? doc.data().createdAt.toDate() : new Date()
-    }));
-
-    applyOrderFilter();
-    updateOrderStats();
-    renderOrderItems();
-  } catch (error) {
-    console.error('Error loading orders:', error);
-    showNotification('Failed to load orders', 'error');
-  } finally {
-    if (loadingEl) loadingEl.style.display = 'none';
-  }
-}
-
-function applyOrderFilter() {
-  const term = (document.getElementById('search-orders-page')?.value || '').toLowerCase();
-
-  window.filteredOrderItems = window.orderItems.filter(item => {
-    let filterMatch = true;
-
-    if (window.currentOrderFilter === 'paid') filterMatch = (item.status || 'paid').toLowerCase() === 'paid';
-    if (window.currentOrderFilter === 'pending') filterMatch = (item.status || '').toLowerCase() === 'pending';
-    if (window.currentOrderFilter === 'high-value') filterMatch = Number(item.total || 0) >= 5000;
-
-    const searchMatch =
-      !term ||
-      (item.orderId || '').toLowerCase().includes(term) ||
-      (item.customer?.name || '').toLowerCase().includes(term) ||
-      (item.customer?.email || '').toLowerCase().includes(term);
-
-    return filterMatch && searchMatch;
-  });
-}
-
-function updateOrderStats() {
-  document.getElementById('orders-total-count').textContent = window.orderItems.length;
-  document.getElementById('orders-paid-count').textContent = window.orderItems.filter(o => (o.status || 'paid').toLowerCase() === 'paid').length;
-  document.getElementById('orders-value-count').textContent = `₹${window.orderItems.reduce((sum, o) => sum + Number(o.total || 0), 0).toFixed(0)}`;
-  document.getElementById('orders-items-count').textContent = window.orderItems.reduce((sum, o) => sum + ((o.items || []).length), 0);
-}
-
-function renderOrderItems() {
-  const tbody = document.getElementById('orders-table-body');
-  const cards = document.getElementById('orders-mobile-cards');
-  const empty = document.getElementById('orders-empty-state');
-  const pagination = document.getElementById('orders-pagination');
-  if (!tbody || !cards) return;
-
-  if (!window.filteredOrderItems.length) {
-    if (empty) empty.style.display = 'block';
-    tbody.innerHTML = '';
-    cards.innerHTML = '';
-    if (pagination) pagination.style.display = 'none';
-    return;
-  }
-
-  if (empty) empty.style.display = 'none';
-
-  const start = (window.currentOrderPage - 1) * window.orderItemsPerPage;
-  const end = start + window.orderItemsPerPage;
-  const pageItems = window.filteredOrderItems.slice(start, end);
-
-  tbody.innerHTML = pageItems.map(order => `
-    <tr>
-      <td><strong>${order.orderId || order.id}</strong></td>
-      <td>${order.customer?.name || '-'}</td>
-      <td>${order.customer?.email || '-'}</td>
-      <td>${(order.items || []).length}</td>
-      <td>₹${Number(order.total || 0).toFixed(2)}</td>
-      <td><span class="request-status-badge ${(order.status || 'paid').toLowerCase()}">${order.status || 'paid'}</span></td>
-      <td>${order.orderDate.toLocaleDateString('en-IN')}</td>
-      <td>
-        <div class="request-action-btns">
-          <button onclick="viewOrderJson('${order.id}')"><i class="fa-solid fa-eye"></i></button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  cards.innerHTML = pageItems.map(order => `
-    <div class="request-card">
-      <div class="request-card-head">
-        <div>
-          <h4>${order.orderId || order.id}</h4>
-          <p>${order.customer?.name || '-'}</p>
-        </div>
-        <span class="request-status-badge ${(order.status || 'paid').toLowerCase()}">${order.status || 'paid'}</span>
-      </div>
-      <div class="request-card-body">
-        <div><i class="fa-solid fa-envelope"></i> ${order.customer?.email || '-'}</div>
-        <div><i class="fa-solid fa-box"></i> ${(order.items || []).length} item(s)</div>
-        <div><i class="fa-solid fa-indian-rupee-sign"></i> ₹${Number(order.total || 0).toFixed(2)}</div>
-        <div><i class="fa-solid fa-calendar"></i> ${order.orderDate.toLocaleDateString('en-IN')}</div>
-      </div>
-      <div class="request-card-actions">
-        <button onclick="viewOrderJson('${order.id}')">view</button>
-      </div>
-    </div>
-  `).join('');
-
-  updateOrderPagination();
-}
-
-function updateOrderPagination() {
-  const totalPages = Math.ceil(window.filteredOrderItems.length / window.orderItemsPerPage);
-  const pagination = document.getElementById('orders-pagination');
-  const prevBtn = document.getElementById('prev-order-page');
-  const nextBtn = document.getElementById('next-order-page');
-  const pageNumbers = document.getElementById('order-page-numbers');
-
-  if (totalPages <= 1) {
-    if (pagination) pagination.style.display = 'none';
-    return;
-  }
-
-  pagination.style.display = 'flex';
-  prevBtn.disabled = window.currentOrderPage === 1;
-  nextBtn.disabled = window.currentOrderPage === totalPages;
-
-  let html = '';
-  for (let i = Math.max(1, window.currentOrderPage - 2); i <= Math.min(totalPages, window.currentOrderPage + 2); i++) {
-    html += `<button class="page-btn ${i === window.currentOrderPage ? 'active' : ''}" onclick="goToOrderPage(${i})">${i}</button>`;
-  }
-  pageNumbers.innerHTML = html;
-}
-
-window.changeOrderPage = function(direction) {
-  const totalPages = Math.ceil(window.filteredOrderItems.length / window.orderItemsPerPage);
-  if (direction === 'prev' && window.currentOrderPage > 1) window.currentOrderPage--;
-  if (direction === 'next' && window.currentOrderPage < totalPages) window.currentOrderPage++;
-  renderOrderItems();
-};
-
-window.goToOrderPage = function(page) {
-  window.currentOrderPage = page;
-  renderOrderItems();
-};
-
-window.viewOrderJson = function(id) {
-  const order = window.orderItems.find(o => o.id === id);
-  if (!order) return;
-  alert(JSON.stringify(order, null, 2));
-};
-
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
-}
-
-db.collection('notifications').onSnapshot((snapshot) => {
-  const pendingCount = snapshot.docs.filter(doc => {
-    const data = doc.data();
-    return data.status === 'pending' || !data.status;
-  }).length;
-  notifyBadge.textContent = pendingCount;
-});
-
-db.collection('reviews').onSnapshot((snapshot) => {
-  reviewsBadge.textContent = snapshot.size;
-});
-
-db.collection('enquiries').onSnapshot((snapshot) => {
-  requestBadge.textContent = snapshot.size;
-});
-
-db.collection('orders').onSnapshot((snapshot) => {
-  ordersBadge.textContent = snapshot.size;
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    addLogoutButton();
-  }, 1000);
-});
-
-window.logout = logout;
-
-document.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && document.getElementById('loginOverlay') && !document.getElementById('loginOverlay').classList.contains('hidden')) {
-    handleLogin(e);
-  }
-});
-
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.attributeName === 'class') {
-      if (!document.getElementById('loginOverlay').classList.contains('hidden')) {
-        document.getElementById('email').focus();
+        return false;
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        return false;
       }
     }
-  });
-});
 
-observer.observe(document.getElementById('loginOverlay'), { attributes: true });
+    function showLoginOverlay() {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      document.getElementById('admin-content').classList.add('blurred');
+      const emailField = document.getElementById('email');
+      if (emailField) setTimeout(() => emailField.focus(), 50);
+    }
 
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  document.body.appendChild(notification);
-  setTimeout(() => notification.remove(), 3000);
-}
+    function hideLoginOverlay() {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      document.getElementById('admin-content').classList.remove('blurred');
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    addLogoutButton();
-  }, 1000);
-});
+    function showLoginError(message) {
+      const errorDiv = document.getElementById('loginError');
+      document.getElementById('errorText').textContent = message;
+      errorDiv.style.display = 'flex';
+      setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
 
-window.logout = logout;
+    function togglePasswordVisibility() {
+      const input = document.getElementById('password');
+      const icon = document.getElementById('togglePassword');
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      icon.classList.toggle('fa-eye', !isPassword);
+      icon.classList.toggle('fa-eye-slash', isPassword);
+    }
 
-document.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && document.getElementById('loginOverlay') && !document.getElementById('loginOverlay').classList.contains('hidden')) {
-    handleLogin(e);
-  }
-});
+    function setLoading(isLoading) {
+      document.getElementById('loginButton').disabled = isLoading;
+      document.getElementById('loginSpinner').style.display = isLoading ? 'inline-block' : 'none';
+      document.getElementById('loginText').style.opacity = isLoading ? '0.7' : '1';
+    }
 
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.attributeName === 'class') {
-      if (!document.getElementById('loginOverlay').classList.contains('hidden')) {
-        document.getElementById('email').focus();
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      if (!email || !password) {
+        showLoginError('Please enter email and password');
+        return false;
+      }
+
+      setLoading(true);
+      try {
+        const persistence = rememberMe
+          ? firebase.auth.Auth.Persistence.LOCAL
+          : firebase.auth.Auth.Persistence.SESSION;
+
+        await auth.setPersistence(persistence);
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const isAdmin = await checkAdminStatus(userCredential.user);
+
+        if (!isAdmin) {
+          await auth.signOut();
+          showLoginError('Access denied. This account does not have admin privileges.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        switch (error.code) {
+          case 'auth/invalid-email':
+            showLoginError('Invalid email address format');
+            break;
+          case 'auth/user-disabled':
+            showLoginError('This account has been disabled');
+            break;
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+            showLoginError('Invalid email or password');
+            break;
+          case 'auth/too-many-requests':
+            showLoginError('Too many failed attempts. Please try again later');
+            break;
+          default:
+            showLoginError('Login failed. Please try again');
+        }
+      } finally {
+        setLoading(false);
+      }
+
+      return false;
+    }
+
+    function updateAdminInfo(user) {
+      document.getElementById('adminEmail').innerHTML = `<i class="fa-solid fa-crown"></i> ${user.email}`;
+      document.getElementById('adminName').textContent = user.displayName || user.email.split('@')[0];
+    }
+
+    async function handleForgotPassword() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        showLoginError('Please enter your email address');
+        return;
+      }
+
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showNotification('Password reset email sent', 'success');
+      } catch (error) {
+        console.error(error);
+        showLoginError('Failed to send reset email. Please try again.');
       }
     }
-  });
-});
 
-observer.observe(document.getElementById('loginOverlay'), { attributes: true });
-</script>
+    function logout() {
+      auth.signOut()
+        .then(() => showNotification('Logged out successfully', 'success'))
+        .catch(() => showNotification('Failed to logout', 'error'));
+    }
+
+    function toggleMenu() {
+      slidingMenu.classList.toggle('open');
+      menuOverlay.classList.toggle('show');
+      adminContent.classList.toggle('menu-open');
+    }
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.sliding-menu') && !event.target.closest('.menu-icon')) {
+        slidingMenu.classList.remove('open');
+        menuOverlay.classList.remove('show');
+        adminContent.classList.remove('menu-open');
+      }
+    });
+
+    async function loadPage(page) {
+      if (!auth.currentUser) {
+        showLoginOverlay();
+        return;
+      }
+
+      currentPage = page;
+      Object.values(menuMap).forEach(menu => menu && menu.classList.remove('active'));
+      if (menuMap[page]) menuMap[page].classList.add('active');
+      pageTitle.textContent = page === 'request' ? 'requests' : page;
+
+      loadingOverlay.classList.add('show');
+      if (slidingMenu.classList.contains('open')) toggleMenu();
+
+      try {
+        if (page === 'dashboard') await loadDashboardPage();
+        if (page === 'notify') await loadNotifyPage();
+        if (page === 'reviews') await loadReviewsPage();
+        if (page === 'request') await loadRequestPage();
+        if (page === 'orders') await loadOrdersPage();
+      } catch (error) {
+        console.error('Error loading page:', error);
+        pageContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <h3>failed to load page</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      } finally {
+        loadingOverlay.classList.remove('show');
+      }
+    }
+
+    async function loadFragment(fileName) {
+      const response = await fetch(fileName);
+      if (!response.ok) throw new Error(`Failed to load ${fileName}`);
+      return await response.text();
+    }
+
+    async function loadDashboardPage() {
+      try {
+        const html = await loadFragment('dashhome.html');
+        pageContainer.innerHTML = html;
+        if (typeof window.initializeDashboard === 'function') {
+          window.initializeDashboard();
+        }
+      } catch (error) {
+        pageContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>dashboard partial missing</h3>
+            <p>add <strong>dashhome.html</strong> in the same folder to load your product management UI.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function loadNotifyPage() {
+      try {
+        const html = await loadFragment('notify.html');
+        pageContainer.innerHTML = html;
+        if (typeof window.initializeNotify === 'function') {
+          window.initializeNotify();
+        }
+      } catch (error) {
+        pageContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-bell"></i>
+            <h3>notify page missing</h3>
+            <p>add <strong>notify.html</strong> in the same folder to load notification management.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function loadReviewsPage() {
+      try {
+        const html = await loadFragment('review.html');
+        pageContainer.innerHTML = html;
+        if (typeof window.initializeReviewsPage === 'function') {
+          window.initializeReviewsPage();
+        }
+      } catch (error) {
+        pageContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-regular fa-star"></i>
+            <h3>reviews page missing</h3>
+            <p>add <strong>review.html</strong> in the same folder to load review management.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function loadRequestPage() {
+      const html = await loadFragment('request.html');
+      pageContainer.innerHTML = html;
+      initializeAdminRequestsPage();
+    }
+
+    async function loadOrdersPage() {
+      const html = await loadFragment('orders.html');
+      pageContainer.innerHTML = html;
+      initializeOrdersPage();
+    }
+
+    function startLiveBadges() {
+      try {
+        db.collection('notifications').onSnapshot((snapshot) => {
+          const pending = snapshot.docs.filter(doc => {
+            const data = doc.data();
+            return !data.status || data.status === 'pending';
+          }).length;
+          document.getElementById('notifyBadge').textContent = pending;
+        });
+      } catch (error) {
+        console.warn('Notification badge listener unavailable', error);
+      }
+
+      try {
+        db.collection('reviews').onSnapshot((snapshot) => {
+          document.getElementById('reviewsBadge').textContent = snapshot.size;
+        });
+      } catch (error) {
+        console.warn('Reviews badge listener unavailable', error);
+      }
+
+      try {
+        db.collection('enquiries').onSnapshot((snapshot) => {
+          const open = snapshot.docs.filter(doc => {
+            const status = (doc.data().status || 'received').toLowerCase();
+            return status === 'received' || status === 'processing';
+          }).length;
+          document.getElementById('requestBadge').textContent = open;
+        });
+      } catch (error) {
+        console.warn('Request badge listener unavailable', error);
+      }
+
+      try {
+        db.collection('orders').onSnapshot((snapshot) => {
+          const active = snapshot.docs.filter(doc => {
+            const status = normalizeOrderStatus(doc.data().status || doc.data().orderStatus);
+            return status === 'pending' || status === 'processing';
+          }).length;
+          document.getElementById('ordersBadge').textContent = active;
+        });
+      } catch (error) {
+        console.warn('Orders badge listener unavailable', error);
+      }
+    }
+
+    function normalizeDate(value) {
+      if (!value) return new Date();
+      if (typeof value.toDate === 'function') return value.toDate();
+      if (typeof value === 'number') return new Date(value);
+      if (value.seconds) return new Date(value.seconds * 1000);
+      return new Date(value);
+    }
+
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
+
+    function exportCsv(rows, fileName) {
+      if (!rows.length) {
+        showNotification('Nothing to export', 'warning');
+        return;
+      }
+
+      const headers = Object.keys(rows[0]);
+      const csvRows = [headers.join(',')];
+      rows.forEach(row => {
+        const values = headers.map(header => `"${String(row[header] ?? '').replace(/"/g, '""')}"`);
+        csvRows.push(values.join(','));
+      });
+
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function truncate(text, size = 90) {
+      if (!text) return '';
+      return text.length > size ? `${text.slice(0, size)}...` : text;
+    }
+
+    function formatStatus(status) {
+      return (status || 'received').toLowerCase();
+    }
+
+    function requestImagesHtml(images) {
+      if (!images || !images.length) return '—';
+      return `
+        <div class="request-images">
+          ${images.slice(0, 3).map(img => `
+            <img
+              src="${img}"
+              class="request-thumb"
+              alt="request image"
+              onclick="window.open('${img}', '_blank')"
+            >
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function initializeAdminRequestsPage() {
+      window.currentAdminRequestFilter = 'all';
+      window.currentAdminRequestPage = 1;
+
+      document.querySelectorAll('#page-container .filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          filterAdminRequests(tab.dataset.filter);
+        });
+      });
+
+      const search = document.getElementById('search-requests-admin');
+      if (search) {
+        search.addEventListener('input', (event) => searchAdminRequests(event.target.value));
+      }
+
+      loadAdminRequests();
+    }
+
+    async function loadAdminRequests() {
+      const loader = document.getElementById('requests-loading');
+      if (loader) loader.style.display = 'flex';
+
+      try {
+        const snapshot = await db.collection('enquiries').orderBy('timestamp', 'desc').get();
+        window.allAdminRequests = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          timestamp: normalizeDate(doc.data().timestamp)
+        }));
+        applyAdminRequestFilter(window.currentAdminRequestFilter);
+        updateAdminRequestStats();
+        renderAdminRequests();
+      } catch (error) {
+        console.error('Error loading enquiries:', error);
+        showNotification('Failed to load requests', 'error');
+      } finally {
+        if (loader) loader.style.display = 'none';
+      }
+    }
+
+    function applyAdminRequestFilter(filter) {
+      window.filteredAdminRequests = window.allAdminRequests.filter(item => {
+        const status = formatStatus(item.status);
+        if (filter === 'all') return true;
+        if (filter === 'with-image') return Array.isArray(item.images) && item.images.length > 0;
+        return status === filter;
+      });
+    }
+
+    function filterAdminRequests(filter) {
+      window.currentAdminRequestFilter = filter;
+      window.currentAdminRequestPage = 1;
+      document.querySelectorAll('#page-container .filter-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.filter === filter);
+      });
+      applyAdminRequestFilter(filter);
+      renderAdminRequests();
+    }
+
+    function searchAdminRequests(term) {
+      const query = term.trim().toLowerCase();
+      if (!query) {
+        applyAdminRequestFilter(window.currentAdminRequestFilter);
+      } else {
+        window.filteredAdminRequests = window.allAdminRequests.filter(item => {
+          return [item.name, item.email, item.phone, item.message, item.id].some(value => String(value || '').toLowerCase().includes(query));
+        });
+      }
+      window.currentAdminRequestPage = 1;
+      renderAdminRequests();
+    }
+
+    function updateAdminRequestStats() {
+      const openCount = window.allAdminRequests.filter(item => {
+        const status = formatStatus(item.status);
+        return status === 'received' || status === 'processing';
+      }).length;
+
+      document.getElementById('requests-total').textContent = window.allAdminRequests.length;
+      document.getElementById('requests-open').textContent = openCount;
+      document.getElementById('requests-images').textContent = window.allAdminRequests.filter(item => item.images && item.images.length).length;
+      document.getElementById('requests-users').textContent = new Set(window.allAdminRequests.map(item => item.email).filter(Boolean)).size;
+    }
+
+    function renderAdminRequests() {
+      const empty = document.getElementById('requests-empty-state');
+      const tableBody = document.getElementById('requests-table-body');
+      const mobile = document.getElementById('requests-mobile-cards');
+      const pagination = document.getElementById('requests-pagination');
+
+      if (!tableBody || !mobile) return;
+
+      if (!window.filteredAdminRequests.length) {
+        empty.style.display = 'block';
+        tableBody.innerHTML = '';
+        mobile.innerHTML = '';
+        pagination.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      const start = (window.currentAdminRequestPage - 1) * window.adminRequestsPerPage;
+      const pageItems = window.filteredAdminRequests.slice(start, start + window.adminRequestsPerPage);
+
+      tableBody.innerHTML = pageItems.map(item => {
+        const status = formatStatus(item.status);
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:800;">${item.name || 'Guest user'}</div>
+              <div style="font-size:0.72rem; color:#666; text-transform:uppercase;">${item.userId || 'guest'}</div>
+            </td>
+            <td>
+              <div><i class="fa-regular fa-envelope" style="color:#d4af37;"></i> ${item.email || '—'}</div>
+              <div style="font-size:0.8rem; color:#666; margin-top:4px;"><i class="fa-solid fa-phone" style="color:#d4af37;"></i> ${item.phone || '—'}</div>
+            </td>
+            <td>${truncate(item.message || 'No message', 120)}</td>
+            <td>${requestImagesHtml(item.images)}</td>
+            <td><span class="status-badge ${status}">${status}</span></td>
+            <td>
+              <div class="timestamp">
+                <span class="date">${item.timestamp.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                <span>${item.timestamp.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn" title="Mark processing" onclick="updateAdminRequestStatus('${item.id}', 'processing')"><i class="fa-solid fa-hourglass-half"></i></button>
+                <button class="action-btn" title="Mark completed" onclick="updateAdminRequestStatus('${item.id}', 'completed')"><i class="fa-solid fa-check"></i></button>
+                <button class="action-btn email-btn" title="Copy email" onclick="copyText('${item.email || ''}', 'Email copied')"><i class="fa-regular fa-copy"></i></button>
+                <button class="action-btn" title="Delete" onclick="deleteAdminRequest('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      mobile.innerHTML = pageItems.map(item => {
+        const status = formatStatus(item.status);
+        return `
+          <div class="notification-card">
+            <div class="card-header">
+              <div class="card-title">
+                <h4>${item.name || 'Guest user'}</h4>
+                <div style="font-size:0.7rem; color:#666;">${item.email || 'No email'}</div>
+              </div>
+              <span class="status-badge ${status}">${status}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-row"><i class="fa-solid fa-phone"></i><span>${item.phone || 'No phone'}</span></div>
+              <div class="card-row"><i class="fa-regular fa-message"></i><span>${item.message || 'No message'}</span></div>
+              <div class="card-row"><i class="fa-regular fa-image"></i><span>${(item.images || []).length} image(s)</span></div>
+              ${(item.images || []).length ? `<div>${requestImagesHtml(item.images)}</div>` : ''}
+              <div class="card-row"><i class="fa-regular fa-clock"></i><span>${item.timestamp.toLocaleDateString('en-IN')} ${item.timestamp.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span></div>
+            </div>
+            <div class="card-footer">
+              <span style="font-family:monospace;">${item.id.slice(0, 8)}</span>
+              <div class="card-actions">
+                <button class="action-btn" onclick="updateAdminRequestStatus('${item.id}', 'processing')"><i class="fa-solid fa-hourglass-half"></i></button>
+                <button class="action-btn" onclick="updateAdminRequestStatus('${item.id}', 'completed')"><i class="fa-solid fa-check"></i></button>
+                <button class="action-btn email-btn" onclick="copyText('${item.email || ''}', 'Email copied')"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateRequestPagination();
+    }
+
+    function updateRequestPagination() {
+      const totalPages = Math.ceil(window.filteredAdminRequests.length / window.adminRequestsPerPage);
+      const pagination = document.getElementById('requests-pagination');
+      if (!pagination) return;
+
+      if (totalPages <= 1) {
+        pagination.style.display = 'none';
+        return;
+      }
+
+      pagination.style.display = 'flex';
+      document.getElementById('prev-request-page').disabled = window.currentAdminRequestPage === 1;
+      document.getElementById('next-request-page').disabled = window.currentAdminRequestPage === totalPages;
+
+      let html = '';
+      for (let i = Math.max(1, window.currentAdminRequestPage - 2); i <= Math.min(totalPages, window.currentAdminRequestPage + 2); i++) {
+        html += `<button class="page-btn ${i === window.currentAdminRequestPage ? 'active' : ''}" onclick="goToRequestPage(${i})">${i}</button>`;
+      }
+      document.getElementById('request-page-numbers').innerHTML = html;
+    }
+
+    function changeRequestPage(direction) {
+      const totalPages = Math.ceil(window.filteredAdminRequests.length / window.adminRequestsPerPage);
+      if (direction === 'prev' && window.currentAdminRequestPage > 1) window.currentAdminRequestPage--;
+      if (direction === 'next' && window.currentAdminRequestPage < totalPages) window.currentAdminRequestPage++;
+      renderAdminRequests();
+    }
+
+    function goToRequestPage(page) {
+      window.currentAdminRequestPage = page;
+      renderAdminRequests();
+    }
+
+    async function updateAdminRequestStatus(id, status) {
+      try {
+        await db.collection('enquiries').doc(id).update({
+          status,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showNotification(`Request marked ${status}`, 'success');
+        loadAdminRequests();
+      } catch (error) {
+        console.error(error);
+        showNotification('Failed to update request', 'error');
+      }
+    }
+
+    async function deleteAdminRequest(id) {
+      if (!confirm('Delete this enquiry request?')) return;
+      try {
+        await db.collection('enquiries').doc(id).delete();
+        showNotification('Request deleted', 'success');
+        loadAdminRequests();
+      } catch (error) {
+        console.error(error);
+        showNotification('Failed to delete request', 'error');
+      }
+    }
+
+    function exportAdminRequests() {
+      exportCsv(
+        window.filteredAdminRequests.map(item => ({
+          id: item.id,
+          name: item.name || '',
+          email: item.email || '',
+          phone: item.phone || '',
+          message: item.message || '',
+          images_count: item.images ? item.images.length : 0,
+          status: formatStatus(item.status),
+          date: item.timestamp.toISOString()
+        })),
+        `enquiry_requests_${new Date().toISOString().slice(0, 10)}.csv`
+      );
+    }
+
+    function normalizeOrderStatus(status) {
+      const value = String(status || 'pending').toLowerCase();
+      if (['pending', 'processing', 'completed', 'cancelled'].includes(value)) return value;
+      if (value === 'delivered' || value === 'success') return 'completed';
+      return 'pending';
+    }
+
+    function orderDate(order) {
+      return normalizeDate(order.createdAt || order.timestamp || order.orderedAt || order.date);
+    }
+
+    function orderAmount(order) {
+      return Number(order.totalAmount || order.total || order.amount || order.grandTotal || order.finalAmount || 0);
+    }
+
+    function orderItems(order) {
+      return order.items || order.products || order.cartItems || [];
+    }
+
+    function orderCustomerName(order) {
+      return order.customerName || order.name || order.shippingAddress?.fullName || order.userName || order.email?.split('@')[0] || 'Customer';
+    }
+
+    function orderPhone(order) {
+      return order.phone || order.shippingAddress?.phone || order.contactNumber || '';
+    }
+
+    function initializeOrdersPage() {
+      window.currentOrdersFilter = 'all';
+      window.currentOrdersPage = 1;
+
+      document.querySelectorAll('#page-container .filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => filterOrdersAdmin(tab.dataset.filter));
+      });
+
+      const search = document.getElementById('search-orders-admin');
+      if (search) {
+        search.addEventListener('input', (event) => searchOrdersAdmin(event.target.value));
+      }
+
+      loadOrdersAdmin();
+    }
+
+    async function loadOrdersAdmin() {
+      const loader = document.getElementById('orders-loading');
+      if (loader) loader.style.display = 'flex';
+
+      try {
+        const snapshot = await db.collection('orders').get();
+        window.allOrdersAdmin = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          _date: orderDate(doc.data()),
+          _status: normalizeOrderStatus(doc.data().status || doc.data().orderStatus)
+        })).sort((a, b) => b._date - a._date);
+
+        applyOrdersFilter(window.currentOrdersFilter);
+        updateOrdersStats();
+        renderOrdersAdmin();
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        showNotification('Failed to load orders', 'error');
+      } finally {
+        if (loader) loader.style.display = 'none';
+      }
+    }
+
+    function applyOrdersFilter(filter) {
+      window.filteredOrdersAdmin = window.allOrdersAdmin.filter(order => {
+        if (filter === 'all') return true;
+        return order._status === filter;
+      });
+    }
+
+    function filterOrdersAdmin(filter) {
+      window.currentOrdersFilter = filter;
+      window.currentOrdersPage = 1;
+      document.querySelectorAll('#page-container .filter-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.filter === filter);
+      });
+      applyOrdersFilter(filter);
+      renderOrdersAdmin();
+    }
+
+    function searchOrdersAdmin(term) {
+      const query = term.trim().toLowerCase();
+      if (!query) {
+        applyOrdersFilter(window.currentOrdersFilter);
+      } else {
+        window.filteredOrdersAdmin = window.allOrdersAdmin.filter(order => {
+          return [order.id, order.orderNumber, orderCustomerName(order), order.email, orderPhone(order)].some(value => String(value || '').toLowerCase().includes(query));
+        });
+      }
+      window.currentOrdersPage = 1;
+      renderOrdersAdmin();
+    }
+
+    function updateOrdersStats() {
+      const totalRevenue = window.allOrdersAdmin.reduce((sum, order) => sum + orderAmount(order), 0);
+      document.getElementById('orders-total').textContent = window.allOrdersAdmin.length;
+      document.getElementById('orders-pending').textContent = window.allOrdersAdmin.filter(order => order._status === 'pending').length;
+      document.getElementById('orders-completed').textContent = window.allOrdersAdmin.filter(order => order._status === 'completed').length;
+      document.getElementById('orders-revenue').textContent = `₹${Math.round(totalRevenue)}`;
+    }
+
+    function renderOrdersAdmin() {
+      const empty = document.getElementById('orders-empty-state');
+      const tableBody = document.getElementById('orders-table-body');
+      const mobile = document.getElementById('orders-mobile-cards');
+      const pagination = document.getElementById('orders-pagination');
+
+      if (!tableBody || !mobile) return;
+
+      if (!window.filteredOrdersAdmin.length) {
+        empty.style.display = 'block';
+        tableBody.innerHTML = '';
+        mobile.innerHTML = '';
+        pagination.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      const start = (window.currentOrdersPage - 1) * window.ordersPerPage;
+      const pageItems = window.filteredOrdersAdmin.slice(start, start + window.ordersPerPage);
+
+      tableBody.innerHTML = pageItems.map(order => {
+        const items = orderItems(order);
+        return `
+          <tr>
+            <td>
+              <div style="font-weight:800;">${order.orderNumber || order.id.slice(0, 8).toUpperCase()}</div>
+              <div style="font-size:0.72rem; color:#666;">${order.id}</div>
+            </td>
+            <td>
+              <div style="font-weight:700;">${orderCustomerName(order)}</div>
+              <div style="font-size:0.78rem; color:#666;">${order.email || 'No email'}</div>
+              <div style="font-size:0.78rem; color:#666;">${orderPhone(order) || 'No phone'}</div>
+            </td>
+            <td>${items.length || Number(order.itemCount || 0)} item(s)</td>
+            <td><strong>₹${Math.round(orderAmount(order))}</strong></td>
+            <td><span class="status-badge ${order._status}">${order._status}</span></td>
+            <td>
+              <div class="timestamp">
+                <span class="date">${order._date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                <span>${order._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="action-btn" title="Processing" onclick="updateOrderStatusAdmin('${order.id}', 'processing')"><i class="fa-solid fa-hourglass-half"></i></button>
+                <button class="action-btn" title="Completed" onclick="updateOrderStatusAdmin('${order.id}', 'completed')"><i class="fa-solid fa-check"></i></button>
+                <button class="action-btn" title="Cancelled" onclick="updateOrderStatusAdmin('${order.id}', 'cancelled')"><i class="fa-solid fa-ban"></i></button>
+                <button class="action-btn email-btn" title="Copy email" onclick="copyText('${order.email || ''}', 'Email copied')"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      mobile.innerHTML = pageItems.map(order => {
+        const items = orderItems(order);
+        return `
+          <div class="notification-card">
+            <div class="card-header">
+              <div class="card-title">
+                <h4>${order.orderNumber || order.id.slice(0, 8).toUpperCase()}</h4>
+                <div style="font-size:0.72rem; color:#666;">${orderCustomerName(order)}</div>
+              </div>
+              <span class="status-badge ${order._status}">${order._status}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-row"><i class="fa-regular fa-envelope"></i><span>${order.email || 'No email'}</span></div>
+              <div class="card-row"><i class="fa-solid fa-phone"></i><span>${orderPhone(order) || 'No phone'}</span></div>
+              <div class="card-row"><i class="fa-solid fa-box"></i><span>${items.length || Number(order.itemCount || 0)} item(s)</span></div>
+              <div class="card-row"><i class="fa-solid fa-indian-rupee-sign"></i><span>₹${Math.round(orderAmount(order))}</span></div>
+              <div class="card-row"><i class="fa-regular fa-clock"></i><span>${order._date.toLocaleDateString('en-IN')} ${order._date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span></div>
+            </div>
+            <div class="card-footer">
+              <span style="font-family:monospace;">${order.id.slice(0, 8)}</span>
+              <div class="card-actions">
+                <button class="action-btn" onclick="updateOrderStatusAdmin('${order.id}', 'processing')"><i class="fa-solid fa-hourglass-half"></i></button>
+                <button class="action-btn" onclick="updateOrderStatusAdmin('${order.id}', 'completed')"><i class="fa-solid fa-check"></i></button>
+                <button class="action-btn" onclick="updateOrderStatusAdmin('${order.id}', 'cancelled')"><i class="fa-solid fa-ban"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateOrdersPagination();
+    }
+
+    function updateOrdersPagination() {
+      const totalPages = Math.ceil(window.filteredOrdersAdmin.length / window.ordersPerPage);
+      const pagination = document.getElementById('orders-pagination');
+      if (!pagination) return;
+
+      if (totalPages <= 1) {
+        pagination.style.display = 'none';
+        return;
+      }
+
+      pagination.style.display = 'flex';
+      document.getElementById('prev-orders-page').disabled = window.currentOrdersPage === 1;
+      document.getElementById('next-orders-page').disabled = window.currentOrdersPage === totalPages;
+
+      let html = '';
+      for (let i = Math.max(1, window.currentOrdersPage - 2); i <= Math.min(totalPages, window.currentOrdersPage + 2); i++) {
+        html += `<button class="page-btn ${i === window.currentOrdersPage ? 'active' : ''}" onclick="goToOrdersPage(${i})">${i}</button>`;
+      }
+      document.getElementById('orders-page-numbers').innerHTML = html;
+    }
+
+    function changeOrdersPage(direction) {
+      const totalPages = Math.ceil(window.filteredOrdersAdmin.length / window.ordersPerPage);
+      if (direction === 'prev' && window.currentOrdersPage > 1) window.currentOrdersPage--;
+      if (direction === 'next' && window.currentOrdersPage < totalPages) window.currentOrdersPage++;
+      renderOrdersAdmin();
+    }
+
+    function goToOrdersPage(page) {
+      window.currentOrdersPage = page;
+      renderOrdersAdmin();
+    }
+
+    async function updateOrderStatusAdmin(id, status) {
+      try {
+        await db.collection('orders').doc(id).update({
+          status,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showNotification(`Order marked ${status}`, 'success');
+        loadOrdersAdmin();
+      } catch (error) {
+        console.error(error);
+        showNotification('Failed to update order', 'error');
+      }
+    }
+
+    function exportOrdersAdmin() {
+      exportCsv(
+        window.filteredOrdersAdmin.map(order => ({
+          id: order.id,
+          order_number: order.orderNumber || order.id.slice(0, 8).toUpperCase(),
+          customer: orderCustomerName(order),
+          email: order.email || '',
+          phone: orderPhone(order),
+          item_count: orderItems(order).length || Number(order.itemCount || 0),
+          amount: Math.round(orderAmount(order)),
+          status: order._status,
+          date: order._date.toISOString()
+        })),
+        `orders_${new Date().toISOString().slice(0, 10)}.csv`
+      );
+    }
+
+    function copyText(text, message = 'Copied') {
+      navigator.clipboard.writeText(text || '');
+      showNotification(message, 'success');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new MutationObserver(() => {
+        const overlay = document.getElementById('loginOverlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+          const emailField = document.getElementById('email');
+          if (emailField) emailField.focus();
+        }
+      });
+
+      observer.observe(document.getElementById('loginOverlay'), { attributes: true });
+    });
+
+    window.handleLogin = handleLogin;
+    window.handleForgotPassword = handleForgotPassword;
+    window.togglePasswordVisibility = togglePasswordVisibility;
+    window.toggleMenu = toggleMenu;
+    window.loadPage = loadPage;
+    window.logout = logout;
+    window.filterAdminRequests = filterAdminRequests;
+    window.changeRequestPage = changeRequestPage;
+    window.goToRequestPage = goToRequestPage;
+    window.updateAdminRequestStatus = updateAdminRequestStatus;
+    window.deleteAdminRequest = deleteAdminRequest;
+    window.exportAdminRequests = exportAdminRequests;
+    window.changeOrdersPage = changeOrdersPage;
+    window.goToOrdersPage = goToOrdersPage;
+    window.updateOrderStatusAdmin = updateOrderStatusAdmin;
+    window.exportOrdersAdmin = exportOrdersAdmin;
+    window.copyText = copyText;
+    window.initializeAdminRequestsPage = initializeAdminRequestsPage;
+    window.initializeOrdersPage = initializeOrdersPage;
+  </script>
 </body>
 </html>
