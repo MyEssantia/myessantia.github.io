@@ -1699,7 +1699,7 @@ function loadCheckoutGooglePlaces() {
   if (document.querySelector('script[data-checkout-google="true"]')) return;
 
   const script = document.createElement('script');
-  script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk&libraries=places&callback=initGoogleAddressAutocomplete';
+script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD16uGnm1vodkbqGoFSdFdJjGFSLpJmflk&libraries=places&callback=initCheckoutGooglePlaces';
   script.async = true;
   script.defer = true;
   script.dataset.checkoutGoogle = 'true';
